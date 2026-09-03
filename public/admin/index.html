@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- The content editor — Decap CMS, https://decapcms.org
+     Pacific Links staff sign in here to edit the landing page's copy and to
+     publish stories. Every save becomes a git commit through Netlify's Git
+     Gateway, and Netlify rebuilds the site from it — there is no database
+     and no second copy of the content anywhere.
+
+     Both scripts are SELF-HOSTED copies (of the decap-cms and
+     netlify-identity-widget npm packages, versions pinned in package.json)
+     rather than CDN tags, because the site's CSP allows scripts from 'self'
+     only — an admin page is the last place to start trusting a third-party
+     CDN. To upgrade them: npm update, re-copy the dist files here (the two
+     Copy-Item lines in docs/CMS-SETUP.md), commit.
+
+     Editable locally too, with no Netlify at all:
+       npm run cms   (in one terminal)
+       npm run dev   (in another)
+     then open http://localhost:5173/admin/ — config.yml's local_backend
+     writes straight to the working tree. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>GLOW — Content editor</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23014E45'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23B7EAE7'/%3E%3Ccircle cx='16' cy='16' r='7.4' fill='%2340D3BA'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%2314BA76'/%3E%3C/svg%3E">
+</head>
+<body>
+<script src="./netlify-identity-widget.js"></script>
+<script src="./decap-cms.js"></script>
+</body>
+</html>

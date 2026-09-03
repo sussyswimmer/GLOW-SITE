@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<!-- EVERY EDITABLE STRING ON THIS PAGE LIVES IN content/landing.json.
+     The {{ … }} tokens below are replaced at dev-serve and build
+     time by tools/content-plugin.mjs, so the HTML that ships is identical
+     to a hand-authored page — but the words are the client's to change,
+     through the CMS at /admin, without touching this file. Structure,
+     hrefs, image slots and everything unlabelled stay a developer's job.
+
+     The title, the description and `lang` are the three things a search
+     result, a browser tab and a shared link are made of, and they were the
+     one part of the page the VI/EN toggle never touched: a Vietnamese
+     interface described itself in English, in a document declaring itself
+     Vietnamese. src/i18n.js swaps all three together from the pair below. -->
+<html lang="vi"
+      data-title-vi="{{meta.title.vi}}"
+      data-title-en="{{meta.title.en}}"
+      data-desc-vi="{{meta.desc.vi}}"
+      data-desc-en="{{meta.desc.en}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F9F9F9">
+<title>{{meta.title.vi}}</title>
+<meta name="description" content="{{meta.desc.vi}}">
+
+<!-- Anybody + Roboto: the Matera Alliance brand pairing (guideline 5.1-5.3).
+     Anybody Bold for headlines, Roboto for sub-headlines and bodytext. Both
+     carry the full Vietnamese diacritic set, which this bilingual site needs. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anybody:wght@600;700;800&family=Roboto:wght@300;400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wght@600;700;800&family=Roboto:wght@300;400;500;700&display=swap">
+<link rel="stylesheet" href="./src/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23014E45'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23B7EAE7'/%3E%3Ccircle cx='16' cy='16' r='7.4' fill='%2340D3BA'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%2314BA76'/%3E%3C/svg%3E">
+<!-- Netlify Identity invitation and recovery emails link to the site root
+     with a token in the hash. The CMS lives at /admin/, so this hop is the
+     only thing the landing page needs to know about it. Self-hosted, three
+     lines, and a no-op for every ordinary visitor. -->
+<script defer src="./identity-redirect.js"></script>
+</head>
+<body>
+
+<!-- Every other page has one; this one did not, so the page with the longest
+     run of decorative chrome before its content — preloader, curtain, drawn
+     thread, full-height hero — was the only one a keyboard had to walk all
+     of. It targets <main id="top">. -->
+<a class="skip-link" href="#top" data-i18n data-vi="Tới nội dung chính" data-en="Skip to main content">Tới nội dung chính</a>
+
+<!-- At the top, because a note explaining why a control does not work is
+     no use at the bottom of a page eight screens long. The style block in
+     the <noscript> at the end of <body> is what makes the rest of the page
+     readable without the scroll sequence; this is the one thing that is
+     genuinely lost, said in both languages because the switch between them
+     is exactly what is missing. -->
+<noscript>
+  <div class="noscript-note" role="note">
+    <p><strong>JavaScript đang tắt.</strong> Bạn vẫn đọc được toàn bộ trang này, nhưng nút chuyển VI · EN sẽ không hoạt động. Bật JavaScript để đổi ngôn ngữ.</p>
+    <p lang="en"><strong>JavaScript is off.</strong> You can still read this whole page, but the VI · EN switch will not work. Turn JavaScript on to change language.</p>
+  </div>
+</noscript>
+
+<!-- PRELOADER
+     aria-hidden, so the counter racing 000 → 100 is never read out and never
+     lands in a text extraction of the page as content. -->
+
+<div id="preloader" aria-hidden="true">
+  <div class="pre-inner">
+    <div class="pre-mark">GLOW</div>
+    <div class="pre-count"><span id="preNum">000</span></div>
+  </div>
+  <div class="pre-rule"><i id="preFill"></i></div>
+</div>
+
+<div class="curtain" aria-hidden="true"><i></i><i></i></div>
+
+<!-- FIXED CHROME -->
+<div id="progress" aria-hidden="true"></div>
+
+<!-- Scroll-drawn thread. One line, and only one: it enters at the top of the
+     screen, meanders down, and leaves at the bottom. It was a port of the
+     reuno-ui / skiper19 "svg follow scroll" figure, which is a knot that
+     crosses itself a dozen times — drawn or half-drawn it reads as a tangle
+     of lines rather than as one thread being pulled.
+
+     Every curve descends, so the drawn tip moves steadily DOWN the screen as
+     you scroll rather than doubling back on itself. That is the whole point:
+     the line goes where you are going.
+
+     Bleeds past the top and bottom of the screen on purpose, so it arrives
+     from off screen and leaves off screen instead of starting and stopping in
+     mid-air.
+
+     The `d` below is only the no-JS fallback. squiggle.js redraws it in real
+     pixels against a viewBox matched to the viewport, because ANY fixed
+     viewBox has to be stretched to fit the screen — and on a 3440-wide
+     monitor that stretch is nearly 5:1, which flattens every descent into a
+     horizontal streak. Generated to the viewport, it is 1:1 at every width. -->
+<svg id="squiggle" aria-hidden="true" viewBox="0 0 1000 1000" fill="none" preserveAspectRatio="none">
+  <defs>
+    <!-- Vertical, and running the Matera palette top to bottom: the thread
+         deepens from the pale pattern mint into the logo green as it
+         descends, so the line reports how far down the page you are.
+         Same four swatches, in the same order, as the stripe bands. -->
+    <linearGradient id="sqGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#B7EAE7"/>
+      <stop offset="40%"  stop-color="#40D3BA"/>
+      <stop offset="72%"  stop-color="#1ECE94"/>
+      <stop offset="100%" stop-color="#14BA76"/>
+    </linearGradient>
+  </defs>
+  <path id="squigglePath" pathLength="1" stroke="url(#sqGrad)" stroke-width="16" stroke-linecap="round"
+    vector-effect="non-scaling-stroke"
+    d="M520 -60C520 80 232 132 232 268C232 404 812 428 812 560C812 692 188 704 188 828C188 940 560 952 560 1060"/>
+</svg>
+
+<header id="hdr">
+  <nav class="nav">
+    <a class="logo" href="#top"><img src="./assets/img/glow-logo.png" width="550" height="90" alt="GLOW — Growing Learning Opportunities Worldwide, by Pacific Links Foundation"></a>
+    <!-- Everything in this bar is a public destination. "Khoá học" used to
+         point at courses.html — which is "My courses", a signed-in page
+         listing your own enrolments — so the public navigation offered a
+         visitor a personalised list they had no account for. The six courses
+         GLOW actually publishes are on this page, and that is where it goes.
+         English and Resources are real public catalogue pages now. -->
+    <div class="nav-links">
+      <a href="./english.html" data-i18n data-vi="{{nav.english.vi}}"   data-en="{{nav.english.en}}">{{nav.english.vi}}</a>
+      <a href="#courses" data-i18n data-vi="{{nav.courses.vi}}"        data-en="{{nav.courses.en}}">{{nav.courses.vi}}</a>
+      <a href="./resources.html" data-i18n data-vi="{{nav.resources.vi}}"      data-en="{{nav.resources.en}}">{{nav.resources.vi}}</a>
+      <a href="./stories.html" data-i18n data-vi="{{nav.stories.vi}}" data-en="{{nav.stories.en}}">{{nav.stories.vi}}</a>
+      <a href="#mission"  data-i18n data-vi="{{nav.about.vi}}"         data-en="{{nav.about.en}}">{{nav.about.vi}}</a>
+    </div>
+    <span class="nav-spacer"></span>
+    <button id="langBtn" class="lang" type="button" aria-pressed="false" aria-label="Language">
+      <span class="lang-vi">VI</span><span class="lang-sep"> · </span><span class="lang-en">EN</span>
+    </button>
+    <!-- To the sign-in form, not past it. This button went straight to
+         dashboard.html, which meant the one control on the page labelled
+         "Sign in" was the one control that skipped signing in. -->
+    <a class="btn-login" href="./login.html" data-i18n data-vi="{{nav.signin.vi}}" data-en="{{nav.signin.en}}">{{nav.signin.vi}}</a>
+  </nav>
+</header>
+
+<!-- tabindex=-1 so the skip link above actually moves focus here. A <main>
+     is not focusable on its own, and a skip link that scrolls the page
+     without moving the caret leaves the next Tab back at the logo. -->
+<main id="top" tabindex="-1">
+
+  <!-- 1 · HERO — the entrance.
+       Type only. There is no picture here and no bitmap of any kind: the
+       visual IS the marquee — GLOW's three pillars in amber over its own
+       wordmark in outline, the two lines counter-travelling as you scroll.
+       That keeps the entrance made of the foundation's own words rather
+       than of abstract art that could belong to anyone, and it means the
+       first screen costs nothing to load.
+
+       The copy is on screen from the first frame: an entrance that
+       withholds what GLOW is until you scroll is a bad trade for a
+       foundation nobody arrives already knowing. -->
+  <section class="hero" id="hero">
+    <div class="hero-stage">
+      <!-- Matera "Spreading" pattern, guideline 6.3 / 7.4: the ripple sits at
+           the bottom of the layout and runs past the edge. Purely decorative. -->
+      <div class="pattern" aria-hidden="true"><i class="ripple hero-ripple"></i></div>
+
+      <!-- The whole type field is aria-hidden: it is the hero's picture, and
+           the tagline it paints is said properly in .hero-copy below. The
+           SECOND span in each row is the seam copy that makes the loop
+           infinite, so it carries its own aria-hidden too — belt and braces,
+           so that removing the wrapper's later cannot silently start reading
+           every line of the marquee twice. -->
+      <div class="hero-type" aria-hidden="true">
+        <div class="st-row" data-dir="-1">
+          <span data-i18n data-vi="{{hero.marquee.vi}}" data-en="{{hero.marquee.en}}">{{hero.marquee.vi}}</span>
+          <span aria-hidden="true" data-i18n data-vi="{{hero.marquee.vi}}" data-en="{{hero.marquee.en}}">{{hero.marquee.vi}}</span>
+        </div>
+        <!-- The wordmark line, verbatim in both languages: it is the name. -->
+        <div class="st-row st-row-2" data-dir="1">
+          <span>Growing Learning Opportunities Worldwide · </span>
+          <span aria-hidden="true">Growing Learning Opportunities Worldwide · </span>
+        </div>
+      </div>
+
+      <!-- Ground for the copy. The marquee runs the full width behind it and
+           the amber line is bright enough to cross the headline; this gives
+           the tagline its own dark side of the screen without dimming the
+           type field everywhere. -->
+      <div class="hero-veil" aria-hidden="true"></div>
+
+      <div class="hero-copy">
+        <p class="kick kick-light"><i class="kick-rule"></i><span data-i18n data-vi="{{hero.kicker.vi}}" data-en="{{hero.kicker.en}}">{{hero.kicker.vi}}</span></p>
+
+        <!-- The real tagline, split over three lines. There used to be a cycling
+             word on the middle line, left over from the placeholder layout — with
+             real copy it produced "Growing opportunities Opportunities Worldwide". -->
+        <h1 class="display">
+          <span class="ln"><i data-i18n data-vi="{{hero.line1.vi}}" data-en="{{hero.line1.en}}">{{hero.line1.vi}}</i></span>
+          <span class="ln"><i data-i18n data-vi="{{hero.line2.vi}}" data-en="{{hero.line2.en}}"><em>{{hero.line2.vi}}</em></i></span>
+          <span class="ln"><i data-i18n data-vi="{{hero.line3.vi}}" data-en="{{hero.line3.en}}">{{hero.line3.vi}}</i></span>
+        </h1>
+
+        <p class="lead" data-i18n
+           data-vi="{{hero.lead.vi}}"
+           data-en="{{hero.lead.en}}">{{hero.lead.vi}}</p>
+
+        <div class="cta-row">
+          <a class="btn btn-primary" href="./dashboard.html" data-i18n data-vi="{{hero.ctaPrimary.vi}}" data-en="{{hero.ctaPrimary.en}}">{{hero.ctaPrimary.vi}}</a>
+          <a class="btn btn-ghost" href="#pillars" data-i18n data-vi="{{hero.ctaSecondary.vi}}" data-en="{{hero.ctaSecondary.en}}">{{hero.ctaSecondary.vi}}</a>
+        </div>
+      </div>
+
+      <!-- Nothing on screen says "keep going" while the picture is full bleed,
+           and the whole page is below that fold. -->
+      <div class="hero-cue" aria-hidden="true"><i></i></div>
+    </div>
+  </section>
+
+  <!-- 2 · MANIFESTO -->
+  <section class="manifesto" id="manifesto">
+    <div class="mani-inner">
+      <p class="mani-line" id="maniLine" data-i18n
+         data-vi="{{manifesto.line.vi}}"
+         data-en="{{manifesto.line.en}}">{{manifesto.line.vi}}</p>
+    </div>
+  </section>
+
+  <!-- 3 · WHAT'S ON GLOW — the picture holds the whole screen, then the
+       page opens up around it as it crops into a frame. -->
+  <section class="showcase" id="inside">
+    <div class="showcase-stage">
+      <div class="showcase-head" data-rise>
+        <p class="kick kick-light"><i class="kick-rule"></i><span data-i18n data-vi="{{showcase.kick.vi}}" data-en="{{showcase.kick.en}}">{{showcase.kick.vi}}</span></p>
+        <h2 data-i18n data-vi="{{showcase.heading.vi}}" data-en="{{showcase.heading.en}}">{{showcase.heading.vi}}</h2>
+      </div>
+
+      <!-- slide2 is the overview diagram — the three pillars around the words
+           "What's on GLOW" — which is exactly what this section is headed.
+           Its alt used to describe slide3 ("English Learning — master English
+           conveniently…"), because the deck's slides were mapped one out of
+           step: this panel took slide2, and the pillar frame below then took
+           slide2 again for pillar 01, slide3 for pillar 02 and slide4 for
+           pillar 03. Every picture was one pillar behind its heading, and the
+           overview appeared twice. Fixed here and below. -->
+      <figure class="showcase-panel">
+        <img src="./assets/img/slide2.png" width="1600" height="900" loading="lazy" decoding="async"
+             alt="{{showcase.panelAlt.vi}}"
+             data-i18n-alt
+             data-alt-vi="{{showcase.panelAlt.vi}}"
+             data-alt-en="{{showcase.panelAlt.en}}">
+      </figure>
+    </div>
+  </section>
+
+  <!-- 4 · THE THREE PILLARS -->
+  <section class="chapters" id="pillars">
+    <!-- ONE SHOT PER PILLAR, and they now line up with the pillar beside them.
+         They did not: slide2 (the "What's on GLOW" overview, already shown as
+         the showcase panel above) sat at 01, which pushed slide3 — the English
+         Learning slide — onto pillar 02, Professional Development, and slide4
+         — Professional Development — onto pillar 03, Skills & Network Building.
+         Every heading was captioned by the wrong picture, and the overview
+         appeared twice on one page.
+
+         GLOW's deck has no slide for pillar 03, so 03 carries the cover of the
+         course that pillar leads with. Worth replacing with a real slide when
+         Pacific Links has one — noted in CONTENT.md.
+
+         alt="" and aria-hidden are correct here and deliberate, not an
+         oversight. All three shots are in the DOM at once and only clip-path
+         decides which is visible, so a described frame would read all three
+         out in a row whatever is on screen — and each slide's line is already
+         the chapter's own body copy, word for word: slide3 says "master
+         English conveniently, anytime, anywhere", which is the first sentence
+         of pillar 01 below in both languages. The informative use of these
+         slides is the showcase panel above, and that one is described. -->
+    <div class="chap-media" aria-hidden="true">
+      <div class="frame">
+        <div class="shot" data-shot="0"><img src="./assets/img/slide3.png" width="1920" height="1080" alt=""></div>
+        <div class="shot" data-shot="1"><img src="./assets/img/slide4.png" width="1920" height="1080" alt=""></div>
+        <div class="shot" data-shot="2"><img src="./assets/img/course-teamwork.png" width="512" height="384" alt=""></div>
+        <div class="odo"><span class="odo-cur"><b><i>01</i><i>02</i><i>03</i></b></span><span class="odo-tot">/03</span></div>
+      </div>
+    </div>
+
+    <article class="chap" data-chap="0">
+      <span class="ghost-num" aria-hidden="true">01</span>
+      <div class="chap-body">
+        <p class="kick"><i class="kick-rule"></i><span data-i18n data-vi="{{pillars.0.kick.vi}}" data-en="{{pillars.0.kick.en}}">{{pillars.0.kick.vi}}</span></p>
+        <h2 data-i18n data-vi="{{pillars.0.heading.vi}}" data-en="{{pillars.0.heading.en}}">{{pillars.0.heading.vi}}</h2>
+        <p class="body" data-i18n
+           data-vi="{{pillars.0.body.vi}}"
+           data-en="{{pillars.0.body.en}}">{{pillars.0.body.vi}}</p>
+        <ul class="dashes">
+          <li data-i18n data-vi="{{pillars.0.items.0.vi}}" data-en="{{pillars.0.items.0.en}}">{{pillars.0.items.0.vi}}</li>
+          <li data-i18n data-vi="{{pillars.0.items.1.vi}}" data-en="{{pillars.0.items.1.en}}">{{pillars.0.items.1.vi}}</li>
+          <li data-i18n data-vi="{{pillars.0.items.2.vi}}" data-en="{{pillars.0.items.2.en}}">{{pillars.0.items.2.vi}}</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="chap" data-chap="1">
+      <span class="ghost-num" aria-hidden="true">02</span>
+      <div class="chap-body">
+        <p class="kick"><i class="kick-rule"></i><span data-i18n data-vi="{{pillars.1.kick.vi}}" data-en="{{pillars.1.kick.en}}">{{pillars.1.kick.vi}}</span></p>
+        <h2 data-i18n data-vi="{{pillars.1.heading.vi}}" data-en="{{pillars.1.heading.en}}">{{pillars.1.heading.vi}}</h2>
+        <p class="body" data-i18n
+           data-vi="{{pillars.1.body.vi}}"
+           data-en="{{pillars.1.body.en}}">{{pillars.1.body.vi}}</p>
+        <ul class="dashes">
+          <li data-i18n data-vi="{{pillars.1.items.0.vi}}" data-en="{{pillars.1.items.0.en}}">{{pillars.1.items.0.vi}}</li>
+          <li data-i18n data-vi="{{pillars.1.items.1.vi}}" data-en="{{pillars.1.items.1.en}}">{{pillars.1.items.1.vi}}</li>
+          <li data-i18n data-vi="{{pillars.1.items.2.vi}}" data-en="{{pillars.1.items.2.en}}">{{pillars.1.items.2.vi}}</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="chap" data-chap="2">
+      <span class="ghost-num" aria-hidden="true">03</span>
+      <div class="chap-body">
+        <p class="kick"><i class="kick-rule"></i><span data-i18n data-vi="{{pillars.2.kick.vi}}" data-en="{{pillars.2.kick.en}}">{{pillars.2.kick.vi}}</span></p>
+        <h2 data-i18n data-vi="{{pillars.2.heading.vi}}" data-en="{{pillars.2.heading.en}}">{{pillars.2.heading.vi}}</h2>
+        <p class="body" data-i18n
+           data-vi="{{pillars.2.body.vi}}"
+           data-en="{{pillars.2.body.en}}">{{pillars.2.body.vi}}</p>
+        <ul class="dashes">
+          <li data-i18n data-vi="{{pillars.2.items.0.vi}}" data-en="{{pillars.2.items.0.en}}">{{pillars.2.items.0.vi}}</li>
+          <li data-i18n data-vi="{{pillars.2.items.1.vi}}" data-en="{{pillars.2.items.1.en}}">{{pillars.2.items.1.vi}}</li>
+          <li data-i18n data-vi="{{pillars.2.items.2.vi}}" data-en="{{pillars.2.items.2.en}}">{{pillars.2.items.2.vi}}</li>
+        </ul>
+      </div>
+    </article>
+  </section>
+
+  <!-- 5 · COURSES
+       The six cards' titles and blurbs are editable in the CMS; the links,
+       course ids and cover images are bound to the real Moodle catalogue and
+       stay in this file. Adding a SEVENTH card is a developer change — the
+       gallery's counter and scroll math assume six. -->
+  <section class="gallery" id="courses">
+    <div class="gal-head">
+      <!-- This kicker used to carry the English string on BOTH sides, so the
+           one section heading a Vietnamese learner met in English was the one
+           introducing the skills courses. Every other kicker on the page is
+           translated; this was the only one that was not. -->
+      <p class="kick"><i class="kick-rule"></i><span data-i18n data-vi="{{coursesSection.kick.vi}}" data-en="{{coursesSection.kick.en}}">{{coursesSection.kick.vi}}</span></p>
+      <h2 data-i18n data-vi="{{coursesSection.heading.vi}}" data-en="{{coursesSection.heading.en}}">{{coursesSection.heading.vi}}</h2>
+    </div>
+    <div class="gal-viewport">
+      <div class="gal-track">
+        <a class="card" href="./course.html?id=2489"><div class="card-img"><img src="./assets/img/course-teamwork.png" width="512" height="384" alt="" loading="lazy" decoding="async"></div><div class="card-meta"><h3 data-i18n data-vi="{{courses.0.title.vi}}" data-en="{{courses.0.title.en}}">{{courses.0.title.vi}}</h3><p class="card-idx"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>{{courses.0.code}}</p><p data-i18n data-vi="{{courses.0.desc.vi}}" data-en="{{courses.0.desc.en}}">{{courses.0.desc.vi}}</p></div></a>
+        <a class="card" href="./course.html?id=2487"><div class="card-img"><img src="./assets/img/course-communication.png" width="512" height="384" alt="" loading="lazy" decoding="async"></div><div class="card-meta"><h3 data-i18n data-vi="{{courses.1.title.vi}}" data-en="{{courses.1.title.en}}">{{courses.1.title.vi}}</h3><p class="card-idx"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>{{courses.1.code}}</p><p data-i18n data-vi="{{courses.1.desc.vi}}" data-en="{{courses.1.desc.en}}">{{courses.1.desc.vi}}</p></div></a>
+        <a class="card" href="./course.html?id=2486"><div class="card-img"><img src="./assets/img/course-leadership.png" width="512" height="384" alt="" loading="lazy" decoding="async"></div><div class="card-meta"><h3 data-i18n data-vi="{{courses.2.title.vi}}" data-en="{{courses.2.title.en}}">{{courses.2.title.vi}}</h3><p class="card-idx"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>{{courses.2.code}}</p><p data-i18n data-vi="{{courses.2.desc.vi}}" data-en="{{courses.2.desc.en}}">{{courses.2.desc.vi}}</p></div></a>
+        <a class="card" href="./course.html?id=2488"><div class="card-img"><img src="./assets/img/course-antitrafficking.png" width="1024" height="768" alt="" loading="lazy" decoding="async"></div><div class="card-meta"><h3 data-i18n data-vi="{{courses.3.title.vi}}" data-en="{{courses.3.title.en}}">{{courses.3.title.vi}}</h3><p class="card-idx"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>{{courses.3.code}}</p><p data-i18n data-vi="{{courses.3.desc.vi}}" data-en="{{courses.3.desc.en}}">{{courses.3.desc.vi}}</p></div></a>
+        <a class="card" href="./course.html?id=2441"><div class="card-img"><img src="./assets/img/course-ai.png" width="1920" height="1080" alt="" loading="lazy" decoding="async"></div><div class="card-meta"><h3 data-i18n data-vi="{{courses.4.title.vi}}" data-en="{{courses.4.title.en}}">{{courses.4.title.vi}}</h3><p class="card-idx"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>{{courses.4.code}}</p><p data-i18n data-vi="{{courses.4.desc.vi}}" data-en="{{courses.4.desc.en}}">{{courses.4.desc.vi}}</p></div></a>
+        <a class="card" href="./course.html?id=2440"><div class="card-img"><img src="./assets/img/course-finance.png" width="1920" height="1080" alt="" loading="lazy" decoding="async"></div><div class="card-meta"><h3 data-i18n data-vi="{{courses.5.title.vi}}" data-en="{{courses.5.title.en}}">{{courses.5.title.vi}}</h3><p class="card-idx"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>{{courses.5.code}}</p><p data-i18n data-vi="{{courses.5.desc.vi}}" data-en="{{courses.5.desc.en}}">{{courses.5.desc.vi}}</p></div></a>
+      </div>
+    </div>
+    <div class="gal-foot">
+      <span class="gal-count"><b id="galCur">01</b> — 06</span>
+      <div class="gal-rule"><i id="galFill"></i></div>
+    </div>
+  </section>
+
+  <!-- 6 · WHAT'S INSIDE -->
+  <section class="stats" id="tracks">
+    <!-- The full pattern layout: circle at the top of the section, stripe
+         bands along the bottom, both full-bleed. Guideline 6.3 and 7.4. -->
+    <div class="pattern" aria-hidden="true">
+      <i class="ripple ripple-soft stats-ripple"></i>
+      <i class="bands bands-btm stats-bands"></i>
+    </div>
+
+    <!-- Both rows ran in English in both languages — "Pronunciation",
+         "Grammar", "Idioms", "Movies", "Songs", "Books" are the only words on
+         the page the toggle left alone. TED Talks, ETOP, TOEIC, IELTS and
+         Quizlet stay as they are in both: they are names, and GLOW's own
+         Vietnamese pages call them that.
+
+         The second span in each row is the seam copy that makes the loop
+         infinite; the wrapper is aria-hidden and each duplicate says so on
+         its own account too, so nothing here can start being read twice. -->
+    <div class="marquee" aria-hidden="true">
+      <div class="mq-row" data-dir="-1"><span data-i18n data-vi="{{stats.marqueeTop.vi}}" data-en="{{stats.marqueeTop.en}}">{{stats.marqueeTop.vi}}</span><span aria-hidden="true" data-i18n data-vi="{{stats.marqueeTop.vi}}" data-en="{{stats.marqueeTop.en}}">{{stats.marqueeTop.vi}}</span></div>
+      <div class="mq-row" data-dir="1"><span data-i18n data-vi="{{stats.marqueeBottom.vi}}" data-en="{{stats.marqueeBottom.en}}">{{stats.marqueeBottom.vi}}</span><span aria-hidden="true" data-i18n data-vi="{{stats.marqueeBottom.vi}}" data-en="{{stats.marqueeBottom.en}}">{{stats.marqueeBottom.vi}}</span></div>
+    </div>
+
+    <!-- THE REAL NUMBERS ARE THE MARKUP. These three used to be authored as
+         "0" and only counted up once a ScrollTrigger fired, which meant the
+         static page — the one a crawler indexes, a link preview screenshots,
+         and anyone with JavaScript off reads — said GLOW has 0 English
+         tracks, 0 courses and 0 languages. The count-up is a flourish, and a
+         flourish is not allowed to be the only place the fact exists: the
+         numbers are here, and stats() in src/scroll.js drops each one to zero
+         and runs it back up only after the page is mounted and only when the
+         section is actually reached. data-to is what it counts to. -->
+    <div class="stat-row">
+      <div class="stat"><b class="num" data-to="{{stats.items.0.value}}">{{stats.items.0.value}}</b><span data-i18n data-vi="{{stats.items.0.label.vi}}" data-en="{{stats.items.0.label.en}}">{{stats.items.0.label.vi}}</span></div>
+      <div class="stat"><b class="num" data-to="{{stats.items.1.value}}">{{stats.items.1.value}}</b><span data-i18n data-vi="{{stats.items.1.label.vi}}" data-en="{{stats.items.1.label.en}}">{{stats.items.1.label.vi}}</span></div>
+      <div class="stat"><b class="num" data-to="{{stats.items.2.value}}">{{stats.items.2.value}}</b><span data-i18n data-vi="{{stats.items.2.label.vi}}" data-en="{{stats.items.2.label.en}}">{{stats.items.2.label.vi}}</span></div>
+    </div>
+
+    <div class="quotes">
+      <blockquote class="quote"><p data-i18n data-vi="{{stats.quotes.0.text.vi}}" data-en="{{stats.quotes.0.text.en}}">{{stats.quotes.0.text.vi}}</p><footer data-i18n data-vi="{{stats.quotes.0.source.vi}}" data-en="{{stats.quotes.0.source.en}}">{{stats.quotes.0.source.vi}}</footer></blockquote>
+      <blockquote class="quote"><p data-i18n data-vi="{{stats.quotes.1.text.vi}}" data-en="{{stats.quotes.1.text.en}}">{{stats.quotes.1.text.vi}}</p><footer data-i18n data-vi="{{stats.quotes.1.source.vi}}" data-en="{{stats.quotes.1.source.en}}">{{stats.quotes.1.source.vi}}</footer></blockquote>
+      <blockquote class="quote"><p data-i18n data-vi="{{stats.quotes.2.text.vi}}" data-en="{{stats.quotes.2.text.en}}">{{stats.quotes.2.text.vi}}</p><footer data-i18n data-vi="{{stats.quotes.2.source.vi}}" data-en="{{stats.quotes.2.source.en}}">{{stats.quotes.2.source.vi}}</footer></blockquote>
+    </div>
+  </section>
+
+  <!-- 7 · MISSION -->
+  <section class="mission" id="mission">
+    <div class="mission-card">
+      <div class="pattern" aria-hidden="true"><i class="ripple mission-ripple"></i></div>
+      <p class="kick light"><i class="kick-rule"></i><span data-i18n data-vi="{{mission.kick.vi}}" data-en="{{mission.kick.en}}">{{mission.kick.vi}}</span></p>
+      <h2 data-i18n data-vi="{{mission.heading.vi}}" data-en="{{mission.heading.en}}">{{mission.heading.vi}}</h2>
+      <p class="body" data-i18n
+         data-vi="{{mission.body.vi}}"
+         data-en="{{mission.body.en}}">{{mission.body.vi}}</p>
+      <a class="btn btn-magnet" href="./dashboard.html" data-i18n data-vi="{{mission.cta.vi}}" data-en="{{mission.cta.en}}">{{mission.cta.vi}}</a>
+    </div>
+  </section>
+</main>
+
+<div id="darken" aria-hidden="true"></div>
+
+<!-- 8 · FOOTER -->
+<footer class="foot">
+  <div class="foot-in">
+    <div class="foot-brand">
+      <span class="logo" id="footLogo"><img src="./assets/img/glow-logo.png" width="550" height="90" alt="GLOW — Growing Learning Opportunities Worldwide"></span>
+      <p data-i18n data-vi="{{footer.tagline.vi}}" data-en="{{footer.tagline.en}}">{{footer.tagline.vi}}</p>
+    </div>
+    <!-- EVERY LINK IN THIS FOOTER NOW GOES TO THE THING IT NAMES.
+         All twelve used to be same-page anchors — #pillars, #courses,
+         #tracks — which meant two separate failures. On any page but this
+         one they resolved to nothing at all, and even here "TED Talks"
+         scrolled you to a section that mentions TED Talks rather than
+         opening them. A footer is where someone goes when the navigation
+         has not got them there; sending them back up the page they are
+         already on is the one thing it must not do.
+
+         The English column points into the real catalogue's own anchors,
+         the Skills column at the six course pages by id, and Resources at
+         the resources catalogue. TED Talks, ETOP, AI and Khan Academy are
+         names, the same in both languages, so they carry no toggle. -->
+    <div class="foot-cols">
+      <div>
+        <h3 data-i18n data-vi="{{footer.colEnglish.vi}}" data-en="{{footer.colEnglish.en}}">{{footer.colEnglish.vi}}</h3>
+        <a href="./english.html#ted">TED Talks</a>
+        <a href="./english.html#pronunciation" data-i18n data-vi="{{footer.linkPronunciation.vi}}" data-en="{{footer.linkPronunciation.en}}">{{footer.linkPronunciation.vi}}</a>
+        <a href="./english.html#etop">ETOP</a>
+        <a href="./english.html#testing" data-i18n data-vi="{{footer.linkTesting.vi}}" data-en="{{footer.linkTesting.en}}">{{footer.linkTesting.vi}}</a>
+      </div>
+      <div>
+        <h3 data-i18n data-vi="{{footer.colSkills.vi}}" data-en="{{footer.colSkills.en}}">{{footer.colSkills.vi}}</h3>
+        <a href="./course.html?id=2487" data-i18n data-vi="{{footer.linkCommunication.vi}}" data-en="{{footer.linkCommunication.en}}">{{footer.linkCommunication.vi}}</a>
+        <a href="./course.html?id=2486" data-i18n data-vi="{{footer.linkLeadership.vi}}" data-en="{{footer.linkLeadership.en}}">{{footer.linkLeadership.vi}}</a>
+        <a href="./course.html?id=2440" data-i18n data-vi="{{footer.linkFinance.vi}}" data-en="{{footer.linkFinance.en}}">{{footer.linkFinance.vi}}</a>
+        <a href="./course.html?id=2441">AI</a>
+      </div>
+      <div>
+        <h3 data-i18n data-vi="{{footer.colResources.vi}}" data-en="{{footer.colResources.en}}">{{footer.colResources.vi}}</h3>
+        <a href="./resources.html#resources" data-i18n data-vi="{{footer.linkChatbots.vi}}" data-en="{{footer.linkChatbots.en}}">{{footer.linkChatbots.vi}}</a>
+        <a href="./resources.html#resources" data-i18n data-vi="{{footer.linkTips.vi}}" data-en="{{footer.linkTips.en}}">{{footer.linkTips.vi}}</a>
+        <a href="./resources.html#resources">Khan Academy</a>
+        <a href="./stories.html" data-i18n data-vi="{{footer.linkStories.vi}}" data-en="{{footer.linkStories.en}}">{{footer.linkStories.vi}}</a>
+        <a href="./login.html" data-i18n data-vi="{{footer.linkSignin.vi}}" data-en="{{footer.linkSignin.en}}">{{footer.linkSignin.vi}}</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-rule">
+    <span>{{footer.copyright}}</span>
+    <span data-i18n data-vi="GLOW — Growing Learning Opportunities Worldwide" data-en="GLOW — Growing Learning Opportunities Worldwide">GLOW — Growing Learning Opportunities Worldwide</span>
+  </div>
+  <div class="bands foot-bands" aria-hidden="true"></div>
+</footer>
+
+<noscript>
+  <!-- This page's CONTENT does not need JavaScript — the style block below
+       unpins the scroll sequence so all of it is readable as a plain
+       document. What is genuinely lost is the VI/EN toggle, which is a
+       script, so a Vietnamese reader who has JavaScript off has no way to
+       reach the English and vice versa. Saying so, in both, beats leaving
+       them to work it out from a toggle that does nothing. -->
+  <style>
+    #preloader,.curtain,#squiggle,#progress{display:none!important}
+    .noscript-note{
+      max-width:62ch;margin:0 auto;padding:20px var(--gut) 8px;
+      color:var(--muted);font-size:.9rem;line-height:1.6;
+    }
+    .noscript-note p + p{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+    .noscript-note strong{color:var(--ink)}
+    .hero,.manifesto,.showcase,.chapters,.gallery,.stats,.mission{opacity:1!important;transform:none!important}
+    .chap-media{position:static!important;height:auto!important}
+    .shot{position:static!important;opacity:1!important;clip-path:none!important}
+    .gal-viewport{overflow-x:auto!important}
+    .gal-track{transform:none!important}
+  </style>
+</noscript>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

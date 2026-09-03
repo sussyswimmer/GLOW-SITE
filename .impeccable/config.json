@@ -1,0 +1,23 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "roboto",
+        "createdAt": "2026-08-22T02:40:54.200Z",
+        "reason": "Matera Alliance brand guideline SS5.2-5.3 mandates Roboto for sub-headlines and body; Anybody Bold SS5.1 for headlines. Recorded in CONTENT.md:51 and in the comment at index.html:19. Client brand requirement, pre-existing, not a default."
+      },
+      {
+        "rule": "codex-grid-background",
+        "value": "*",
+        "files": [
+          "src/styles.css"
+        ],
+        "createdAt": "2026-08-22T02:41:02.732Z",
+        "reason": "body::after is a paper-grain field, not a grid overlay: a 1px RADIAL gradient dot at 4% alpha on a 4px cell, no linear-gradient hairlines and no grid lines. Intent documented at styles.css:129 ('a whisper of tooth so the flats never read as plastic') and in main.js ('Grain is the CSS dot field drawn by body::after'). Pre-existing and deliberate."
+      }
+    ]
+  }
+}

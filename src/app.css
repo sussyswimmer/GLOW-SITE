@@ -1,0 +1,585 @@
+/* ═══════════════════════════════════════════════════════════
+   App chrome — the signed-in side of GLOW.
+   White brand bar over a deep-green nav strip, section headings
+   with a spring-green rule, spring-green primary buttons. Same
+   Matera tokens as the marketing page, so the hero and the
+   dashboard are unmistakably one product.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── brand bar ─────────────────────────────────────────── */
+.appbar{
+  position:sticky;top:0;z-index:60;background:var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.appbar-in{
+  max-width:var(--maxw);margin:0 auto;padding:14px var(--gut);
+  display:flex;align-items:center;gap:20px;
+}
+.appbar .logo img{height:40px}
+.appbar-spacer{flex:1}
+
+
+.who{display:flex;align-items:center;gap:10px;text-decoration:none}
+.who-name{font-size:.86rem;font-weight:500;color:var(--deep);white-space:nowrap}
+.who-id{display:block;font-size:.7rem;color:var(--muted)}
+.avatar{
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  background:var(--mint);color:var(--deep);font-weight:700;font-size:.86rem;letter-spacing:.02em;
+}
+@media(max-width:719px){.who-name,.who-id{display:none}}
+
+/* ── deep-green nav strip ────────────────────────────────────── */
+.appnav{background:var(--deep);position:sticky;top:69px;z-index:59}
+.appnav-in{
+  max-width:var(--maxw);margin:0 auto;padding:0 var(--gut);
+  display:flex;align-items:stretch;gap:2px;overflow-x:auto;scrollbar-width:none;
+}
+.appnav-in::-webkit-scrollbar{display:none}
+.appnav a{
+  display:flex;align-items:center;gap:7px;padding:14px 16px;white-space:nowrap;
+  color:rgba(255,255,255,.82);text-decoration:none;font-size:.88rem;font-weight:500;
+  border-bottom:3px solid transparent;transition:color .2s,border-color .2s,background .2s;
+}
+.appnav a:hover{color:#fff;background:rgba(255,255,255,.07)}
+.appnav a[aria-current="page"]{color:#fff;border-bottom-color:var(--spring);font-weight:700}
+.appnav svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── page banner ───────────────────────────────────────── */
+.pagehead{
+  background:linear-gradient(180deg,var(--paper-3),var(--paper-2));
+  border-bottom:1px solid var(--line);
+}
+.pagehead-in{max-width:var(--maxw);margin:0 auto;padding:38px var(--gut) 34px}
+.crumbs{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  font-size:.78rem;color:var(--muted);margin-bottom:12px;
+}
+.crumbs a{text-decoration:none;color:var(--moss)}
+.crumbs a:hover{text-decoration:underline}
+.crumbs span[aria-hidden]{color:var(--line-2)}
+.pagehead h1{font-size:clamp(1.7rem,3.4vw,2.5rem);margin:0}
+.pagehead p{color:var(--muted);margin-top:10px;max-width:62ch}
+
+/* ── shell ─────────────────────────────────────────────── */
+.shell{max-width:var(--maxw);margin:0 auto;padding:36px var(--gut) 96px}
+.shell-2col{display:grid;grid-template-columns:1fr;gap:28px}
+@media(min-width:1000px){.shell-2col{grid-template-columns:minmax(0,1fr) 306px}}
+
+/* section heading with the brand's spring-green rule (§4.1 #1ECE94) */
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.sec-head h2{font-size:1.12rem;margin:0;letter-spacing:-.01em}
+.sec-head::after{content:"";flex:1;height:2px;background:var(--spring);max-width:64px;border-radius:2px}
+
+/* ── cards ─────────────────────────────────────────────── */
+.panel{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:26px;box-shadow:var(--sh-sm);
+}
+.panel + .panel{margin-top:24px}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:20px}
+
+.tile{
+  display:flex;flex-direction:column;background:var(--paper);text-decoration:none;
+  border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;
+  transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s,border-color .25s;
+}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--mint)}
+.tile-img{aspect-ratio:3/2;background:var(--matte);overflow:hidden}
+/* `contain`, not `cover`. GLOW's course covers are ~4:1 banners with the
+   course name set inside the artwork, so cropping them to fill a 3:2 tile
+   cuts the headline off both ends — which is exactly what it was doing.
+   Letterboxing onto the pale sky the artwork already sits on is invisible
+   as a seam and keeps the whole banner readable. Recorded in CONTENT.md. */
+.tile-img img{width:100%;height:100%;object-fit:contain;object-position:center}
+.tile-body{padding:16px 18px 20px;display:flex;flex-direction:column;gap:7px;flex:1}
+/* Under the title now, and quiet. This used to be the first thing on every
+   tile, in the brand's brightest green, at full weight — so the six course
+   cards all opened on "EMM231", "EM7112", "EMM230", which is the registrar's
+   filing system rather than anything a learner recognises. It is still here
+   because people quote the code in email; it is no longer the headline. */
+.tile-code{font-size:.7rem;letter-spacing:.06em;color:var(--faint);margin:-2px 0 0}
+.tile h3{font-size:1rem;margin:0;line-height:1.3}
+.tile p{font-size:.85rem;color:var(--muted);margin:0}
+.tile-foot{margin-top:auto;padding-top:12px;display:flex;align-items:center;gap:8px}
+
+/* progress */
+.bar{height:6px;border-radius:999px;background:var(--paper-3);overflow:hidden;flex:1}
+.bar i{display:block;height:100%;background:var(--spring);border-radius:999px}
+.bar-pct{font-size:.72rem;font-weight:700;color:var(--muted);min-width:34px;text-align:right}
+
+/* ── empty state, as the platform shows it ─────────────── */
+.empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;padding:52px 20px;text-align:center;color:var(--muted);
+}
+.empty svg{width:56px;height:56px;stroke:var(--mint);fill:none;stroke-width:1.4}
+.empty p{font-size:.92rem;margin:0}
+
+/* ── side rail ─────────────────────────────────────────── */
+.rail{display:flex;flex-direction:column;gap:22px}
+.rail .panel{padding:20px}
+.rail h2{font-size:.96rem}
+.rail-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+.rail-list a{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);
+  text-decoration:none;font-size:.88rem;color:var(--ink);transition:background .2s,color .2s;
+}
+.rail-list a:hover{background:var(--paper-2);color:var(--deep)}
+/* Two states out of one hue: the palette is green throughout, so the old
+   amber-vs-green pair collapsed into one colour. Size and saturation carry
+   it instead — and it is never the only signal, the label says which. */
+.rail-list .pip{width:7px;height:7px;border-radius:50%;background:var(--line-2);flex:none}
+.rail-list .pip.on{background:var(--spring-d)}
+
+
+/* ── course page ───────────────────────────────────────── */
+/* align-items:start, not center: the text column is short and the cover is
+   tall, and centring the two left a panel that was mostly empty space. */
+.course-hero{display:grid;grid-template-columns:1fr;gap:24px;align-items:start}
+@media(min-width:880px){.course-hero{grid-template-columns:1.25fr .75fr}}
+.course-hero img{
+  width:100%;border-radius:var(--r-md);border:1px solid var(--line);
+  /* The same 4:1-banner problem as the tiles, so the same answer. */
+  max-height:220px;object-fit:contain;background:var(--matte);
+}
+/* The progress bar reads as a measure, not a rule across the page. */
+.course-progress{max-width:340px}
+
+.section-block{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--paper)}
+.section-block + .section-block{margin-top:18px}
+.section-head{
+  display:flex;align-items:center;gap:12px;padding:16px 20px;
+  background:var(--paper-2);border-bottom:1px solid var(--line);
+}
+.section-head h3{margin:0;font-size:1rem}
+.section-count{margin-left:auto;font-size:.74rem;font-weight:700;color:var(--muted)}
+
+.acts{list-style:none}
+.act{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.act:last-child{border-bottom:none}
+.act:hover{background:var(--paper-2)}
+.act-ico{
+  width:34px;height:34px;border-radius:8px;flex:none;display:grid;place-items:center;
+  background:var(--paper-3);color:var(--deep);
+}
+.act-ico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.act-main{min-width:0;flex:1}
+.act-main a{text-decoration:none;font-weight:500;color:var(--deep);font-size:.94rem}
+.act-main a:hover{text-decoration:underline}
+.act-type{display:block;font-size:.72rem;color:var(--muted);margin-top:2px}
+.act-done{
+  flex:none;font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:999px;
+  background:var(--paper-3);color:var(--moss);
+}
+.act-done.on{background:#CDF2E2;color:#0A5C3C}
+
+/* ── category / track lists ────────────────────────────── */
+.track{border:1px solid var(--line);border-radius:var(--r-md);background:var(--paper);overflow:hidden}
+.track + .track{margin-top:18px}
+.track-head{display:flex;align-items:center;gap:14px;padding:18px 22px;background:var(--paper-2);border-bottom:1px solid var(--line)}
+.track-head h3{margin:0;font-size:1.05rem}
+.track-head .count{margin-left:auto;font-size:.74rem;font-weight:700;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:9px;padding:18px 22px 22px}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+  border:1px solid var(--line-2);background:var(--paper);text-decoration:none;
+  font-size:.85rem;color:var(--ink);transition:border-color .2s,background .2s,color .2s;
+}
+.chip:hover{border-color:var(--spring-d);background:#E8F8F1;color:var(--deep)}
+
+/* ═══════════════════════════════════════════════════════════
+   Everything below is the working site: the states a real page has
+   when its data is in flight, missing or refused, and the sign-in
+   screen. All of it uses the tokens already declared in styles.css —
+   no new colours, no one-off spacing.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── buttons ───────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  /* 44px min-height: a thumb target on a phone, not a cursor target. */
+  min-height:44px;padding:11px 22px;border-radius:999px;
+  font-family:var(--display);font-size:.9rem;font-weight:700;letter-spacing:.01em;
+  text-decoration:none;border:1px solid transparent;cursor:pointer;
+  transition:background .2s,border-color .2s,color .2s,transform .12s;
+}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none}
+
+.btn-primary{background:var(--spring);color:var(--ink);border-color:var(--spring-x)}
+.btn-primary:hover:not([disabled]){background:var(--spring-d)}
+
+.btn-quiet{background:var(--paper);color:var(--deep);border-color:var(--line-2)}
+.btn-quiet:hover:not([disabled]){background:var(--paper-2);border-color:var(--mint)}
+
+.btn-block{width:100%}
+
+/* The spinner only exists while the button is working, and it is a
+   transform animation so it costs nothing to run. */
+.btn-spin{display:none;width:15px;height:15px;border-radius:50%;
+  border:2px solid rgba(1,78,69,.25);border-top-color:var(--deep);
+  animation:spin .7s linear infinite}
+.btn.is-busy .btn-spin{display:block}
+.btn.is-busy .btn-label{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── focus, everywhere ─────────────────────────────────────
+   One visible ring on one selector, so no control can be styled without
+   it. :focus-visible rather than :focus keeps it off mouse clicks while
+   guaranteeing it for the keyboard. */
+a:focus-visible,button:focus-visible,input:focus-visible,
+[tabindex]:focus-visible,.chip:focus-visible,.tile:focus-visible{
+  outline:3px solid var(--spring-x);
+  outline-offset:2px;
+  border-radius:var(--r-sm);
+}
+/* On the deep-green strip the accent ring is only 2.6:1 — white carries it. */
+.appnav a:focus-visible{outline-color:#fff}
+
+/* .sr-only and .skip-link live in styles.css — every page loads that one,
+   only the signed-in pages load this. */
+
+/* The shell hides the signed-in header until there is a session to fill it,
+   and hides the private nav items on the public catalogue pages. `hidden` is
+   an attribute the UA styles as display:none — and every one of these
+   elements carries a class that sets `display`, which wins on specificity.
+   Without this rule the attribute is decorative. */
+[hidden]{display:none!important}
+
+/* No JavaScript, no content — the private shells are an empty #view until
+   the API answers. This is what stands in the hole. */
+.noscript-note{
+  max-width:62ch;margin:0 auto;padding:26px var(--gut) 60px;
+  color:var(--muted);font-size:.92rem;line-height:1.6;
+}
+.noscript-note p + p{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.noscript-note strong{color:var(--ink)}
+
+/* ── loading skeletons ─────────────────────────────────────
+   Shaped like the content they stand in for, so the page does not
+   reflow when the data lands. The shimmer is a background-position
+   animation on a gradient — no layout, no paint of new geometry. */
+.skel{display:grid;gap:20px}
+.skel-tiles{grid-template-columns:repeat(auto-fill,minmax(238px,1fr))}
+.skel-rows{grid-template-columns:1fr}
+.skel-item{
+  border-radius:var(--r-md);border:1px solid var(--line);
+  background:linear-gradient(100deg,var(--paper-2) 30%,var(--paper-3) 50%,var(--paper-2) 70%);
+  background-size:300% 100%;
+  animation:shimmer 1.4s ease-in-out infinite;
+}
+.skel-tiles .skel-item{height:264px}
+.skel-rows .skel-item{height:68px}
+@keyframes shimmer{to{background-position:-150% 0}}
+
+@media(prefers-reduced-motion:reduce){
+  .skel-item{animation:none;background:var(--paper-2)}
+  .btn-spin{animation-duration:2s}
+}
+
+/* ── empty / error states ──────────────────────────────── */
+.state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:48px 24px;text-align:center;
+  border:1px dashed var(--line-2);border-radius:var(--r-md);background:var(--paper-2);
+}
+.state-ico{width:42px;height:42px;fill:none;stroke:var(--teal);stroke-width:1.5;
+  stroke-linecap:round;stroke-linejoin:round}
+.state-error .state-ico{stroke:var(--spring-x)}
+.state-title{font-family:var(--display);font-weight:700;font-size:1rem;color:var(--deep);margin:0}
+.state-body{font-size:.88rem;color:var(--muted);margin:0;max-width:44ch}
+.state .btn{margin-top:6px}
+
+/* ── the demo banner ───────────────────────────────────── */
+.demo-bar{
+  position:sticky;top:0;z-index:80;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:9px 16px;text-align:center;
+  /* #1ECE94 under the deepest green in the palette: 8.1:1, and — as the one
+     fully saturated bar on the page — unmistakably not part of the design. */
+  background:var(--spring);color:var(--deep-x);
+  font-size:.82rem;font-weight:700;line-height:1.35;
+  border-bottom:1px solid var(--spring-x);
+}
+.demo-ico{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+/* The sticky bar pushes the two sticky bars beneath it down by its height. */
+.has-demo-bar .appbar{top:35px}
+.has-demo-bar .appnav{top:104px}
+@media(max-width:719px){
+  .demo-bar{font-size:.74rem;padding:7px 12px}
+  .has-demo-bar .appbar{top:47px}
+  .has-demo-bar .appnav{top:110px}
+}
+
+/* ── upcoming events, replacing the drawn calendar ─────── */
+.events{list-style:none;display:flex;flex-direction:column;gap:2px}
+.event{
+  display:flex;align-items:center;gap:16px;padding:12px 10px;
+  border-radius:var(--r-sm);transition:background .2s;
+}
+.event:hover{background:var(--paper-2)}
+.event-date{
+  flex:none;width:52px;height:52px;border-radius:var(--r-sm);
+  display:grid;place-content:center;text-align:center;
+  background:var(--paper-3);color:var(--deep);line-height:1.1;
+}
+.event.is-soon .event-date{background:var(--spring);color:var(--ink)}
+.event-day{font-family:var(--display);font-weight:800;font-size:1.15rem}
+.event-mon{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.event-main{min-width:0;display:flex;flex-direction:column;gap:3px}
+.event-main a,.event-title{font-weight:500;font-size:.94rem;color:var(--deep);text-decoration:none}
+.event-main a:hover{text-decoration:underline}
+.event-meta{font-size:.76rem;color:var(--muted)}
+
+/* ── activities with nowhere to go ─────────────────────────
+   Rendered as plainly unavailable rather than as a link that lies.
+   Both the colour AND the absence of underline/pointer carry it, so it
+   does not depend on colour alone to communicate. */
+.act-unavailable{background:repeating-linear-gradient(
+  -45deg,transparent,transparent 9px,var(--paper-2) 9px,var(--paper-2) 18px)}
+.act-unavailable:hover{background:var(--paper-2)}
+.act-title.is-unavailable{font-weight:500;font-size:.94rem;color:var(--muted);cursor:default}
+.act-unavailable .act-ico{background:var(--paper-2);color:var(--faint)}
+.section-summary{padding:14px 20px 0;font-size:.86rem;color:var(--muted);margin:0}
+
+.chip.is-unavailable{
+  color:var(--faint);border-style:dashed;border-color:var(--line);cursor:default;
+}
+.chip.is-unavailable:hover{background:var(--paper);border-color:var(--line);color:var(--faint)}
+
+/* ═══════════════════════════════════════════════════════════
+   Sign in — the one screen that is not the app chrome.
+
+   Deep-green field with the brand's ripple rising behind a white
+   card — the same pattern the landing page's hero and mission card
+   carry, so arriving at the platform feels continuous with the page
+   that sent you there.
+   ═══════════════════════════════════════════════════════════ */
+.signin{
+  min-height:100dvh;display:grid;place-items:center;padding:28px 20px;
+  background:var(--deep-d);position:relative;overflow:hidden;
+}
+/* Two soft blobs used to sit here. Matera's circle pattern is hard-edged
+   concentric rings, not a bloom, so this is the same .ripple geometry the
+   rest of the site uses — bottom of the layout, running past both edges
+   (guideline 7.4). Screened rather than faded, so the rings stay green
+   instead of going grey over the deep field. */
+.signin-glow{
+  position:fixed;inset:0;pointer-events:none;overflow:hidden;
+}
+.signin-glow i{
+  position:absolute;left:50%;bottom:-58vmin;width:130vmin;aspect-ratio:1;
+  translate:-50% 0;border-radius:50%;
+  mix-blend-mode:screen;opacity:.15;
+  background:radial-gradient(circle at 50% 50%,
+    var(--band-1) 0 9.8%,   var(--band-1) 10.56%,
+    var(--band-2) 11.3%,    var(--band-2) 26.9%,
+    var(--band-3) 28.4%,    var(--band-3) 54.5%,
+    var(--band-4) 56.1%,    var(--band-4) 100%);
+}
+.signin-wrap{position:relative;width:100%;max-width:436px;display:flex;flex-direction:column;gap:22px}
+
+.signin-card{
+  background:var(--paper);border-radius:var(--r-lg);padding:40px 36px 32px;
+  box-shadow:var(--sh-lg);position:relative;
+}
+.signin-logo{display:block;margin-bottom:26px}
+.signin-logo img{height:44px;width:auto}
+.signin-card h1{font-size:1.72rem;margin:0}
+.signin-sub{color:var(--muted);font-size:.9rem;margin:8px 0 24px}
+
+/* The message strip is out of the flow until it has something to say,
+   so the form does not shift down when an error appears. */
+.signin-msg{display:none;margin-bottom:18px;padding:12px 14px;border-radius:var(--r-sm);
+  font-size:.86rem;line-height:1.45}
+.signin-msg.is-shown{display:block}
+.signin-msg.is-error{background:#FDECEA;color:#8C1D18;border:1px solid #F5C6C2}
+.signin-msg.is-notice{background:var(--paper-3);color:var(--deep);border:1px solid var(--mint)}
+
+.field{margin-bottom:18px}
+.field label{
+  display:block;margin-bottom:7px;
+  font-family:var(--display);font-size:.78rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--deep);
+}
+.field input{
+  width:100%;min-height:48px;padding:12px 14px;
+  border:1px solid var(--line-2);border-radius:var(--r-sm);
+  background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:1rem;
+  transition:border-color .2s,box-shadow .2s;
+}
+.field input:hover{border-color:var(--mint)}
+.field input:focus{border-color:var(--moss);box-shadow:var(--ring);outline:none}
+.field input:focus-visible{outline:none}   /* the ring above is the indicator here */
+
+.field-pass{position:relative}
+.field-pass input{padding-right:52px}
+.pass-toggle{
+  position:absolute;right:4px;top:50%;transform:translateY(-50%);
+  /* 44 so a thumb can hit it — the field is 48 tall, so it still fits inside. */
+  width:44px;height:44px;display:grid;place-items:center;border-radius:50%;
+  background:none;border:none;color:var(--muted);cursor:pointer;transition:color .2s,background .2s;
+}
+.pass-toggle:hover{color:var(--deep);background:var(--paper-2)}
+.pass-toggle svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.pass-toggle[aria-pressed="true"] svg{stroke:var(--moss)}
+
+/* Padding rather than a bigger font: the link was 22px tall, half a thumb.
+   Negative margin keeps it sitting where it looked right. */
+.signin-help{
+  display:inline-block;margin-top:8px;margin-left:-10px;padding:11px 10px;
+  font-size:.85rem;color:var(--moss);text-decoration:none;
+}
+.signin-help:hover{text-decoration:underline}
+
+.signin-demo{
+  margin-top:20px;padding:12px 14px;border-radius:var(--r-sm);
+  background:#E8F8F1;border:1px solid var(--spring);
+  font-size:.8rem;line-height:1.45;color:#01463C;
+}
+.signin-demo strong{font-family:var(--display)}
+
+.signin-lang{
+  position:absolute;top:20px;right:20px;
+  background:none;border:1px solid var(--line);border-radius:999px;
+  /* 44px tall. On a bilingual site for Vietnamese-first learners the
+     language switch is a primary control, not chrome — it gets a real
+     touch target even though it sits in a corner. */
+  padding:14px 14px;font-size:.74rem;font-weight:700;color:var(--muted);cursor:pointer;
+  transition:border-color .2s,color .2s;
+}
+.signin-lang:hover{border-color:var(--mint);color:var(--deep)}
+.signin-lang[aria-pressed="true"] .lang-en,
+.signin-lang[aria-pressed="false"] .lang-vi{color:var(--deep)}
+
+.signin-foot{
+  display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;
+  font-size:.78rem;color:rgba(255,255,255,.72);
+}
+/* Padded to a 44px target; negative margin keeps the row visually where
+   it was. */
+.signin-foot a{color:var(--spring);text-decoration:none;display:inline-block;padding:12px 8px;margin:-12px -8px}
+.signin-foot a:hover{text-decoration:underline}
+
+@media(max-width:479px){
+  .signin-card{padding:32px 22px 26px}
+  .signin-card h1{font-size:1.45rem}
+  .signin-lang{top:14px;right:14px}
+}
+
+/* ── sign in / sign out, in the brand bar ──────────────── */
+.signout{
+  display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 14px;
+  border-radius:999px;border:1px solid var(--line);background:var(--paper);
+  font-size:.8rem;font-weight:500;color:var(--muted);cursor:pointer;
+  text-decoration:none;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.signout:hover{border-color:var(--mint);color:var(--deep);background:var(--paper-2)}
+
+/* Signing in is the one thing a signed-out reader is here to be offered, so
+   it carries the brand's weight rather than sitting at the same volume as a
+   sign-out button they will never press. */
+#signIn{border-color:var(--spring-d);color:var(--deep);font-weight:700}
+#signIn:hover{background:var(--spring);border-color:var(--spring);color:var(--ink)}
+
+/* The label collapses to the icon on a narrow bar — but only for sign OUT,
+   which is a secondary action beside a name that already identifies the
+   session. Doing the same to sign in would leave the primary action on the
+   page as an unnamed arrow: no text, no accessible name, nothing but a
+   glyph. It keeps its word at every width.
+
+   Sign out hides its word with the sr-only geometry rather than
+   display:none, so the button keeps an accessible name off screen. */
+@media(max-width:719px){
+  #signOut span{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+  }
+  #signOut{padding:7px 10px}
+}
+
+/* ── app footer ────────────────────────────────────────── */
+.appfoot{
+  border-top:1px solid var(--line);background:var(--paper-2);
+  padding:26px var(--gut);
+}
+.appfoot-in{
+  max-width:var(--maxw);margin:0 auto;display:flex;flex-wrap:wrap;gap:14px;
+  align-items:center;justify-content:space-between;font-size:.8rem;color:var(--muted);
+}
+.appfoot a{color:var(--moss);text-decoration:none}
+.appfoot a:hover{text-decoration:underline}
+
+/* ── stories ───────────────────────────────────────────────
+   The CMS-authored news pages. Cards on stories.html follow the tile
+   grammar the rest of the app already speaks; the reader page is plain
+   long-form typography, because its content is the client's markdown and
+   has to look right whatever they write. */
+.stories{display:grid;gap:18px}
+.stories-empty{color:var(--muted);font-size:.95rem}
+
+.story-card{
+  display:flex;gap:0;flex-direction:column;background:var(--paper);
+  border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;
+  text-decoration:none;color:var(--ink);
+  transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s,border-color .25s;
+}
+.story-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--mint)}
+.story-cover{display:block;aspect-ratio:5/2;background:var(--matte);overflow:hidden}
+.story-cover img{width:100%;height:100%;object-fit:cover;object-position:center}
+.story-meta{display:flex;flex-direction:column;gap:8px;padding:20px 22px 22px}
+.story-meta time{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.story-meta h3{margin:0;font-size:1.15rem;line-height:1.3}
+.story-meta p{margin:0;font-size:.9rem;line-height:1.55;color:var(--muted)}
+.story-more{margin-top:4px;font-size:.8rem;font-weight:700;color:var(--moss)}
+
+@media(min-width:720px){
+  .stories{grid-template-columns:repeat(2,1fr)}
+  /* The newest story leads the page at full width, like a front page. */
+  .story-card:first-child{grid-column:1 / -1;flex-direction:row}
+  .story-card:first-child .story-cover{flex:0 0 46%;aspect-ratio:auto}
+  .story-card:first-child .story-meta{justify-content:center;padding:26px 30px}
+  .story-card:first-child h3{font-size:1.45rem}
+}
+
+/* ── the reader ── */
+.story-article{max-width:68ch;margin:0 auto}
+.story-hero{margin:0 0 22px}
+.story-hero img{width:100%;border-radius:var(--r-md);border:1px solid var(--line)}
+.story-date{margin:0 0 26px;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.story-missing{color:var(--muted)}
+
+/* Only one language of the body is on screen; i18n.js keeps <html lang>
+   current, so the toggle needs no story-specific code. */
+html:not([lang="en"]) .story-body-en{display:none}
+html[lang="en"] .story-body-vi{display:none}
+
+/* Long-form defaults for whatever the markdown produces. */
+.story-body{font-size:1rem;line-height:1.75;color:var(--ink)}
+.story-body p{margin:0 0 1.1em}
+.story-body h1,.story-body h2,.story-body h3{line-height:1.25;margin:1.6em 0 .55em}
+.story-body h1{font-size:1.5rem}
+.story-body h2{font-size:1.3rem}
+.story-body h3{font-size:1.1rem}
+.story-body ul,.story-body ol{margin:0 0 1.1em;padding-left:1.4em}
+.story-body li{margin:.3em 0}
+.story-body img{max-width:100%;border-radius:var(--r-sm);border:1px solid var(--line)}
+.story-body blockquote{
+  margin:1.3em 0;padding:2px 0 2px 18px;border-left:3px solid var(--spring);
+  color:var(--muted);
+}
+.story-body blockquote p:last-child{margin-bottom:0}
+.story-body a{color:var(--moss)}
+.story-body code{
+  font-size:.88em;background:var(--paper-3);border-radius:4px;padding:1px 5px;
+}
+.story-body hr{border:none;border-top:1px solid var(--line);margin:2em 0}
+
+.story-back{margin-top:34px;padding-top:18px;border-top:1px solid var(--line)}
+.story-back a{color:var(--moss);text-decoration:none;font-weight:700;font-size:.9rem}
+.story-back a:hover{text-decoration:underline}

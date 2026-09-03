@@ -1,0 +1,27 @@
+node_modules/
+dist/
+dist-share/
+qa/
+
+# Secrets. Nothing in this family may ever be committed — see docs/HANDOFF.md
+# for what to do if one is.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Generation scratch: masters, source video, retired plates. Large and not
+# needed to build or run the site.
+.gen/
+
+.DS_Store
+Thumbs.db
+*.log
+
+# Local Netlify folder
+.netlify
+
+# Local tool state, not part of the site
+.claude/settings.local.json
+.impeccable/hook.cache.json

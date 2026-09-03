@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "title": {
+      "vi": "GLOW — Mở rộng cơ hội học tập trên toàn thế giới",
+      "en": "GLOW — Growing Learning Opportunities Worldwide"
+    },
+    "desc": {
+      "vi": "GLOW là nền tảng tự học miễn phí của Pacific Links Foundation: học tiếng Anh, phát triển nghề nghiệp, kỹ năng và kết nối — mọi lúc, mọi nơi.",
+      "en": "GLOW is a free self-learning platform from Pacific Links Foundation: English learning, professional development, and skills and network building — anytime, anywhere."
+    }
+  },
+  "nav": {
+    "english":   { "vi": "Học tiếng Anh", "en": "English self-learning" },
+    "courses":   { "vi": "Khoá học", "en": "Courses" },
+    "resources": { "vi": "Tài nguyên", "en": "Resources" },
+    "stories":   { "vi": "Tin tức", "en": "Stories" },
+    "about":     { "vi": "Về GLOW", "en": "About GLOW" },
+    "signin":    { "vi": "Đăng nhập", "en": "Sign in" }
+  },
+  "hero": {
+    "kicker": { "vi": "Pacific Links Foundation", "en": "Pacific Links Foundation" },
+    "marquee": {
+      "vi": "Học tiếng Anh · Phát triển nghề nghiệp · Kỹ năng và kết nối · ",
+      "en": "English Learning · Professional Development · Skills & Network Building · "
+    },
+    "line1": { "vi": "Mở rộng", "en": "Growing" },
+    "line2": { "vi": "cơ hội học tập", "en": "Learning Opportunities" },
+    "line3": { "vi": "trên toàn thế giới", "en": "Worldwide" },
+    "lead": {
+      "vi": "GLOW là nền tảng tự học miễn phí: tiếng Anh, phát triển nghề nghiệp, và kỹ năng — học mọi lúc, mọi nơi.",
+      "en": "GLOW is a free self-learning platform: English, professional development, and life skills — anytime, anywhere."
+    },
+    "ctaPrimary":   { "vi": "Bắt đầu học", "en": "Start learning" },
+    "ctaSecondary": { "vi": "Có gì trên GLOW", "en": "What's on GLOW" }
+  },
+  "manifesto": {
+    "line": {
+      "vi": "Học tập là con đường ngắn nhất để mở ra cơ hội. GLOW giữ cho con đường đó luôn miễn phí.",
+      "en": "Learning is the shortest path to opportunity. GLOW keeps that path free and open to everyone."
+    }
+  },
+  "showcase": {
+    "kick":    { "vi": "Có gì trên GLOW", "en": "What's on GLOW" },
+    "heading": { "vi": "Ba hướng phát triển, một nền tảng", "en": "Three ways to grow, one platform" },
+    "panelAlt": {
+      "vi": "Có gì trên GLOW: ba hướng phát triển — Học tiếng Anh, Phát triển nghề nghiệp, và Kỹ năng và kết nối.",
+      "en": "What's on GLOW: three ways to grow — English Learning, Professional Development, and Skills & Network Building."
+    }
+  },
+  "pillars": [
+    {
+      "kick":    { "vi": "Hướng thứ nhất", "en": "Pillar one" },
+      "heading": { "vi": "Học tiếng Anh", "en": "English Learning" },
+      "body": {
+        "vi": "Làm chủ tiếng Anh một cách thuận tiện, mọi lúc, mọi nơi. Từ phát âm cơ bản đến luyện thi TOEIC và IELTS, mỗi lộ trình đều chia theo trình độ để bạn bắt đầu đúng chỗ.",
+        "en": "Master English conveniently, anytime, anywhere. From first pronunciation drills to TOEIC and IELTS preparation, every track is split by level so you start in the right place."
+      },
+      "items": [
+        { "vi": "TED Talks — General, Careers, AI", "en": "TED Talks — General, Careers, AI" },
+        { "vi": "Phát âm — Cơ bản, Trung cấp, Nâng cao", "en": "Pronunciation — Beginner, Intermediate, Advanced" },
+        { "vi": "ETOP và Coaching", "en": "ETOP and Coaching" }
+      ]
+    },
+    {
+      "kick":    { "vi": "Hướng thứ hai", "en": "Pillar two" },
+      "heading": { "vi": "Phát triển nghề nghiệp", "en": "Professional Development" },
+      "body": {
+        "vi": "Tiếp cận tài nguyên, mở rộng kiến thức cho con đường sự nghiệp phía trước. Các khoá học ngắn về giao tiếp, lãnh đạo, quản lý tài chính và ứng dụng AI trong công việc.",
+        "en": "Access resources and expand your knowledge for the career path ahead. Short courses in communication, leadership, financial management and applying AI at work."
+      },
+      "items": [
+        { "vi": "Kỹ năng giao tiếp và lãnh đạo", "en": "Communication and leadership skills" },
+        { "vi": "Quản lý tài chính cá nhân", "en": "Personal financial management" },
+        { "vi": "AI từ cơ bản đến ứng dụng", "en": "AI from basics to application" }
+      ]
+    },
+    {
+      "kick":    { "vi": "Hướng thứ ba", "en": "Pillar three" },
+      "heading": { "vi": "Kỹ năng và kết nối", "en": "Skills & Network Building" },
+      "body": {
+        "vi": "Xây dựng kỹ năng, mở rộng mạng lưới và tiến tới thành công. Bao gồm cả những nội dung bảo vệ bản thân — nhận biết và phòng, chống mua bán người.",
+        "en": "Build skills, expand your network, and embrace success. This includes protective knowledge too — recognising and preventing human trafficking."
+      },
+      "items": [
+        { "vi": "Kỹ năng làm việc nhóm", "en": "Teamwork skills" },
+        { "vi": "Phòng, chống mua bán người", "en": "Anti-trafficking awareness" },
+        { "vi": "Cộng đồng học tập GLOW", "en": "The GLOW learning community" }
+      ]
+    }
+  ],
+  "coursesSection": {
+    "kick":    { "vi": "Nâng cao kỹ năng", "en": "Upskilling Development" },
+    "heading": { "vi": "Sáu khoá học kỹ năng, miễn phí", "en": "Six skills courses, free to take" }
+  },
+  "courses": [
+    {
+      "title": { "vi": "Kỹ Năng Làm Việc Nhóm", "en": "Teamwork Skills" },
+      "code": "EMM231",
+      "desc": {
+        "vi": "Mô hình nhóm, quy trình sinh hoạt và nguyên tắc làm việc hiệu quả",
+        "en": "Team models, running sessions, and the principles of working well together"
+      }
+    },
+    {
+      "title": { "vi": "Kỹ Năng Giao Tiếp", "en": "Communication Skills" },
+      "code": "EMM230",
+      "desc": {
+        "vi": "Định nghĩa, hình thức, phương tiện và phong cách giao tiếp hiệu quả",
+        "en": "What effective communication is, its forms, channels and styles"
+      }
+    },
+    {
+      "title": { "vi": "Kỹ Năng Lãnh Đạo", "en": "Leadership Skills" },
+      "code": "EMM232",
+      "desc": {
+        "vi": "Các kiểu lãnh đạo, phẩm chất và kỹ năng của người dẫn dắt",
+        "en": "Leadership styles, the qualities of a leader, and the skills behind them"
+      }
+    },
+    {
+      "title": { "vi": "Phòng, Chống Mua Bán Người", "en": "Anti-Human Trafficking" },
+      "code": "EMM227",
+      "desc": {
+        "vi": "Nhận biết thủ đoạn và hình thức bóc lột, bảo vệ bản thân và người xung quanh",
+        "en": "Recognise the tactics and forms of exploitation, and protect yourself and others"
+      }
+    },
+    {
+      "title": { "vi": "AI Từ Cơ Bản Đến Ứng Dụng", "en": "AI: Basics to Application" },
+      "code": "EM7112",
+      "desc": {
+        "vi": "Hiểu AI và đưa nó vào công việc hằng ngày một cách thiết thực",
+        "en": "Understand AI and put it to practical use in everyday work"
+      }
+    },
+    {
+      "title": { "vi": "Quản Lý Tài Chính", "en": "Financial Management" },
+      "code": "EM7113",
+      "desc": {
+        "vi": "Nền tảng quản lý tài chính cá nhân và lập kế hoạch chi tiêu",
+        "en": "The foundations of personal financial management and planning"
+      }
+    }
+  ],
+  "stats": {
+    "marqueeTop": {
+      "vi": "TED Talks · Phát âm · ETOP · TOEIC · IELTS · ",
+      "en": "TED Talks · Pronunciation · ETOP · TOEIC · IELTS · "
+    },
+    "marqueeBottom": {
+      "vi": "Ngữ pháp · Thành ngữ · Phim · Bài hát · Sách · Quizlet · ",
+      "en": "Grammar · Idioms · Movies · Songs · Books · Quizlet · "
+    },
+    "items": [
+      { "value": "5", "label": { "vi": "Lộ trình tiếng Anh", "en": "English tracks" } },
+      { "value": "6", "label": { "vi": "Khoá học kỹ năng", "en": "Skills courses" } },
+      { "value": "2", "label": { "vi": "Ngôn ngữ", "en": "Languages" } }
+    ],
+    "quotes": [
+      {
+        "text": {
+          "vi": "Luyện thi TOEIC, IELTS, IELTS Speaking và Writing, cùng bài đánh giá đầu vào để bạn biết mình đang ở đâu.",
+          "en": "TOEIC, IELTS, IELTS Speaking and Writing preparation, plus a placement assessment so you know where you stand."
+        },
+        "source": { "vi": "Kiểm tra và đánh giá", "en": "Testing and assessment" }
+      },
+      {
+        "text": {
+          "vi": "Ngữ pháp, thành ngữ, phim, bài hát, sách và Quizlet — học tiếng Anh qua những thứ bạn đã thích.",
+          "en": "Grammar, idioms, movies, songs, books and Quizlet — learning English through the things you already enjoy."
+        },
+        "source": { "vi": "Học qua nội dung", "en": "Learning through content" }
+      },
+      {
+        "text": {
+          "vi": "Chatbot AI, mẹo tự học trên GLOW, báo cáo thời gian tự học và Khan Academy.",
+          "en": "AI chatbots, tips for self-learning on GLOW, self-study time reporting, and Khan Academy."
+        },
+        "source": { "vi": "Tài nguyên hỗ trợ", "en": "Supporting resources" }
+      }
+    ]
+  },
+  "mission": {
+    "kick":    { "vi": "Về GLOW", "en": "About GLOW" },
+    "heading": { "vi": "Growing Learning Opportunities Worldwide", "en": "Growing Learning Opportunities Worldwide" },
+    "body": {
+      "vi": "GLOW là nền tảng học tập của Pacific Links Foundation, được xây dựng để việc học không bao giờ bị giới hạn bởi chi phí hay khoảng cách. Miễn phí, song ngữ, và mở cho tất cả mọi người.",
+      "en": "GLOW is Pacific Links Foundation's learning platform, built so that learning is never limited by cost or distance. Free, bilingual, and open to everyone."
+    },
+    "cta": { "vi": "Bắt đầu học", "en": "Start learning" }
+  },
+  "footer": {
+    "tagline": {
+      "vi": "Nền tảng tự học miễn phí của Pacific Links Foundation.",
+      "en": "The free self-learning platform from Pacific Links Foundation."
+    },
+    "colEnglish":   { "vi": "Tiếng Anh", "en": "English" },
+    "colSkills":    { "vi": "Kỹ năng", "en": "Skills" },
+    "colResources": { "vi": "Tài nguyên", "en": "Resources" },
+    "linkPronunciation": { "vi": "Phát âm", "en": "Pronunciation" },
+    "linkTesting":       { "vi": "Kiểm tra", "en": "Testing" },
+    "linkCommunication": { "vi": "Giao tiếp", "en": "Communication" },
+    "linkLeadership":    { "vi": "Lãnh đạo", "en": "Leadership" },
+    "linkFinance":       { "vi": "Tài chính", "en": "Finance" },
+    "linkChatbots":      { "vi": "Chatbot AI", "en": "AI Chatbots" },
+    "linkTips":          { "vi": "Mẹo tự học", "en": "Self-learning tips" },
+    "linkStories":       { "vi": "Tin tức", "en": "Stories" },
+    "linkSignin":        { "vi": "Đăng nhập", "en": "Sign in" },
+    "copyright": "© 2026 Pacific Links Foundation"
+  }
+}

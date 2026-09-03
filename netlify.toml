@@ -1,0 +1,54 @@
+#  GLOW on Netlify — the CDN serves dist/, one function answers /api/*.
+#
+#  This is the PREVIEW host, not the deployment docs/DEPLOY.md describes.
+#  There the whole thing is one Node process and helmet sets every header
+#  below on every response. Here the pages come off the CDN and never touch
+#  the app, so the headers helmet would have set have to be restated — the
+#  block below is a copy of the policy in server/app.js and has to move with
+#  it. If you add a script host there, add it here too.
+
+[build]
+  publish  = "dist"
+  command  = "npm run build"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Netlify's "pretty URLs" post-processing rewrites every internal link from
+# `dashboard.html` to `/dashboard`. The app routes on the filename, so the
+# rewritten links walked straight past the routing table: the dashboard shell
+# rendered with no data and no redirect to sign in. src/app.js now tolerates
+# both forms, but the host should not be editing the app's own links either.
+[build.processing.html]
+  pretty_urls = false
+
+# ── security headers ────────────────────────────────────────
+# Mirrors helmet's configuration in server/app.js, with ONE deliberate
+# addition: `worker-src 'self' blob:` for the content editor at /admin
+# (Decap CMS spawns a blob worker; the CMS is Netlify-only because it
+# publishes through Git Gateway, so the Node deployment does not carry
+# this). Note the editor's scripts are SELF-HOSTED under public/admin/ —
+# script-src stays 'self' with no CDN exceptions.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; form-action 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests"
+    X-Content-Type-Options   = "nosniff"
+    X-Frame-Options          = "DENY"
+    Referrer-Policy          = "same-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains"
+
+# ── caching ─────────────────────────────────────────────────
+# Everything under /assets carries a content hash in its name and can be
+# cached forever. The HTML shells are the only files that do not, so a stale
+# one would pin a learner to a deleted JS bundle.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"
