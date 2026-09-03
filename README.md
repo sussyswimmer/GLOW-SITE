@@ -21,6 +21,7 @@ here.
 | `docs/DEPLOY.md` | Hosting, environment variables, verifying a deploy |
 | `docs/ARCHITECTURE.md` | How it works and why; the security model |
 | `docs/OPERATIONS.md` | Running it day to day — written for a non-developer |
+| `docs/CMS-SETUP.md` | The content editor at `/admin` — setting it up, and using it |
 | `docs/HANDOFF.md` | Transferring ownership to the client |
 | `CONTENT.md` | Where every piece of copy and imagery came from |
 
@@ -351,4 +352,10 @@ Known gaps, deliberately:
 
 ## Not built (out of scope per the original brief)
 
-Moodle theming, CMS, analytics.
+Moodle theming, analytics.
+
+A CMS *was* out of scope and then got built anyway, because "the client
+cannot change their own words without hiring someone" is a handover
+problem, not a feature request. It edits the marketing copy and the news
+stories only — never courses or learners, which stay in Moodle. See
+`docs/CMS-SETUP.md`.

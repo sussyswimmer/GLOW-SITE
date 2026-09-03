@@ -37,6 +37,7 @@ staff member's personal mailbox. People leave; the site outlives them.
 | Domain / DNS | Pacific Links | Registrar login, with two staff on it |
 | Hosting (the Node app) | Pacific Links | See `docs/DEPLOY.md` |
 | Source repository | Pacific Links org | You are a collaborator |
+| Content editor accounts | Pacific Links | Netlify Identity, **invite only**. See `docs/CMS-SETUP.md` |
 | Moodle (`glow.mata9.com`) | Pacific Links | Already theirs — confirm two admins exist |
 | Error monitoring, if added | Pacific Links | |
 | Password manager vault | Pacific Links | Where all of the above live |
@@ -96,6 +97,9 @@ They should each perform, themselves:
 - [ ] Take the site down and bring it back up
 - [ ] **Rotate `SESSION_SECRET`** and confirm they get signed out
 - [ ] Add a course in Moodle and watch it appear on the site
+- [ ] Edit a line of front-page text at `/admin`, publish it, and wait for
+      it to go live — so the two-minute delay is not a surprise later
+- [ ] Write and publish a story, then delete the sample one
 - [ ] Find and read `docs/OPERATIONS.md`
 - [ ] Sign in to the site as a real learner
 
@@ -114,7 +118,10 @@ Corollaries worth saying out loud:
 
 - Adding a course, enrolling a learner, editing a quiz: **all in Moodle**,
   exactly as they do today. Nobody needs to touch the new site.
-- The new site is where the *design* lives. Changing it needs a developer.
+- The *words* on the marketing pages, and any news story, they change
+  themselves at `/admin` — no developer, no deploy. `docs/CMS-SETUP.md`.
+- The *design* — layout, colour, motion, and how many of a thing the page
+  can hold — still needs a developer.
 - If the new site goes down, **Moodle is unaffected** and learners can still
   work at `glow.mata9.com`. This is the reassurance to give first in an
   incident.
@@ -158,6 +165,8 @@ Whichever it is, tell them the thing they will not think to ask:
 - [ ] The walkthrough happened, with both people present
 - [ ] `npm ci && npm run build && npm start` works on a clean machine
 - [ ] `node tools/smoke.mjs` passes against the live site
+- [ ] Identity is invite-only, Git Gateway is on, and both named people
+      have published a real content change themselves
 - [ ] §2 and §6 above are filled in
 - [ ] They have been told, in writing, what happens after the support window
 
@@ -174,11 +183,20 @@ Give them this. A handover that only lists what works is not a handover.
    site after every Moodle upgrade.
 2. **Nobody at Pacific Links currently maintains JavaScript.** Design and
    behaviour changes need a developer. Content changes do not.
-3. **The support window ends.** After it, unpatched dependencies accumulate.
-4. **`auth_userkey`, if installed, mints login URLs.** It is the most
+3. **The content editor depends on Netlify Identity, which is a legacy
+   product.** It signs staff in and Git Gateway turns their saves into
+   commits. Netlify has been restricting Identity to sites already using
+   it, and if it is ever withdrawn, staff lose the ability to edit their
+   own copy until someone moves the editor to a different backend. The
+   site itself keeps working — the words are plain files in the
+   repository, and a developer can still change them. Confirm Identity is
+   actually enabled before handover day, not after. See
+   `docs/CMS-SETUP.md`.
+4. **The support window ends.** After it, unpatched dependencies accumulate.
+5. **`auth_userkey`, if installed, mints login URLs.** It is the most
    security-sensitive component. Disable it first if this site is ever
    retired.
-5. **Learner data is sensitive.** GLOW serves young people including
+6. **Learner data is sensitive.** GLOW serves young people including
    participants in an anti-trafficking programme. The site was built to hold
    none of it, which removes most of this risk — but Moodle holds all of it,
    and Moodle's own security, backups and access list matter more than

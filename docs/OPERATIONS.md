@@ -56,6 +56,32 @@ The site is in demo mode. It is showing example content, **not** your
 learners. Fix: set `DATA_SOURCE=moodle` in the hosting dashboard and
 redeploy. See `docs/MOODLE-SETUP.md`.
 
+### I want to change the words on the front page, or post news
+
+You can do that yourself, without a developer. Go to
+**`https://YOUR-SITE/admin/`** and sign in with the email you were invited
+on. You get two things to edit:
+
+- **Trang chủ / Landing page** — every piece of text on the front page, in
+  Vietnamese and English side by side.
+- **Tin tức / Stories** — announcements, learner stories, events. Write as
+  many as you like.
+
+Press **Publish**, then wait one to two minutes and reload the site.
+Publishing is not instant, because the site rebuilds itself first.
+
+Two boundaries worth holding in your head:
+
+- **Words on the marketing pages** → edit them here.
+- **Courses, learners, grades, activities** → edit them in **Moodle**, as
+  you do today. Nothing about those is in the editor, on purpose.
+
+You cannot add a fourth pillar or a seventh course card here. Those counts
+are built into the page's design. Ask a developer.
+
+Full instructions, including what to do when a publish does not appear, are
+in `docs/CMS-SETUP.md`.
+
 ---
 
 ## Is it up?
