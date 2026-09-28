@@ -25,3 +25,4 @@ Thumbs.db
 # Local tool state, not part of the site
 .claude/settings.local.json
 .impeccable/hook.cache.json
+.omc/

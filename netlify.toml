@@ -30,10 +30,51 @@
 # publishes through Git Gateway, so the Node deployment does not carry
 # this). Note the editor's scripts are SELF-HOSTED under public/admin/ —
 # script-src stays 'self' with no CDN exceptions.
+#
+# This rule deliberately does NOT match /admin/*. Netlify sends every
+# matching rule's headers, and a browser given two CSP headers enforces
+# both intersected — so a second, laxer policy for the editor could not
+# loosen this one. The editor gets its own block below instead, and the
+# two are mutually exclusive by path.
 [[headers]]
-  for = "/*"
+  for = "/*.html"
   [headers.values]
     Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; form-action 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests"
+    X-Content-Type-Options   = "nosniff"
+    X-Frame-Options          = "DENY"
+    Referrer-Policy          = "same-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; form-action 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests"
+    X-Content-Type-Options   = "nosniff"
+    X-Frame-Options          = "DENY"
+    Referrer-Policy          = "same-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains"
+
+# ── the content editor ──────────────────────────────────────
+# `'unsafe-eval'`, and only here.
+#
+# Decap validates its own config.yml with Ajv, which compiles JSON Schema
+# into functions with `new Function(...)`. That is eval. Under the policy
+# above the editor does not merely lose a feature — it never starts, and
+# shows "Error loading the CMS configuration" to whoever tried to sign in.
+#
+# The exception is worth taking on this path and no other: /admin/ carries
+# no learner data, is noindex, cannot be framed, and is reachable only by
+# an invited Identity account. Its scripts are still self-hosted, so eval
+# is being granted to a bundle committed to this repository rather than to
+# anything a third party can change. Everything else on the site keeps the
+# stricter policy.
+#
+# If a future Decap release drops Ajv, delete this block and confirm
+# /admin/ still loads.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; form-action 'self'; base-uri 'none'; object-src 'none'; upgrade-insecure-requests"
     X-Content-Type-Options   = "nosniff"
     X-Frame-Options          = "DENY"
     Referrer-Policy          = "same-origin"
