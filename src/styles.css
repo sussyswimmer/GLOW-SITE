@@ -479,8 +479,19 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
 }
 /* The wordmark line is drawn rather than filled — it sits behind the green
    line without competing with it, and an outline at this size is the one
-   piece of typographic detail the hero gets. */
-.st-row-2{color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.24)}
+   piece of typographic detail the hero gets.
+   Its own font file because a stroke outlines every contour, and the variable
+   Anybody from Google keeps overlapping ones — the R's leg drew a line through
+   its bowl. This is the same font frozen at wght 800 with the overlaps merged
+   (fontTools instancer --remove-overlaps), cut to A–Z, a–z, space and "·". */
+@font-face{
+  font-family:'Anybody Outline';font-weight:800;font-display:swap;
+  src:url('./fonts/anybody-800-outline.woff2') format('woff2');
+}
+.st-row-2{
+  font-family:'Anybody Outline',var(--display);
+  color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.24);
+}
 /* Without text-stroke the line would render as nothing at all. */
 @supports not (-webkit-text-stroke:1px #000){
   .st-row-2{color:rgba(255,255,255,.13)}
