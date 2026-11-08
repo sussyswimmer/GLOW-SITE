@@ -163,8 +163,21 @@ export async function buildApp({ serveStatic = true, logger } = {}) {
          to a deleted JS bundle. Everything under /assets IS hashed and can
          be cached for a year. */
       setHeaders(res, path) {
+        const embed = /[\\/]embed[\\/]/.test(path);
         if (path.endsWith('.html')) res.setHeader('cache-control', 'no-cache');
+        /* embed/ keeps one name across deploys (tools/build.mjs), so it must
+           revalidate; everything else under assets/ is hashed and need not. */
+        else if (embed) res.setHeader('cache-control', 'public, max-age=0, must-revalidate');
         else if (path.includes('assets')) res.setHeader('cache-control', 'public, max-age=31536000, immutable');
+
+        /* The Moodle front page loads the landing CSS, JS and font from
+           here. Helmet's default Cross-Origin-Resource-Policy is same-origin,
+           which would block all three; the font also needs CORS. Public
+           static files only; the HTML and /api keep helmet's defaults. */
+        if (embed || (path.includes('assets') && !path.endsWith('.html'))) {
+          res.setHeader('cross-origin-resource-policy', 'cross-origin');
+          res.setHeader('access-control-allow-origin', '*');
+        }
       },
     });
   } else if (serveStatic) {

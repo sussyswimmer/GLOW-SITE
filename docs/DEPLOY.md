@@ -117,6 +117,32 @@ originals do:
 Environment variables are set in Netlify rather than a file, same as any other
 host: `SESSION_SECRET`, `PUBLIC_ORIGIN`, `NODE_ENV=production`, `DATA_SOURCE`.
 
+## The Moodle front page
+
+`glowtest.mata9.com` (and later `glow.mata9.com`) shows this landing page as
+Moodle's own home page. A script in **Site administration → Appearance →
+Additional HTML → Before BODY is closed** swaps the body for the landing
+markup and loads this page's CSS and JS from the Netlify site.
+
+Point it at these two URLs and nothing else:
+
+```
+https://glow-pacific-links.netlify.app/embed/landing.css
+https://glow-pacific-links.netlify.app/embed/landing.js
+```
+
+**Never at `/assets/style.<hash>.css` or `/assets/index.<hash>.js`.** Those
+names change on every deploy and the old files are deleted, so each merge to
+`main` left Moodle's home page unstyled for every visitor without the old
+files cached. It looked fine in the browser that set it up (cached for a year)
+and broken in incognito, which is how it was found. `tools/build.mjs` writes
+the `/embed/` copies on every build; `netlify.toml` serves them no-cache with
+CORS open, and opens CORS on `/assets/*` because browsers block a cross-origin
+font without it.
+
+The markup itself is still a copy pasted into that Moodle setting, so copy
+changes from the CMS reach Netlify but **not** Moodle until it is re-pasted.
+
 ## Verifying a deploy
 
 ```bash

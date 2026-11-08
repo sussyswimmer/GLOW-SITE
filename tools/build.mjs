@@ -4,7 +4,7 @@
    chunk. The marketing page and the app pages have different entry scripts, so
    they are built in separate passes into the same dist/. */
 import { build } from 'vite';
-import { rmSync } from 'node:fs';
+import { rmSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { contentPlugin } from './content-plugin.mjs';
 
@@ -76,4 +76,30 @@ for (const [i, page] of PAGES.entries()) {
   await build(common({ [page]: r(`${page}.html`) }, page, i === 0));
 }
 
+/* ── the Moodle front page ───────────────────────────────────
+   glow(test).mata9.com shows this landing page on its own home page: a
+   script in Moodle's Additional HTML swaps the body for the landing markup
+   and loads this page's CSS and JS from here. It used to load them by their
+   hashed names, which every deploy renames and deletes, so each merge to
+   main quietly left Moodle's home page unstyled for anyone without the old
+   files cached (every new visitor, every incognito window).
+
+   These two copies never change name. Moodle points at /embed/landing.css
+   and /embed/landing.js once, and every deploy updates what is behind them.
+   They are served no-cache (revalidate each load) with CORS open; see the
+   /embed/* block in netlify.toml and setHeaders in server/app.js. */
+const indexHtml = readFileSync(r('dist/index.html'), 'utf8');
+const built = ext => {
+  const m = indexHtml.match(new RegExp(`(?:href|src)="\\./(assets/[^"]+\\.${ext})"`));
+  if (!m) throw new Error(`embed: no .${ext} bundle referenced by dist/index.html`);
+  return readFileSync(r(`dist/${m[1]}`), 'utf8');
+};
+mkdirSync(r('dist/embed'), { recursive: true });
+/* The CSS names its font relative to itself (./x.woff2 next to it in
+   assets/); one directory over, that has to say ../assets/x.woff2. */
+writeFileSync(r('dist/embed/landing.css'),
+  built('css').replace(/url\((["']?)\.\/(?!\.)/g, 'url($1../assets/'));
+writeFileSync(r('dist/embed/landing.js'), built('js'));
+
 console.log(`\nbuilt ${PAGES.length} pages: ${PAGES.join(', ')}`);
+console.log('embed: dist/embed/landing.css, dist/embed/landing.js (stable names for Moodle)');
