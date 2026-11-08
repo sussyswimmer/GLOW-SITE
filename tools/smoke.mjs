@@ -49,7 +49,7 @@ async function req(path, opts = {}) {
 }
 
 /* ── 1. the API is closed by default ───────────────────── */
-for (const path of ['/api/dashboard', '/api/courses', '/api/catalog/english', '/api/courses/101']) {
+for (const path of ['/api/dashboard', '/api/courses', '/api/catalog/english', '/api/courses/101', '/api/billing']) {
   const r = await req(path);
   check(`${path} requires a session`, r.status === 401, `got ${r.status}`);
 }
@@ -105,6 +105,19 @@ check('dashboard carries the learner', Boolean(dashBody.learner?.fullname));
 check('dashboard carries courses', Array.isArray(dashBody.courses) && dashBody.courses.length > 0,
   `${dashBody.courses?.length} courses`);
 check('demo data is flagged as demo', dashBody.demo === true);
+
+/* GLOW is a paid programme: the tuition is a positive amount or not yet
+   announced (null) — never 0, which the page would show as a price of
+   nothing. And the support links must be paths /api/sso will accept. */
+const bill = await req('/api/billing');
+const billBody = await bill.json();
+check('billing loads with a session', bill.status === 200, `got ${bill.status}`);
+check('billing status is a known state',
+  ['unknown', 'unpaid', 'pending', 'paid', 'aid-review', 'aid-approved'].includes(billBody.status), billBody.status);
+check('tuition is never zero',
+  billBody.tuition?.amount === null || billBody.tuition?.amount > 0, String(billBody.tuition?.amount));
+check('billing support links are site-relative',
+  [billBody.contact?.payPath, billBody.contact?.aidPath].every(p => typeof p === 'string' && p.startsWith('/') && !p.startsWith('//')));
 
 /* ── 6. the contract holds ─────────────────────────────── */
 /* Take the id from the dashboard rather than naming one. Course ids are

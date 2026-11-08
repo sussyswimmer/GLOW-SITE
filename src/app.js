@@ -13,7 +13,7 @@ import { initI18n, setDocTitle } from './i18n.js';
 import { initInteractions } from './interact.js';
 import { api, signOut, toLogin, ApiError } from './api.js';
 import { el, clear, region, demoBanner, currentLang } from './ui.js';
-import { renderDashboard, renderCourses, renderCourse, renderCatalog } from './views.js';
+import { renderDashboard, renderCourses, renderCourse, renderCatalog, renderPayment } from './views.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -200,6 +200,12 @@ const ROUTES = {
     load: () => api.courses(),
     render: renderCourses,
     skeleton: 'tiles',
+  },
+  'payment.html': {
+    host: '#view',
+    load: () => api.billing(),
+    render: renderPayment,
+    skeleton: 'rows',
   },
   'course.html': {
     host: '#view',

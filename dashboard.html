@@ -63,7 +63,7 @@
      so the first item in the navigation read "./index.html". It has a word
      now, and the icon is decoration beside it.
 
-     data-private marks the two items that only mean anything with a session.
+     data-private marks the items that only mean anything with a session.
      On a public page they start hidden and src/app.js reveals them if there
      is one; on a private page they are always there, because you cannot be
      looking at one of those signed out. -->
@@ -75,6 +75,7 @@
     </a>
     <a href="./dashboard.html" data-page="dashboard.html" data-private data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
     <a href="./courses.html" data-page="courses.html" data-private data-i18n data-vi="Khoá học của tôi" data-en="My courses">Khoá học của tôi</a>
+    <a href="./payment.html" data-page="payment.html" data-private data-i18n data-vi="Thanh toán" data-en="Payment">Thanh toán</a>
     <a href="./english.html" data-page="english.html" data-i18n data-vi="Học tiếng Anh" data-en="English self-learning">Học tiếng Anh</a>
     <a href="./resources.html" data-page="resources.html" data-i18n data-vi="Tài nguyên giáo dục" data-en="Educational Resources">Tài nguyên giáo dục</a>
     <a href="./stories.html" data-page="stories.html" data-i18n data-vi="Tin tức" data-en="Stories">Tin tức</a>
@@ -90,7 +91,7 @@
   </div>
 </div>
 
-<main class="shell shell-2col" id="view" tabindex="-1"></main>
+<main class="shell dash" id="view" tabindex="-1"></main>
 
 <!-- Written in both languages, always — the VI/EN toggle is itself a script,
      so a reader without JavaScript is stuck in whichever language the markup

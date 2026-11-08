@@ -25,7 +25,8 @@
    its own learners, so it is not optional and not silenceable.
    ═══════════════════════════════════════════════════════════ */
 
-import { assertDashboard, assertCourseDetail } from './contract.js';
+import { assertDashboard, assertCourseDetail, assertBilling } from './contract.js';
+import { billingFor } from './billing.js';
 import { catalogGroups, trackById } from './glow-catalogue.js';
 
 /* The one account that can sign in against the mock. Documented in
@@ -193,10 +194,19 @@ export async function getDashboard() {
       .slice(0, 3).map(stripInternal),
     events: [
       { id: 1, title: 'Meeting with your Student', when: soon(0), courseTitle: 'ETOP Beginner' },
+      { id: 3, title: 'Teamwork Skills — reflection', when: soon(2), courseTitle: 'Kỹ Năng Làm Việc Nhóm' },
       { id: 2, title: 'ETOP Intermediate — session', when: soon(6), courseTitle: 'ETOP Intermediate' },
     ],
     unread: 1,
   });
+}
+
+/* The same answer the live adapter gives while billing.js has no amount:
+   nobody can owe a fee that has not been set, so the demo must not say
+   "not paid yet" beside "there is nothing to pay right now". Switch this to
+   'unpaid' to review that state once a price exists. */
+export async function getBilling() {
+  return assertBilling(billingFor('unknown'));
 }
 
 export async function getCourse(_session, courseId) {

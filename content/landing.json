@@ -5,8 +5,8 @@
       "en": "GLOW — Growing Learning Opportunities Worldwide"
     },
     "desc": {
-      "vi": "GLOW là nền tảng tự học miễn phí của Pacific Links Foundation: học tiếng Anh, phát triển nghề nghiệp, kỹ năng và kết nối — mọi lúc, mọi nơi.",
-      "en": "GLOW is a free self-learning platform from Pacific Links Foundation: English learning, professional development, and skills and network building — anytime, anywhere."
+      "vi": "GLOW là nền tảng tự học của Pacific Links Foundation: học tiếng Anh, phát triển nghề nghiệp, kỹ năng và kết nối — mọi lúc, mọi nơi.",
+      "en": "GLOW is a self-learning platform from Pacific Links Foundation: English learning, professional development, and skills and network building — anytime, anywhere."
     }
   },
   "nav": {
@@ -27,16 +27,16 @@
     "line2": { "vi": "cơ hội học tập", "en": "Learning Opportunities" },
     "line3": { "vi": "trên toàn thế giới", "en": "Worldwide" },
     "lead": {
-      "vi": "GLOW là nền tảng tự học miễn phí: tiếng Anh, phát triển nghề nghiệp, và kỹ năng — học mọi lúc, mọi nơi.",
-      "en": "GLOW is a free self-learning platform: English, professional development, and life skills — anytime, anywhere."
+      "vi": "GLOW là nền tảng tự học song ngữ: tiếng Anh, phát triển nghề nghiệp, và kỹ năng — học mọi lúc, mọi nơi.",
+      "en": "GLOW is a bilingual self-learning platform: English, professional development, and life skills — anytime, anywhere."
     },
     "ctaPrimary":   { "vi": "Bắt đầu học", "en": "Start learning" },
     "ctaSecondary": { "vi": "Có gì trên GLOW", "en": "What's on GLOW" }
   },
   "manifesto": {
     "line": {
-      "vi": "Học tập là con đường ngắn nhất để mở ra cơ hội. GLOW giữ cho con đường đó luôn miễn phí.",
-      "en": "Learning is the shortest path to opportunity. GLOW keeps that path free and open to everyone."
+      "vi": "Học tập là con đường ngắn nhất để mở ra cơ hội. GLOW đồng hành cùng bạn trên con đường đó.",
+      "en": "Learning is the shortest path to opportunity. GLOW walks that path with you."
     }
   },
   "showcase": {
@@ -90,7 +90,7 @@
   ],
   "coursesSection": {
     "kick":    { "vi": "Nâng cao kỹ năng", "en": "Upskilling Development" },
-    "heading": { "vi": "Sáu khoá học kỹ năng, miễn phí", "en": "Six skills courses, free to take" }
+    "heading": { "vi": "Sáu khoá học kỹ năng, theo nhịp của bạn", "en": "Six skills courses, at your own pace" }
   },
   "courses": [
     {
@@ -184,15 +184,15 @@
     "kick":    { "vi": "Về GLOW", "en": "About GLOW" },
     "heading": { "vi": "Growing Learning Opportunities Worldwide", "en": "Growing Learning Opportunities Worldwide" },
     "body": {
-      "vi": "GLOW là nền tảng học tập của Pacific Links Foundation, được xây dựng để việc học không bao giờ bị giới hạn bởi chi phí hay khoảng cách. Miễn phí, song ngữ, và mở cho tất cả mọi người.",
-      "en": "GLOW is Pacific Links Foundation's learning platform, built so that learning is never limited by cost or distance. Free, bilingual, and open to everyone."
+      "vi": "GLOW là nền tảng học tập của Pacific Links Foundation, được xây dựng để khoảng cách không bao giờ giới hạn việc học. Song ngữ, tự học theo nhịp riêng, và có lớp hội thoại một kèm một với tình nguyện viên.",
+      "en": "GLOW is Pacific Links Foundation's learning platform, built so that distance never limits learning. Bilingual, self-paced, with one-to-one conversation classes led by volunteers."
     },
     "cta": { "vi": "Bắt đầu học", "en": "Start learning" }
   },
   "footer": {
     "tagline": {
-      "vi": "Nền tảng tự học miễn phí của Pacific Links Foundation.",
-      "en": "The free self-learning platform from Pacific Links Foundation."
+      "vi": "Nền tảng tự học của Pacific Links Foundation.",
+      "en": "The self-learning platform from Pacific Links Foundation."
     },
     "colEnglish":   { "vi": "Tiếng Anh", "en": "English" },
     "colSkills":    { "vi": "Kỹ năng", "en": "Skills" },

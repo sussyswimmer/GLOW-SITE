@@ -4,7 +4,8 @@
    see the note at the top of ui.js for why that is absolute here.
    ═══════════════════════════════════════════════════════════ */
 
-import { el, t, icon, clear, emptyState, formatDate, currentLang } from './ui.js';
+import { el, t, icon, clear, emptyState, formatDate, currentLang, bilingual, region } from './ui.js';
+import { api } from './api.js';
 import { setDocTitle } from './i18n.js';
 
 /* ── shared pieces ───────────────────────────────────────── */
@@ -84,67 +85,269 @@ function panel(titleVi, titleEn, ...content) {
     ...content);
 }
 
-/* ── dashboard ───────────────────────────────────────────── */
+/* ── dashboard ───────────────────────────────────────────────
+   Built around the one question a learner arrives with — "what do I do
+   next?" — so the page answers it first and in words: the course to go
+   back to, what is coming up and when, and whether tuition needs them.
+   DOM order is phone order — next step, what is due, tuition — and the
+   desktop grid only lifts the tuition card into the top of the right-hand
+   column, so it never lands under every course tile on a phone.
+
+   What it deliberately does NOT have: streaks, a learning path, or
+   per-skill mastery. Moodle gives this site none of the data behind them,
+   and a dashboard that invents a number is worse than one that leaves it
+   out. */
+
+const DAY = 86_400_000;
 
 export function renderDashboard(d, host) {
-  const main = el('div');
-
-  main.append(d.recent.length
-    ? panel('Khoá học gần đây', 'Recently accessed courses', tileGrid(d.recent))
-    : panel('Khoá học gần đây', 'Recently accessed courses',
-        emptyState('Bạn chưa mở khoá học nào.', "You haven't opened a course yet.",
-          el('a', { class: 'btn btn-primary', href: './courses.html' },
-            t('Xem khoá học', 'Browse courses')))));
-
-  main.append(upcoming(d.events));
-
-  const rail = el('aside', { class: 'rail' });
-
-  const list = el('ul', { class: 'rail-list' });
-  d.courses.slice(0, 6).forEach(c => list.append(
-    el('li', {}, el('a', { href: `./course.html?id=${encodeURIComponent(c.id)}` },
-      el('span', { class: 'pip' }), el('span', { text: c.title })))));
-  list.append(el('li', {}, el('a', { href: './courses.html' },
-    el('span', { class: 'pip on' }), t('Tất cả khoá học', 'All courses'))));
-  rail.append(panel('Khoá học của tôi', 'My courses', list));
-
-  host.append(main, rail);
+  greet(d);
+  const lead = d.recent[0] || null;
+  host.append(
+    continueCard(lead),
+    upcoming(d.events),
+    tuitionCard(),
+    shortcuts(d.unread),
+    yourCourses(d.courses, lead),
+  );
 }
 
-/* The calendar the prototype drew was a hardcoded August 2026 grid — a
-   picture of a calendar. What a learner actually needs from a dashboard
-   is the next few things they have to turn up to, so this is a list of
-   real events, and it says so plainly when there are none. */
-function upcoming(events) {
-  if (!events.length) {
-    return panel('Sắp tới', 'Coming up',
-      emptyState('Không có buổi học nào sắp tới.', 'Nothing scheduled coming up.'));
+/* The heading says hello, and the line under it says what the rest of the
+   page is about to show. Both stay bilingual through data-i18n; the
+   learner's name goes in through textContent like everything else. */
+function greet(d) {
+  const name = d.learner.fullname;
+  const h1 = document.querySelector('.pagehead h1');
+  if (h1) bilingual(h1, `Xin chào, ${name}`, `Hello, ${name}`);
+
+  const now = Date.now();
+  const overdue = d.events.filter(e => Date.parse(e.when) < now).length;
+  /* Calendar days, like the tag on each item, so "in the next 7 days" never
+     leaves out something the list labels "In 6 days". */
+  const week = d.events.filter(e => {
+    const w = Date.parse(e.when);
+    return w >= now && Math.round((startOfDay(w) - startOfDay(now)) / DAY) < 7;
+  }).length;
+  const n = d.courses.length;
+
+  const vi = [`Bạn có ${n} khoá học`];
+  const en = [`You have ${n} ${n === 1 ? 'course' : 'courses'}`];
+  if (overdue) { vi.push(`${overdue} việc quá hạn`); en.push(`${overdue} overdue ${overdue === 1 ? 'task' : 'tasks'}`); }
+  if (week) {
+    vi.push(`${week} việc trong 7 ngày tới`);
+    en.push(`${week} ${week === 1 ? 'task' : 'tasks'} in the next 7 days`);
+  }
+  if (!overdue && !week) { vi.push('không có việc nào trong 7 ngày tới'); en.push('nothing in the next 7 days'); }
+
+  const p = document.querySelector('.pagehead p');
+  if (p) bilingual(p, vi.join(' · ') + '.', en.join(' · ') + '.');
+}
+
+/* The one primary action on the page. It only says "continue" when the
+   learner has actually been in the course: Moodle's fallback for a new
+   learner is just their first enrolments, and calling that "continue"
+   would be the same lie as a 0% bar on an untracked course. */
+function continueCard(c) {
+  const card = el('section', { class: 'dash-hero', 'data-rise': '', 'aria-labelledby': 'dash-next' });
+
+  if (!c) {
+    card.append(
+      el('p', { class: 'dash-kick' }, t('Bắt đầu', 'Get started')),
+      el('h2', { id: 'dash-next' }, t('Chọn khoá học đầu tiên của bạn', 'Pick your first course')),
+      el('p', { class: 'dash-hero-meta' },
+        t('Bạn chưa được ghi danh vào khoá học nào. Hãy bắt đầu với một lộ trình tự học tiếng Anh.',
+          "You aren't enrolled in a course yet. Start with an English self-study track.")),
+      el('a', { class: 'btn btn-primary', href: './english.html' }, t('Xem lộ trình tiếng Anh', 'Browse English tracks')));
+    return card;
   }
 
-  const list = el('ul', { class: 'events' });
-  for (const e of events) {
-    const when = new Date(e.when);
-    const item = el('li', { class: 'event' },
-      el('time', {
-        class: 'event-date', datetime: e.when,
-      },
+  const been = Boolean(c.lastAccess);
+  card.append(el('p', { class: 'dash-kick' }, been ? t('Tiếp tục học', 'Continue learning') : t('Bắt đầu học', 'Start learning')));
+  card.append(c.titleEn && c.titleEn !== c.title
+    ? el('h2', { id: 'dash-next' }, t(c.title, c.titleEn))
+    : el('h2', { id: 'dash-next', text: c.title }));
+
+  const meta = el('p', { class: 'dash-hero-meta' });
+  if (c.code && c.code !== c.title) meta.append(el('span', { class: 'sr-only' }, t('Mã khoá học: ', 'Course code: ')), c.code);
+  if (been) {
+    if (meta.childNodes.length) meta.append(' · ');
+    meta.append(t(`Mở lần cuối ${ago(c.lastAccess, 'vi')}`, `Last opened ${ago(c.lastAccess, 'en')}`));
+  }
+  if (meta.childNodes.length) card.append(meta);
+
+  if (c.tracked) card.append(progress(c.progress, 'dash-progress'));
+
+  card.append(el('a', { class: 'btn btn-primary', href: `./course.html?id=${encodeURIComponent(c.id)}` },
+    been ? t('Tiếp tục khoá học', 'Continue course') : t('Mở khoá học', 'Open course'),
+    icon('arrow', 'btn-ico')));
+  return card;
+}
+
+/* Its own region, so a billing hiccup costs the learner this card and not
+   the dashboard — the same rule the calendar already lives by. */
+function tuitionCard() {
+  const body = el('div');
+  region(body, () => api.billing(), (b, node) => {
+    node.append(statusPill(b.status), el('p', { class: 'pay-hint' }, statusHint(b)));
+    /* Quiet in every state: the hero's button is the page's one primary action. */
+    node.append(el('a', { class: 'btn btn-quiet', href: './payment.html' }, b.status === 'unpaid'
+      ? t('Xem cách thanh toán', 'See how to pay')
+      : t('Xem chi tiết thanh toán', 'See payment details')));
+  }, { skeleton: 'card' });
+
+  return el('section', { class: 'panel dash-pay', 'aria-labelledby': 'dash-pay-h' },
+    el('div', { class: 'sec-head' }, el('h2', { id: 'dash-pay-h' }, t('Học phí', 'Tuition'))),
+    body);
+}
+
+/* At most five, said in words as well as colour. "Today" used to be a green
+   date block and nothing else, and overdue work never appeared at all
+   because the window started at now. The rest are one tap away, in place. */
+const SHOW = 5;
+
+function upcoming(events) {
+  const head = el('div', { class: 'sec-head' }, el('h2', { id: 'dash-due-h' }, t('Sắp tới', 'Coming up')));
+  const card = el('section', { class: 'panel dash-due', 'aria-labelledby': 'dash-due-h' }, head);
+
+  if (!events.length) {
+    card.append(emptyState('Không có việc nào sắp tới.', 'Nothing coming up.'));
+    return card;
+  }
+  head.append(el('span', { class: 'count' }, t(`${events.length} việc`, `${events.length} ${events.length === 1 ? 'item' : 'items'}`)));
+
+  const list = el('ul', { class: 'events', id: 'dash-events' });
+  const now = Date.now();
+  events.forEach((e, i) => {
+    const tag = whenTag(new Date(e.when), now);
+    const item = el('li', { class: `event${tag.cls ? ` is-${tag.cls}` : ''}` },
+      el('time', { class: 'event-date', datetime: e.when },
         el('span', { class: 'event-day', text: formatDate(e.when, { day: 'numeric' }) }),
-        el('span', { class: 'event-mon', text: formatDate(e.when, { month: 'short' }) }),
-      ),
+        el('span', { class: 'event-mon', text: formatDate(e.when, { month: 'short' }) })),
       el('div', { class: 'event-main' },
         e.href
           ? el('a', { href: e.href, text: e.title })
           : el('span', { class: 'event-title', text: e.title }),
         el('span', {
           class: 'event-meta',
-          text: [e.courseTitle, formatDate(e.when, { hour: '2-digit', minute: '2-digit' })]
-            .filter(Boolean).join(' · '),
-        }),
-      ));
-    if (when - Date.now() < 86_400_000) item.classList.add('is-soon');
+          text: [e.courseTitle, formatDate(e.when, { hour: '2-digit', minute: '2-digit' })].filter(Boolean).join(' · '),
+        })),
+      el('span', { class: `pill${tag.cls ? ` pill-${tag.cls}` : ''}` }, t(tag.vi, tag.en)));
+    if (i >= SHOW) item.hidden = true;
     list.append(item);
+  });
+  card.append(list);
+
+  if (events.length > SHOW) {
+    const rest = events.length - SHOW;
+    const label = open => (open ? t('Thu gọn', 'Show less') : t(`Xem thêm ${rest} việc`, `Show ${rest} more`));
+    const btn = el('button', {
+      class: 'btn btn-quiet dash-more', type: 'button',
+      'aria-expanded': 'false', 'aria-controls': 'dash-events',
+      onclick() {
+        const open = btn.getAttribute('aria-expanded') !== 'true';
+        btn.setAttribute('aria-expanded', String(open));
+        [...list.children].forEach((li, i) => { if (i >= SHOW) li.hidden = !open; });
+        clear(btn).append(label(open));
+      },
+    }, label(false));
+    card.append(btn);
   }
-  return panel('Sắp tới', 'Coming up', list);
+  return card;
+}
+
+/* Calendar days, not 24-hour blocks: 9am tomorrow is "tomorrow" at 11pm
+   tonight, even though it is only ten hours away. */
+function whenTag(when, now) {
+  if (when < now) return { vi: 'Quá hạn', en: 'Overdue', cls: 'alert' };
+  const days = Math.round((startOfDay(when) - startOfDay(now)) / DAY);
+  if (days <= 0) return { vi: 'Hôm nay', en: 'Today', cls: 'soon' };
+  if (days === 1) return { vi: 'Ngày mai', en: 'Tomorrow', cls: 'soon' };
+  return { vi: `Còn ${days} ngày`, en: `In ${days} days`, cls: '' };
+}
+
+function startOfDay(d) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x.getTime();
+}
+
+/* Replaces the old rail, which listed the same courses as the tiles beside
+   it and the nav above it. These are the places a learner goes next that
+   the rest of the page does not already show — including the notification
+   count, which the API has always sent and nothing ever displayed. */
+function shortcuts(unread) {
+  const n = Number(unread) || 0;
+  const list = el('ul', { class: 'links' });
+
+  const row = (href, ico, label, { badge, external } = {}) => {
+    const a = el('a', { href }, el('span', { class: 'links-ico' }, icon(ico)), el('span', { class: 'links-label' }, label));
+    if (badge) a.append(el('span', { class: 'badge', text: String(badge), 'aria-hidden': 'true' }));
+    if (external) {
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.append(el('span', { class: 'sr-only' }, t(' (mở tab mới)', ' (opens in a new tab)')));
+    }
+    a.append(icon('chevron', 'links-chev'));
+    list.append(el('li', {}, a));
+  };
+
+  row(`/api/sso?to=${encodeURIComponent('/message/output/popup/notifications.php')}`, 'bell',
+    n ? t(`${n} thông báo mới`, `${n} new ${n === 1 ? 'notification' : 'notifications'}`) : t('Thông báo', 'Notifications'),
+    { badge: n, external: true });
+  row('./courses.html', 'page', t('Tất cả khoá học của tôi', 'All my courses'));
+  row('./payment.html', 'wallet', t('Thanh toán', 'Payment'));
+  row('./english.html', 'forum', t('Học tiếng Anh', 'English self-learning'));
+
+  return el('section', { class: 'panel dash-links', 'aria-labelledby': 'dash-links-h' },
+    el('div', { class: 'sec-head' }, el('h2', { id: 'dash-links-h' }, t('Lối tắt', 'Shortcuts'))),
+    list);
+}
+
+/* Everything they are enrolled in, most recently opened first, minus the
+   one already in the hero. Headed "your courses", not "recently accessed":
+   for a learner who has opened nothing, Moodle's list is their enrolments,
+   and the old heading claimed a history they did not have. */
+function yourCourses(courses, lead) {
+  const rest = courses
+    .map((c, i) => ({ c, i }))
+    .filter(x => !lead || x.c.id !== lead.id)
+    .sort((a, b) => (Date.parse(b.c.lastAccess) || 0) - (Date.parse(a.c.lastAccess) || 0) || a.i - b.i)
+    .map(x => x.c);
+  /* Nothing left that the hero is not already showing — no courses at all
+     (the hero says so and offers the English tracks) or just the one. An
+     empty panel under a heading reads as a broken region. */
+  if (!rest.length) return document.createDocumentFragment();
+
+  return el('section', { class: 'panel dash-courses', 'aria-labelledby': 'dash-courses-h' },
+    el('div', { class: 'sec-head' },
+      el('h2', { id: 'dash-courses-h' }, t('Khoá học của bạn', 'Your courses')),
+      el('a', { class: 'sec-link', href: './courses.html' },
+        t(`Xem tất cả (${courses.length})`, `See all (${courses.length})`))),
+    tileGrid(rest.slice(0, 4)));
+}
+
+function progress(pct, cls) {
+  const v = Math.round(pct || 0);
+  return el('div', { class: `tile-foot ${cls}` },
+    el('div', {
+      class: 'bar', role: 'progressbar',
+      'aria-valuenow': v, 'aria-valuemin': 0, 'aria-valuemax': 100,
+      'aria-label': currentLang() === 'en' ? 'Course progress' : 'Tiến độ khoá học',
+    }, el('i', { dataset: { pct: String(v) } })),
+    el('span', { class: 'bar-pct', text: '0%' }));
+}
+
+/* "hôm qua", "3 days ago" — Intl knows both languages' phrasing. It
+   capitalises Vietnamese ("Hôm qua") as if it stood alone; here it is
+   mid-sentence. */
+function ago(iso, lang) {
+  const days = Math.round((startOfDay(iso) - startOfDay(Date.now())) / DAY);
+  try {
+    const s = new Intl.RelativeTimeFormat(lang === 'en' ? 'en-GB' : 'vi-VN', { numeric: 'auto' }).format(days, 'day');
+    return s.charAt(0).toLocaleLowerCase('vi') + s.slice(1);
+  } catch {
+    return formatDate(iso);
+  }
 }
 
 /* ── courses ─────────────────────────────────────────────── */
@@ -340,4 +543,161 @@ export function renderCatalog(d, host) {
     track.append(chips);
     host.append(track);
   }
+}
+
+/* ── payment ─────────────────────────────────────────────────
+   Four things, in the order a learner needs them: where they stand, what
+   the tuition is, how to pay — with "can't afford it?" given the same
+   weight right beside it — and what they have paid before.
+
+   Two rules hold the page honest while the details are still being
+   decided. A tuition amount that has not been set reads "to be announced",
+   never a number and never "free". And with no payment provider connected
+   the pay button is visibly disabled and says why, rather than leading
+   somewhere that cannot take money. */
+
+const STATUS = {
+  unknown:        { vi: 'Chưa có thông tin', en: 'No details yet', ico: 'wallet', tone: '' },
+  unpaid:         { vi: 'Chưa thanh toán', en: 'Not paid yet', ico: 'wallet', tone: 'due' },
+  pending:        { vi: 'Đang chờ xác nhận', en: 'Awaiting confirmation', ico: 'other', tone: '' },
+  paid:           { vi: 'Đã thanh toán', en: 'Paid', ico: 'check', tone: 'ok' },
+  'aid-review':   { vi: 'Đang xét hỗ trợ học phí', en: 'Fee support under review', ico: 'other', tone: '' },
+  'aid-approved': { vi: 'Được hỗ trợ học phí', en: 'Fee support approved', ico: 'check', tone: 'ok' },
+};
+
+/* Words and an icon, never colour alone. */
+function statusPill(status) {
+  const s = STATUS[status] || STATUS.unknown;
+  return el('span', { class: `pill pill-lg${s.tone ? ` pill-${s.tone}` : ''}` }, icon(s.ico), t(s.vi, s.en));
+}
+
+function statusHint(b) {
+  const long = { day: 'numeric', month: 'long', year: 'numeric' };
+  switch (b.status) {
+    case 'unpaid': return t('Xem cách thanh toán học phí, hoặc xin hỗ trợ học phí nếu bạn cần.',
+      'See how to pay your tuition, or ask for fee support if you need it.');
+    case 'pending': return t('Chúng tôi đang xác nhận khoản thanh toán của bạn. Bạn không cần thanh toán lại.',
+      "We're confirming your payment. You don't need to pay again.");
+    case 'paid': return b.paidThrough
+      ? t(`Học phí của bạn đã được thanh toán đến ${formatDate(b.paidThrough, long)}.`,
+          `Your tuition is paid through ${formatDate(b.paidThrough, long)}.`)
+      : t('Học phí của bạn đã được thanh toán.', 'Your tuition is paid.');
+    case 'aid-review': return t('Yêu cầu hỗ trợ học phí của bạn đang được xem xét.', 'Your request for fee support is being reviewed.');
+    case 'aid-approved': return t('Yêu cầu hỗ trợ học phí của bạn đã được chấp thuận.', 'Your request for fee support has been approved.');
+    default: return t('Trạng thái thanh toán của bạn sẽ hiện ở đây khi GLOW mở thanh toán trực tuyến.',
+      'Your payment status will show here once GLOW opens online payment.');
+  }
+}
+
+function money(amount, currency, lang) {
+  try {
+    return new Intl.NumberFormat(lang === 'en' ? 'en-GB' : 'vi-VN',
+      { style: 'currency', currency, maximumFractionDigits: 0 }).format(amount);
+  } catch {
+    return `${amount} ${currency}`;
+  }
+}
+
+/* Through the SSO bridge, so the learner arrives at Moodle signed in. */
+function moodleLink(path, cls, ...label) {
+  return el('a', {
+    class: cls,
+    href: `/api/sso?to=${encodeURIComponent(path)}`,
+    target: '_blank',
+    rel: 'noopener noreferrer',
+  }, ...label, el('span', { class: 'sr-only' }, t(' (mở tab mới)', ' (opens in a new tab)')));
+}
+
+export function renderPayment(b, host) {
+  const tbd = () => el('span', { class: 'tbd' }, t('Đang cập nhật', 'To be announced'));
+  const { tuition } = b;
+
+  /* 1 · where they stand */
+  host.append(el('section', { class: 'panel pay-status', 'aria-labelledby': 'pay-status-h' },
+    el('div', { class: 'sec-head' }, el('h2', { id: 'pay-status-h' }, t('Trạng thái của bạn', 'Your status'))),
+    statusPill(b.status),
+    el('p', { class: 'pay-hint' }, statusHint(b))));
+
+  /* 2 · what it costs and what it covers */
+  const amount = tuition.amount == null
+    ? tbd()
+    : t(money(tuition.amount, tuition.currency, 'vi'), money(tuition.amount, tuition.currency, 'en'));
+  const term = tuition.termVi || tuition.termEn
+    ? t(tuition.termVi || tuition.termEn, tuition.termEn || tuition.termVi)
+    : tbd();
+
+  const includes = el('ul', { class: 'pay-includes' });
+  tuition.includes.forEach(i => includes.append(el('li', {}, icon('check'), t(i.vi, i.en))));
+
+  host.append(el('section', { class: 'panel pay-tuition', 'aria-labelledby': 'pay-tuition-h' },
+    el('div', { class: 'sec-head' }, el('h2', { id: 'pay-tuition-h' }, t('Học phí', 'Tuition'))),
+    el('dl', { class: 'pay-facts' },
+      el('div', {}, el('dt', {}, t('Số tiền', 'Amount')), el('dd', { class: 'pay-amount' }, amount)),
+      el('div', {}, el('dt', {}, t('Áp dụng cho', 'Covers')), el('dd', {}, term))),
+    tuition.amount == null
+      ? el('p', { class: 'pay-note' }, t('Pacific Links Foundation sẽ công bố học phí trước khi mở thanh toán.',
+          'Pacific Links Foundation will announce the tuition before payment opens.'))
+      : null,
+    el('h3', { class: 'pay-sub' }, t('Học phí bao gồm', "What's included")),
+    tuition.includes.length ? includes : el('p', {}, tbd())));
+
+  /* 3 · how to pay, and — beside it, at the same weight — what to do if
+     they can't. For the young people GLOW serves, the second is not a
+     footnote. */
+  const how = el('div', { class: 'pay-how' },
+    el('h3', { class: 'pay-sub' }, t('Cách thanh toán', 'How to pay')));
+  if (!b.provider) {
+    how.append(
+      el('button', { class: 'btn btn-primary btn-block', type: 'button', disabled: true, 'aria-describedby': 'pay-soon' },
+        t('Thanh toán trực tuyến — sắp có', 'Online payment — coming soon')),
+      el('p', { class: 'pay-hint', id: 'pay-soon' },
+        t('GLOW chưa mở thanh toán, nên hiện tại bạn chưa cần trả gì. Khi mở, cách thanh toán sẽ hiện ngay trên trang này.',
+          "GLOW hasn't opened payment yet, so there is nothing to pay right now. When it opens, how to pay will appear on this page.")),
+      moodleLink(b.contact.payPath, 'btn btn-quiet btn-block', t('Câu hỏi về học phí?', 'Questions about tuition?')));
+  }
+
+  const aid = el('div', { class: 'pay-aid' },
+    el('p', { class: 'dash-kick' }, t('Hỗ trợ học phí', 'Fee support')),
+    el('h3', {}, t('Học phí là một trở ngại?', 'Is the fee a barrier?')),
+    el('p', {}, t('Hãy cho chúng tôi biết hoàn cảnh của bạn. Pacific Links Foundation xem xét từng yêu cầu hỗ trợ học phí.',
+      'Tell us about your situation. Pacific Links Foundation considers every request for fee support.')),
+    moodleLink(b.contact.aidPath, 'btn btn-primary btn-block', t('Xin hỗ trợ học phí', 'Ask for fee support')));
+
+  host.append(el('section', { class: 'panel pay-wide pay-pay', 'aria-labelledby': 'pay-pay-h' },
+    el('div', { class: 'sec-head' }, el('h2', { id: 'pay-pay-h' }, t('Thanh toán học phí', 'Paying your tuition'))),
+    el('div', { class: 'pay-split' }, how, aid)));
+
+  /* 4 · what they have paid before */
+  const hist = el('section', { class: 'panel pay-wide', 'aria-labelledby': 'pay-hist-h' },
+    el('div', { class: 'sec-head' }, el('h2', { id: 'pay-hist-h' }, t('Lịch sử thanh toán', 'Payment history'))));
+  if (!b.history.length) {
+    hist.append(emptyState('Chưa có khoản thanh toán nào.', 'No payments yet.'));
+  } else {
+    const row = (...cells) => el('tr', {}, ...cells);
+    const table = el('table', { class: 'pay-table' },
+      el('caption', { class: 'sr-only' }, t('Các khoản thanh toán trước đây', 'Your past payments')),
+      el('thead', {}, row(
+        el('th', { scope: 'col' }, t('Ngày', 'Date')),
+        el('th', { scope: 'col' }, t('Số tiền', 'Amount')),
+        el('th', { scope: 'col' }, t('Hình thức', 'Method')),
+        el('th', { scope: 'col' }, t('Trạng thái', 'Status')),
+        el('th', { scope: 'col' }, t('Mã tham chiếu', 'Reference')))));
+    const body = el('tbody');
+    for (const p of b.history) {
+      body.append(row(
+        el('td', { text: formatDate(p.date, { day: 'numeric', month: 'short', year: 'numeric' }) }),
+        el('td', {}, t(money(p.amount, p.currency, 'vi'), money(p.amount, p.currency, 'en'))),
+        el('td', { text: p.method }),
+        el('td', { text: p.status }),
+        el('td', { class: 'pay-ref', text: p.reference })));
+    }
+    table.append(body);
+    hist.append(el('div', { class: 'pay-table-wrap' }, table));
+  }
+  host.append(hist);
+
+  /* What we hold and what we never will. */
+  host.append(el('p', { class: 'pay-wide pay-trust' }, icon('shield'),
+    el('span', {}, t('Trang web GLOW không lưu số thẻ hay thông tin tài khoản ngân hàng của bạn. Khi GLOW mở thanh toán trực tuyến, khoản thanh toán sẽ được xử lý qua một đơn vị thanh toán bên ngoài.',
+      'This site never stores your card number or bank details. When GLOW opens online payment, payments will be processed by a separate payment provider.'))));
 }

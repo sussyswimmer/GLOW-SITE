@@ -33,6 +33,7 @@ const report = [];
 const PAGES = [
   ['dashboard.html', '02-dashboard'],
   ['courses.html', '03-courses'],
+  ['payment.html', '03b-payment'],
   /* Real GLOW course ids — see server/data/glow-catalogue.js. 241 has a
      demo interior, 2489 is an Upskilling course, and 1105 is a track this
      site has never been able to see inside, which is the case that must

@@ -125,6 +125,18 @@ The site detects whether this is available and degrades gracefully: if the
 call fails it links straight to the Moodle page instead, and the learner
 signs in once. Nothing breaks either way.
 
+**The Payment tab is the exception.** Its two help links ("Questions about
+tuition?" and "Ask for fee support", set in `server/data/billing.js`) both
+open Moodle's `/user/contactsitesupport.php`. That page does not send a
+signed-out visitor through the login screen. Without auth_userkey the
+learner lands on the Moodle home page instead of the form. It also needs
+**Site administration → Server → Support contact → Support availability**
+set to authenticated users or wider. Before launch, sign in as a real
+learner and test both links. Better still, create a Feedback activity in a
+GLOW Support course and point `aidPath` at it
+(`/mod/feedback/complete.php?id=N`). That page requires login, and the
+questions can be specific to fee support.
+
 > **Security note on this step.** `auth_userkey` mints short-lived login
 > URLs, so it is the highest-privilege thing in this setup. Keep the key
 > lifetime short, keep the IP restriction on, and if the site is ever

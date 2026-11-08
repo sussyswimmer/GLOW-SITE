@@ -94,7 +94,7 @@ await page.fill('#password', 'glow-demo-2026');
 await page.click('#loginSubmit');
 await page.waitForURL('**/dashboard.html');
 
-for (const path of ['dashboard.html', 'courses.html', 'course.html?id=241', 'english.html', 'resources.html']) {
+for (const path of ['dashboard.html', 'courses.html', 'payment.html', 'course.html?id=241', 'english.html', 'resources.html']) {
   await page.goto(`${BASE}/${path}`, { waitUntil: 'networkidle' });
   await scan(path);
 }

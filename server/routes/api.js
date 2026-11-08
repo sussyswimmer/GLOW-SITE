@@ -57,6 +57,12 @@ export default async function apiRoutes(app) {
     return { ...d, demo: isDemo };
   });
 
+  /* ── GET /api/billing ───────────────────────────────────── */
+  app.get('/billing', async (req) => {
+    const d = await data.getBilling(req.session);
+    return { ...d, demo: isDemo };
+  });
+
   /* ── GET /api/sso?to=/mod/quiz/view.php?id=12 ─────────────
      The bridge for everything that stays in Moodle — quizzes,
      assignments, the ETOP scheduler, forums. The learner clicks a row
