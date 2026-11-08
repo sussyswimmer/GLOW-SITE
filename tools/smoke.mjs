@@ -59,6 +59,16 @@ const health = await (await req('/api/health')).json();
 check('/api/health responds', health.ok === true);
 check('/api/health declares its data source', typeof health.demo === 'boolean', `demo=${health.demo}`);
 
+/* The tuition page is public, so its endpoint is open — and must therefore
+   carry nothing about a learner: no status, no history. */
+const pub = await req('/api/tuition');
+const pubBody = await pub.json();
+check('/api/tuition is open without a session', pub.status === 200, `got ${pub.status}`);
+check('/api/tuition carries no learner data', !('status' in pubBody) && !('history' in pubBody),
+  Object.keys(pubBody).join(','));
+check('/api/tuition never prices GLOW at zero',
+  pubBody.tuition?.amount === null || pubBody.tuition?.amount > 0, String(pubBody.tuition?.amount));
+
 /* ── 3. a wrong password is refused, without saying why ── */
 const bad = await req('/api/auth/login', {
   method: 'POST',
