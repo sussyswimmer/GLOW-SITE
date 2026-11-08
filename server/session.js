@@ -18,7 +18,7 @@
    which is why the envelope is encrypted rather than merely signed.
    ═══════════════════════════════════════════════════════════ */
 
-import { randomBytes, createCipheriv, createDecipheriv, timingSafeEqual } from 'node:crypto';
+import { randomBytes, createCipheriv, createDecipheriv } from 'node:crypto';
 import { config } from './config.js';
 
 /* AES-256-GCM: one standard authenticated cipher, used the standard way.
@@ -98,12 +98,11 @@ export function unseal(raw) {
  * with, and enough identity to render the header without a round trip.
  * Notably absent: email, ID number, anything about their courses.
  */
-export function makeSession({ token, userId, username, fullname, privateToken }) {
+export function makeSession({ token, userId, username, fullname }) {
   const now = Date.now();
   return {
     v: VERSION,
     token,                 // Moodle web-services token, this learner's own
-    privateToken: privateToken || null,  // used for the auto-login deep link, see sso.js
     userId,
     username,
     fullname,
@@ -150,12 +149,4 @@ export function touchSession(reply, session) {
   const next = { ...session, iat: Date.now(), exp: Date.now() + config.SESSION_TTL_MS };
   setSession(reply, next);
   return next;
-}
-
-/** Constant-time string compare, for anything that gates on a secret value. */
-export function safeEqual(a, b) {
-  const A = Buffer.from(String(a));
-  const B = Buffer.from(String(b));
-  if (A.length !== B.length) return false;
-  return timingSafeEqual(A, B);
 }

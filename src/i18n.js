@@ -6,11 +6,6 @@
 
 import gsap from 'gsap';
 
-const CYCLE = {
-  vi: ['cơ hội', 'kỹ năng', 'tương lai', 'tự tin'],
-  en: ['opportunities', 'skills', 'futures', 'confidence'],
-};
-
 /* The chosen language is remembered. On a one-page site that hardly
    mattered; across five signed-in pages, resetting to Vietnamese on
    every navigation means an English-reading learner re-toggles on every
@@ -143,33 +138,7 @@ export function initI18n({ onSwapped, onBeforeSwap, reduced } = {}) {
   else { applyDocMeta('vi'); applyAlts(); }
   btn?.setAttribute('aria-pressed', String(lang === 'en'));
 
-  /* ── the hero's cycling word ─────────────────────────── */
-  const cyc = document.getElementById('cycler');
-  if (cyc && !reduced) {
-    let i = 0, paused = false, hidden = false;
-    const wrap = cyc.closest('.cyc-wrap') || cyc.parentElement;
-
-    wrap?.addEventListener('pointerenter', () => { paused = true; });
-    wrap?.addEventListener('pointerleave', () => { paused = false; });
-    document.addEventListener('visibilitychange', () => { hidden = document.hidden; });
-
-    setInterval(() => {
-      if (paused || hidden || busy) return;
-      const list = CYCLE[lang];
-      i = (i + 1) % list.length;
-      gsap.to(cyc, {
-        yPercent: -100, opacity: 0, duration: 0.28, ease: 'power3.in',
-        onComplete: () => {
-          cyc.textContent = list[i];
-          gsap.fromTo(cyc, { yPercent: 100, opacity: 0 },
-                           { yPercent: 0, opacity: 1, duration: 0.45, ease: 'power3.out' });
-        },
-      });
-    }, 2700);
-  }
-
   return {
-    getLang: () => lang,
     /* Called by the views after they render, so freshly built nodes come
        up in the language already on screen instead of their authored one. */
     refresh() {

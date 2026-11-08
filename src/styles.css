@@ -391,7 +391,6 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
 /* Anchored to the bottom of whatever it sits in, which is where §7.2's
    first layout puts it. Height is the only thing a caller sets. */
 .bands-btm{bottom:0}
-.bands-top{top:0}
 
 /* ── §6.3 Circle Pattern ──
    Same ratio, now as radii: the rings land at 10.56 / 27.64 / 55.28 / 100%
@@ -415,7 +414,6 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
    variants, so the pattern is atmosphere on a page and never a second thing
    to read. */
 .ripple-soft{opacity:.36}
-.ripple-dim{opacity:.13}
 
 /* One shared holder: clips the bleed so a ripple can run off the edge
    without widening the document. */
@@ -594,11 +592,7 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
 .mani-line .w{display:inline-block;opacity:.72;will-change:opacity}
 
 /* ═══════ 3 · WHAT'S ON GLOW ═══════
-   Deliberately quiet. This section used to be a ported rotateX
-   container-scroll card, and for a while it was a second crop-open
-   sequence — but the hero now opens that way, and the same trick twice on
-   one page stops reading as a decision and starts reading as a habit.
-   So: the heading, the picture, framed, and nothing else. */
+   Deliberately quiet: the heading, the picture, framed, and nothing else. */
 /* No background. It was `--paper`, which is the body's own colour, so it
    painted nothing you could see — except the thread running behind it. */
 .showcase{position:relative;padding:14vh 0 2vh}
@@ -612,22 +606,6 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
   aspect-ratio:16/9;box-shadow:var(--sh-md);
 }
 .showcase-panel img{width:100%;height:100%;object-fit:contain}
-
-/* ═══════ image placeholders ═══════ */
-.ph{
-  position:relative;display:flex;align-items:center;justify-content:center;
-  width:100%;height:100%;background:var(--paper-3);
-  background-image:
-    linear-gradient(rgba(1,78,69,.06) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(1,78,69,.06) 1px,transparent 1px);
-  background-size:26px 26px;
-  box-shadow:inset 0 0 0 1px var(--line);
-}
-.ph::after{content:"";position:absolute;inset:14px;border:1px dashed var(--line-2);border-radius:8px}
-.ph span{
-  position:relative;font-family:var(--sans);font-size:.68rem;font-weight:700;
-  letter-spacing:.22em;text-transform:uppercase;color:var(--faint);
-}
 
 /* ═══════ 4 · CHAPTERS ═══════ */
 .chapters{
@@ -847,13 +825,6 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
      the track used to add the right-hand one itself, which doubled it. */
   .card{scroll-snap-align:center;width:76vw}
 }
-
-/* ═══════ REVEAL BASE ═══════
-   The hero copy is no longer listed here. It used to be hidden per-child and
-   revealed by the load timeline; the scrub now reveals `.hero-copy` as one
-   block, so hiding the children too would leave them at zero after the
-   parent had already faded in. The headline still rises out of its masks —
-   that is `.ln{overflow:hidden}` plus a yPercent tween, no opacity needed. */
 
 /* ═══════ REDUCED MOTION ═══════ */
 @media(prefers-reduced-motion:reduce){

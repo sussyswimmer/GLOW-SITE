@@ -100,9 +100,8 @@ export async function buildApp({ serveStatic = true, logger } = {}) {
     referrerPolicy: { policy: 'same-origin' },
   });
 
-  await app.register(cookie, {
-    parseOptions: { httpOnly: true, sameSite: 'lax', path: '/' },
-  });
+  // Cookie attributes are applied where cookies are written: cookieOptions() in session.js.
+  await app.register(cookie);
 
   await app.register(rateLimit, {
     global: false,                        // opted into per-route, see auth.js
@@ -165,7 +164,7 @@ export async function buildApp({ serveStatic = true, logger } = {}) {
          be cached for a year. */
       setHeaders(res, path) {
         if (path.endsWith('.html')) res.setHeader('cache-control', 'no-cache');
-        else if (path.includes(`${'assets'}`)) res.setHeader('cache-control', 'public, max-age=31536000, immutable');
+        else if (path.includes('assets')) res.setHeader('cache-control', 'public, max-age=31536000, immutable');
       },
     });
   } else if (serveStatic) {

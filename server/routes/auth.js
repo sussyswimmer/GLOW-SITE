@@ -61,9 +61,9 @@ export default async function authRoutes(app) {
 
     const { username, password } = req.body;
 
-    let token, privateToken;
+    let token;
     try {
-      ({ token, privateToken } = await data.login(username.trim(), password));
+      ({ token } = await data.login(username.trim(), password));
     } catch (err) {
       /* One response for every kind of failure, and a constant-ish shape:
          no user enumeration, no hint about which half was wrong. The real
@@ -80,7 +80,7 @@ export default async function authRoutes(app) {
     const learner = await data.getLearner({ token });
 
     const session = makeSession({
-      token, privateToken,
+      token,
       userId: learner.id,
       username: learner.username || username.trim(),
       fullname: learner.fullname,

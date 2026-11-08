@@ -23,7 +23,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request(path, { method = 'GET', body, signal } = {}) {
+async function request(path, { method = 'GET', body } = {}) {
   /* Checked before the fetch, because a dropped connection otherwise
      surfaces as a generic TypeError several seconds later and the
      learner gets a worse message than the browser already knows. */
@@ -33,7 +33,6 @@ async function request(path, { method = 'GET', body, signal } = {}) {
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  signal?.addEventListener('abort', () => controller.abort(), { once: true });
 
   let res;
   try {

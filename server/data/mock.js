@@ -19,8 +19,8 @@
      course. Course interiors sit behind the login and were never
      accessible, so they are illustrative structure, not their content.
 
-   Every response from this adapter carries `demo: true`, and the UI
-   shows a standing banner because of it. That flag is the only thing
+   Every API response made from this adapter carries `demo: true` (stamped
+   by routes/api.js from isDemo), and the UI shows a standing banner because of it. That flag is the only thing
    standing between a demo and a foundation believing it is looking at
    its own learners, so it is not optional and not silenceable.
    ═══════════════════════════════════════════════════════════ */
@@ -29,8 +29,7 @@ import { assertDashboard, assertCourseDetail } from './contract.js';
 import { catalogGroups, trackById } from './glow-catalogue.js';
 
 /* The one account that can sign in against the mock. Documented in
-   docs/DEPLOY.md, and refused outright when DATA_SOURCE=moodle — see
-   the guard in login() below. */
+   docs/DEPLOY.md; with DATA_SOURCE=moodle this adapter is never loaded. */
 const DEMO_USER = 'demo';
 const DEMO_PASS = 'glow-demo-2026';
 
@@ -168,7 +167,7 @@ function daysAgo(n) {
   return new Date(Date.now() - n * 86_400_000).toISOString();
 }
 
-/* ── the adapter surface — same six as moodle.js ─────────── */
+/* ── the adapter surface — same as moodle.js ─────────────── */
 
 export async function login(username, password) {
   const ok = username === DEMO_USER && password === DEMO_PASS;
@@ -177,7 +176,7 @@ export async function login(username, password) {
     e.statusCode = 401;
     throw e;
   }
-  return { token: 'mock-token', privateToken: null };
+  return { token: 'mock-token' };
 }
 
 export async function getLearner() {
@@ -187,7 +186,6 @@ export async function getLearner() {
 export async function getDashboard() {
   const courses = COURSES.map(stripInternal);
   return assertDashboard({
-    demo: true,
     learner: { ...LEARNER },
     courses,
     recent: COURSES.filter(c => c.lastAccess)
@@ -205,7 +203,6 @@ export async function getCourse(_session, courseId) {
   const course = COURSES.find(c => c.id === Number(courseId));
   if (course) {
     return assertCourseDetail({
-      demo: true,
       course: stripInternal(course),
       sections: sectionsFor(course),
     });
@@ -219,7 +216,6 @@ export async function getCourse(_session, courseId) {
   const track = trackById(courseId);
   if (track) {
     return assertCourseDetail({
-      demo: true,
       course: {
         id: track.id,
         code: track.category || '',
@@ -246,7 +242,7 @@ export async function getCourse(_session, courseId) {
 
 export async function getCatalog(_session, key) {
   if (key === 'english' || key === 'resources') {
-    return { demo: true, groups: catalogGroups(key) };
+    return { groups: catalogGroups(key) };
   }
   const e = new Error('No such catalogue');
   e.statusCode = 404;
@@ -265,14 +261,12 @@ export async function fetchMedia() {
   throw e;
 }
 
-/* Keep the catalogue's authoring fields (syllabus, the VI variants used to
-   build sections) out of the API response — the contract does not include
-   them and shipping extra fields invites the front end to depend on them. */
+/* Keep the syllabus (used only to build sections) out of the API response.
+   moodlePath is derived rather than written on each row, so a course can
+   never end up with an id and a path that disagree. */
 function stripInternal(c) {
-  const { syllabus, summaryVi, titleEn, ...rest } = c;
-  /* Derived rather than written on each row, so a course can never end up
-     with an id and a path that disagree. */
-  return { ...rest, summaryVi, titleEn, moodlePath: `/course/view.php?id=${c.id}` };
+  const { syllabus, ...rest } = c;
+  return { ...rest, moodlePath: `/course/view.php?id=${c.id}` };
 }
 
 function soon(days) {
@@ -280,5 +274,3 @@ function soon(days) {
   d.setHours(19, 0, 0, 0);
   return d.toISOString();
 }
-
-export const DEMO_CREDENTIALS = { username: DEMO_USER, password: DEMO_PASS };
