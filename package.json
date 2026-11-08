@@ -3,7 +3,7 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
-  "description": "GLOW landing page - warm bilingual community, lantern-lit scroll story",
+  "description": "GLOW - Pacific Links Foundation's bilingual public site and Moodle front end",
   "engines": {
     "node": ">=20.11"
   },

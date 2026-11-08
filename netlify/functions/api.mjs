@@ -29,8 +29,7 @@ const getApp = () => (building ??= buildApp({ serveStatic: false }).then(async a
 /* Hop-by-hop and length headers belong to the connection, not the message.
    Forwarding a stale content-length alongside a re-encoded body is the
    classic way to make a request hang or truncate. */
-const DROP_IN = new Set(['connection', 'keep-alive', 'transfer-encoding', 'upgrade', 'content-length']);
-const DROP_OUT = new Set(['connection', 'keep-alive', 'transfer-encoding', 'upgrade', 'content-length']);
+const HOP = new Set(['connection', 'keep-alive', 'transfer-encoding', 'upgrade', 'content-length']);
 
 export default async request => {
   const app = await getApp();
@@ -38,7 +37,7 @@ export default async request => {
 
   const headers = {};
   for (const [k, v] of request.headers) {
-    if (!DROP_IN.has(k.toLowerCase())) headers[k] = v;
+    if (!HOP.has(k.toLowerCase())) headers[k] = v;
   }
 
   const hasBody = request.method !== 'GET' && request.method !== 'HEAD';
@@ -56,7 +55,7 @@ export default async request => {
      single comma-joined header silently loses all but the first. */
   const out = new Headers();
   for (const [k, v] of Object.entries(res.headers)) {
-    if (v === undefined || DROP_OUT.has(k.toLowerCase())) continue;
+    if (v === undefined || HOP.has(k.toLowerCase())) continue;
     if (Array.isArray(v)) for (const one of v) out.append(k, String(one));
     else out.set(k, String(v));
   }

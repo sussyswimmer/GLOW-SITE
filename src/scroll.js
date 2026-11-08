@@ -133,17 +133,12 @@ function manifesto(reduced) {
   });
   tl.fromTo(words, { opacity: 0.72 }, { opacity: 1, stagger: 0.5, ease: 'none' }, 0);
   tl.to('.mani-inner', { scale: 0.94, opacity: 0.6, ease: 'power1.in' }, 0.72);
-  /* No background tween on the section itself. The object sits BEHIND the
-     manifesto during the close-up, and an opaque section background paints
-     straight over it. The cream -> blush wash is done by .manifesto::before
-     instead, which is also what keeps the copy legible over the silk. */
+  /* No background tween on the section itself: the cream -> blush wash is
+     done by .manifesto::before, which also keeps the copy legible. */
 }
 
 /* ───────── what's on GLOW: a plain reveal ─────────
-   This section carried the crop-open sequence for a while. The hero opens
-   that way now, and running the same trick twice on one page stops reading
-   as a decision and starts reading as a habit — so this is one short rise
-   on the heading and the picture, and nothing else. */
+   One short rise on the heading and the picture, and nothing else. */
 function showcase(reduced) {
   const sec = q('.showcase');
   if (!sec || reduced) return;
@@ -189,7 +184,7 @@ function chapters(reduced) {
             duration: 0.6, ease: 'expo.inOut', overwrite: 'auto',
           });
           if (k === i) {
-            gsap.fromTo(qa('img, .ph', s), { scale: 1.06 }, { scale: 1, duration: 1.1, ease: 'power2.out', overwrite: 'auto' });
+            gsap.fromTo(qa('img', s), { scale: 1.06 }, { scale: 1, duration: 1.1, ease: 'power2.out', overwrite: 'auto' });
           }
         });
         if (odo) gsap.to(odo, { y: `${-i * 1.35}em`, duration: 0.5, ease: 'power3.inOut', overwrite: 'auto' });
@@ -252,7 +247,7 @@ function gallery(reduced) {
   gsap.set('.gal-viewport', { perspective: 1400 });
   cards.forEach(card => {
     gsap.set(card, { transformStyle: 'preserve-3d' });
-    const inner = q('img, .ph', card);
+    const inner = q('img', card);
     const tick = () => {
       if (!runs()) {
         gsap.set(card, { scale: 1, rotateY: 0 });
@@ -292,21 +287,20 @@ function stats(reduced, getVelocity) {
      one already on screen. */
   if (!reduced) qa('.num', sec).forEach(el => {
     const to = Number(el.dataset.to || 0);
-    const suf = el.dataset.suffix || '';
     const o = { v: 0 };
     const run = () => {
       o.v = 0;
-      el.textContent = '0' + suf;
+      el.textContent = '0';
       gsap.to(o, {
         v: to, duration: 1.7, ease: 'power2.out',
-        onUpdate: () => { el.textContent = Math.round(o.v) + suf; },
+        onUpdate: () => { el.textContent = Math.round(o.v); },
       });
     };
     /* Off screen, it is left reading the real number rather than reset to
        zero: a stat that says 0 the moment you scroll past it is wrong even
        when nobody is looking, and a screenshot or a print taken at that
        scroll position would catch it. Re-entering replays from zero. */
-    const rest = () => { gsap.killTweensOf(o); el.textContent = to + suf; };
+    const rest = () => { gsap.killTweensOf(o); el.textContent = to; };
     ScrollTrigger.create({
       trigger: el, start: 'top 85%', end: 'bottom 20%',
       onEnter: run, onEnterBack: run, onLeave: rest, onLeaveBack: rest,
@@ -421,21 +415,6 @@ function chrome() {
   });
 }
 
-/* ───────── velocity skew ───────── */
-function skew(getVelocity, reduced) {
-  if (reduced) return;
-  const els = qa('[data-skew]');
-  if (!els.length) return;
-  const setters = els.map(el => gsap.quickSetter(el, 'skewY', 'deg'));
-  let cur = 0;
-  return () => {
-    const target = Math.max(-3, Math.min(3, getVelocity() / -3000));
-    cur += (target - cur) * 0.1;
-    if (Math.abs(cur) < 0.005) cur = 0;
-    setters.forEach(s => s(cur));
-  };
-}
-
 /* ───────── entry ───────── */
 export function initScroll({ reduced, getVelocity }) {
   splitText();
@@ -466,9 +445,7 @@ export function initScroll({ reduced, getVelocity }) {
     manifesto(reduced);
   });
 
-  const skewTick = skew(getVelocity, reduced);
   ScrollTrigger.refresh();
-  return { skewTick, refresh: () => ScrollTrigger.refresh() };
 }
 
 export { ScrollTrigger };

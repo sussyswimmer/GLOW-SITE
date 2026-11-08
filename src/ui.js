@@ -25,7 +25,6 @@ export function el(tag, attrs = {}, ...children) {
     if (v == null || v === false) continue;
     if (k === 'class') node.className = v;
     else if (k === 'text') node.textContent = v;          // never innerHTML
-    else if (k === 'html') node.innerHTML = v;            // only for our own literal SVG
     else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2), v);
     else if (k === 'dataset') Object.assign(node.dataset, v);
     else node.setAttribute(k, v === true ? '' : String(v));
@@ -41,15 +40,6 @@ export function el(tag, attrs = {}, ...children) {
 /** Bilingual text node: swaps with the language toggle. See i18n.js. */
 export function t(vi, en) {
   return el('span', { 'data-i18n': '', 'data-vi': vi, 'data-en': en, text: currentLang() === 'en' ? en : vi });
-}
-
-/** Bilingual attribute set on an existing element, for headings and labels. */
-export function bilingual(node, vi, en) {
-  node.setAttribute('data-i18n', '');
-  node.dataset.vi = vi;
-  node.dataset.en = en;
-  node.textContent = currentLang() === 'en' ? en : vi;
-  return node;
 }
 
 export function currentLang() {
@@ -107,7 +97,7 @@ export function icon(name, cls) {
  * in the shell, and were the one thing that went on claiming the course was
  * loading after this had already given up on it.
  *
- * @param {object} opts  { empty: () => boolean, label: [vi,en], onError: (err) => void }
+ * @param {object} opts  { label: [vi,en], onError: (err) => void }
  */
 export async function region(host, load, render, opts = {}) {
   const { skeleton = 'tiles', label = ['Đang tải…', 'Loading…'] } = opts;
@@ -133,12 +123,7 @@ export async function region(host, load, render, opts = {}) {
     console.error('[glow] render failed', err);
     clear(host).append(errorState(new Error('render'), () => region(host, load, render, opts)));
     opts.onError?.(err);
-    return;
   }
-
-  /* Nothing was produced: a real, valid, empty answer. Distinct from a
-     failure, and it gets a different sentence. */
-  if (!host.children.length && opts.empty) host.append(opts.empty());
 }
 
 /** A shape-matched placeholder, so the page does not jump when data lands. */

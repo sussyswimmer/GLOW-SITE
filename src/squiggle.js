@@ -7,10 +7,7 @@
    The path carries pathLength="1", so dash values are already
    normalised: offset 1 is a line that does not exist yet, offset
    0 is the finished line. It starts at 1. Nothing is on screen
-   until you scroll, which is the entire idea. (The reuno-ui /
-   skiper19 original this began as maps pathLength 0.5 -> 1, so
-   it opens already half drawn. That is the one thing about it we
-   explicitly do not want.)
+   until you scroll, which is the entire idea.
 
    It belongs to the MANIFESTO and to nothing else. Scoped to the
    whole page it had fifteen thousand pixels of scroll to cross,

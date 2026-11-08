@@ -140,7 +140,7 @@ function initialsOf(fullname) {
    devtools, in the referrer, and in any proxy log along the way.
 
    So we never do. Course images are rewritten to a path on THIS server,
-   which fetches them with the token server-side. See routes/media.js. */
+   which fetches them with the token server-side. See /media in routes/api.js. */
 function proxied(fileurl) {
   if (!fileurl) return undefined;
   return `/api/media?src=${encodeURIComponent(fileurl)}`;
@@ -231,8 +231,8 @@ function normaliseModule(m) {
 }
 
 /* ── the adapter surface ─────────────────────────────────────
-   These four functions are the entire contract with the route layer.
-   mock.js implements the same four. */
+   These functions are the entire contract with the route layer
+   (the list is SURFACE in data/index.js); mock.js implements the same. */
 
 export async function getLearner(session) {
   const info = await call(session.token, 'core_webservice_get_site_info');
@@ -451,7 +451,7 @@ export async function login(username, password) {
     throw e;
   }
 
-  return { token: json.token, privateToken: json.privatetoken || null };
+  return { token: json.token };
 }
 
 export { UpstreamError };

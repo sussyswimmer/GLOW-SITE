@@ -118,7 +118,8 @@ is not a formality — run it after any change to `server/`.
 
 ```
 server/
-  index.js            Fastify, security headers, CSRF hook, static, errors
+  index.js            starts the server
+  app.js              Fastify, security headers, CSRF hook, static, errors
   config.js           env parsing; refuses to boot if misconfigured
   session.js          the sealed-cookie session. Read this one first.
   routes/auth.js      sign in / out / me   ← the security-critical file

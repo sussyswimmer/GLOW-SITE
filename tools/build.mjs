@@ -55,7 +55,7 @@ const common = (input, name, emptyOutDir) => ({
   },
 });
 
-/* One pass per page. Five pages sharing an entry script makes rollup
+/* One pass per page. Nine pages sharing an entry script makes rollup
    code-split, and IIFE forbids that — so each page is built on its own and
    ships a self-contained bundle. Costs a little duplication; buys a dist that
    opens from disk with no server. */

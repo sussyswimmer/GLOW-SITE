@@ -108,14 +108,6 @@
 .bar i{display:block;height:100%;background:var(--spring);border-radius:999px}
 .bar-pct{font-size:.72rem;font-weight:700;color:var(--muted);min-width:34px;text-align:right}
 
-/* ── empty state, as the platform shows it ─────────────── */
-.empty{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;padding:52px 20px;text-align:center;color:var(--muted);
-}
-.empty svg{width:56px;height:56px;stroke:var(--mint);fill:none;stroke-width:1.4}
-.empty p{font-size:.92rem;margin:0}
-
 /* ── side rail ─────────────────────────────────────────── */
 .rail{display:flex;flex-direction:column;gap:22px}
 .rail .panel{padding:20px}

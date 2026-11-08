@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
    GLOW — bootstrap.
-   One Lenis. One rAF. One canvas. Everything hangs off here.
+   One Lenis. One rAF. Everything hangs off here.
    ═══════════════════════════════════════════════════════════ */
 
 import gsap from 'gsap';
@@ -34,9 +34,6 @@ if (!window.location.hash) {
 
 document.documentElement.classList.add('js-anim');
 
-/* No stand-in photography anywhere on the page. Grain is the CSS dot field
-   drawn by body::after. */
-
 /* ── smooth scroll ─────────────────────────────────────── */
 let lenis = null;
 if (!reduced) {
@@ -57,14 +54,9 @@ const preFill = document.getElementById('preFill');
 const curtain = document.querySelector('.curtain');
 
 let shown = 0;
-let loadFrac = 0;
-const t0 = performance.now();
 
 function paintCounter() {
-  // never sit behind the preloader longer than 2.5s, whatever the network does
-  const timeFrac = Math.min(1, (performance.now() - t0) / 2500);
-  const target = Math.max(loadFrac, timeFrac);
-  shown += (target - shown) * 0.12;
+  shown += (1 - shown) * 0.12;
   const n = Math.round(Math.min(100, shown * 100));
   if (preNum) preNum.textContent = String(n).padStart(3, '0');
   if (preFill) preFill.style.right = `${100 - n}%`;
@@ -134,25 +126,15 @@ function playIntro() {
 }
 
 /* ── the single rAF loop ───────────────────────────────── */
-let scrollCtl = null;
-let last = performance.now();
 let ready = false;
 
 function frame(now) {
-  const dt = Math.min(0.05, (now - last) / 1000);
-  last = now;
-
   if (lenis) lenis.raf(now);
 
   if (!ready) {
     const n = paintCounter();
-    if (n >= 100 && loadFrac >= 1) start();
+    if (n >= 100) start();
   }
-
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-
-  scrollCtl?.skewTick?.();
 
   requestAnimationFrame(frame);
 }
@@ -166,7 +148,7 @@ function start() {
 
 async function boot() {
   // scroll system first so layout is settled before anything measures it
-  scrollCtl = initScroll({ reduced, getVelocity });
+  initScroll({ reduced, getVelocity });
   initSquiggle({ reduced });
 
   initInteractions({ reduced });
@@ -182,11 +164,6 @@ async function boot() {
 
   requestAnimationFrame(frame);
 
-  // hard ceiling on the preloader, whatever the network is doing
-  setTimeout(() => { loadFrac = 1; start(); }, 2500);
-
-  loadFrac = 1;
-
   /* Nothing to introduce on a repeat visit, so do not wait for the counter to
      ease its way up to 100 first — that is another second on top of the
      entrance we are already skipping. */
@@ -200,13 +177,6 @@ async function boot() {
   setTimeout(settle, 700);
 }
 
-
-/* ── resize / refresh ──────────────────────────────────── */
-let rt = null;
-window.addEventListener('resize', () => {
-  clearTimeout(rt);
-  rt = setTimeout(() => ScrollTrigger.refresh(), 180);
-});
 
 if (document.readyState === 'complete') boot();
 else window.addEventListener('load', boot);
