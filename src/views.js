@@ -295,7 +295,7 @@ function shortcuts(unread) {
     n ? t(`${n} thông báo mới`, `${n} new ${n === 1 ? 'notification' : 'notifications'}`) : t('Thông báo', 'Notifications'),
     { badge: n, external: true });
   row('./courses.html', 'page', t('Tất cả khoá học của tôi', 'All my courses'));
-  row('./payment.html', 'wallet', t('Thanh toán', 'Payment'));
+  row('./payment.html', 'wallet', t('Học phí và thanh toán', 'Tuition and payment'));
   row('./english.html', 'forum', t('Học tiếng Anh', 'English self-learning'));
 
   return el('section', { class: 'panel dash-links', 'aria-labelledby': 'dash-links-h' },
@@ -550,6 +550,11 @@ export function renderCatalog(d, host) {
    the tuition is, how to pay — with "can't afford it?" given the same
    weight right beside it — and what they have paid before.
 
+   The page is public. Signed out, the payload comes from /api/tuition and
+   has no status: tuition leads, the status card becomes a sign-in prompt,
+   there is no history, and the help links go straight to Moodle because
+   /api/sso needs a session to sign anyone in.
+
    Two rules hold the page honest while the details are still being
    decided. A tuition amount that has not been set reads "to be announced",
    never a number and never "free". And with no payment provider connected
@@ -598,11 +603,12 @@ function money(amount, currency, lang) {
   }
 }
 
-/* Through the SSO bridge, so the learner arrives at Moodle signed in. */
-function moodleLink(path, cls, ...label) {
+/* Through the SSO bridge when signed in, so the learner arrives at Moodle
+   signed in; straight to Moodle otherwise (`origin` is only sent then). */
+function moodleLink(origin, path, cls, ...label) {
   return el('a', {
     class: cls,
-    href: `/api/sso?to=${encodeURIComponent(path)}`,
+    href: origin ? new URL(path, origin).href : `/api/sso?to=${encodeURIComponent(path)}`,
     target: '_blank',
     rel: 'noopener noreferrer',
   }, ...label, el('span', { class: 'sr-only' }, t(' (mở tab mới)', ' (opens in a new tab)')));
@@ -611,12 +617,20 @@ function moodleLink(path, cls, ...label) {
 export function renderPayment(b, host) {
   const tbd = () => el('span', { class: 'tbd' }, t('Đang cập nhật', 'To be announced'));
   const { tuition } = b;
+  const signedIn = b.status != null;
+  const origin = signedIn ? null : b.moodleOrigin;
 
-  /* 1 · where they stand */
-  host.append(el('section', { class: 'panel pay-status', 'aria-labelledby': 'pay-status-h' },
-    el('div', { class: 'sec-head' }, el('h2', { id: 'pay-status-h' }, t('Trạng thái của bạn', 'Your status'))),
-    statusPill(b.status),
-    el('p', { class: 'pay-hint' }, statusHint(b))));
+  /* 1 · where they stand — or, signed out, how to find out */
+  const status = el('section', { class: 'panel pay-status', 'aria-labelledby': 'pay-status-h' },
+    el('div', { class: 'sec-head' }, el('h2', { id: 'pay-status-h' }, t('Trạng thái của bạn', 'Your status'))));
+  if (signedIn) {
+    status.append(statusPill(b.status), el('p', { class: 'pay-hint' }, statusHint(b)));
+  } else {
+    status.append(
+      el('p', { class: 'pay-hint' }, t('Đăng nhập để xem trạng thái thanh toán và lịch sử thanh toán của bạn.',
+        'Sign in to see your payment status and payment history.')),
+      el('a', { class: 'btn btn-quiet', href: './login.html?next=payment.html' }, t('Đăng nhập', 'Sign in')));
+  }
 
   /* 2 · what it costs and what it covers */
   const amount = tuition.amount == null
@@ -629,7 +643,7 @@ export function renderPayment(b, host) {
   const includes = el('ul', { class: 'pay-includes' });
   tuition.includes.forEach(i => includes.append(el('li', {}, icon('check'), t(i.vi, i.en))));
 
-  host.append(el('section', { class: 'panel pay-tuition', 'aria-labelledby': 'pay-tuition-h' },
+  const tuitionCard = el('section', { class: 'panel pay-tuition', 'aria-labelledby': 'pay-tuition-h' },
     el('div', { class: 'sec-head' }, el('h2', { id: 'pay-tuition-h' }, t('Học phí', 'Tuition'))),
     el('dl', { class: 'pay-facts' },
       el('div', {}, el('dt', {}, t('Số tiền', 'Amount')), el('dd', { class: 'pay-amount' }, amount)),
@@ -639,7 +653,10 @@ export function renderPayment(b, host) {
           'Pacific Links Foundation will announce the tuition before payment opens.'))
       : null,
     el('h3', { class: 'pay-sub' }, t('Học phí bao gồm', "What's included")),
-    tuition.includes.length ? includes : el('p', {}, tbd())));
+    tuition.includes.length ? includes : el('p', {}, tbd()));
+
+  /* A visitor came for the price; a learner came for their status. */
+  host.append(...(signedIn ? [status, tuitionCard] : [tuitionCard, status]));
 
   /* 3 · how to pay, and — beside it, at the same weight — what to do if
      they can't. For the young people GLOW serves, the second is not a
@@ -653,7 +670,7 @@ export function renderPayment(b, host) {
       el('p', { class: 'pay-hint', id: 'pay-soon' },
         t('GLOW chưa mở thanh toán, nên hiện tại bạn chưa cần trả gì. Khi mở, cách thanh toán sẽ hiện ngay trên trang này.',
           "GLOW hasn't opened payment yet, so there is nothing to pay right now. When it opens, how to pay will appear on this page.")),
-      moodleLink(b.contact.payPath, 'btn btn-quiet btn-block', t('Câu hỏi về học phí?', 'Questions about tuition?')));
+      moodleLink(origin, b.contact.payPath, 'btn btn-quiet btn-block', t('Câu hỏi về học phí?', 'Questions about tuition?')));
   }
 
   const aid = el('div', { class: 'pay-aid' },
@@ -661,16 +678,25 @@ export function renderPayment(b, host) {
     el('h3', {}, t('Học phí là một trở ngại?', 'Is the fee a barrier?')),
     el('p', {}, t('Hãy cho chúng tôi biết hoàn cảnh của bạn. Pacific Links Foundation xem xét từng yêu cầu hỗ trợ học phí.',
       'Tell us about your situation. Pacific Links Foundation considers every request for fee support.')),
-    moodleLink(b.contact.aidPath, 'btn btn-primary btn-block', t('Xin hỗ trợ học phí', 'Ask for fee support')));
+    moodleLink(origin, b.contact.aidPath, 'btn btn-primary btn-block', t('Xin hỗ trợ học phí', 'Ask for fee support')));
 
   host.append(el('section', { class: 'panel pay-wide pay-pay', 'aria-labelledby': 'pay-pay-h' },
     el('div', { class: 'sec-head' }, el('h2', { id: 'pay-pay-h' }, t('Thanh toán học phí', 'Paying your tuition'))),
     el('div', { class: 'pay-split' }, how, aid)));
 
-  /* 4 · what they have paid before */
+  /* 4 · what they have paid before — theirs alone, so signed in only */
+  if (signedIn) host.append(paymentHistory(b.history));
+
+  /* What we hold and what we never will. */
+  host.append(el('p', { class: 'pay-wide pay-trust' }, icon('shield'),
+    el('span', {}, t('Trang web GLOW không lưu số thẻ hay thông tin tài khoản ngân hàng của bạn. Khi GLOW mở thanh toán trực tuyến, khoản thanh toán sẽ được xử lý qua một đơn vị thanh toán bên ngoài.',
+      'This site never stores your card number or bank details. When GLOW opens online payment, payments will be processed by a separate payment provider.'))));
+}
+
+function paymentHistory(history) {
   const hist = el('section', { class: 'panel pay-wide', 'aria-labelledby': 'pay-hist-h' },
     el('div', { class: 'sec-head' }, el('h2', { id: 'pay-hist-h' }, t('Lịch sử thanh toán', 'Payment history'))));
-  if (!b.history.length) {
+  if (!history.length) {
     hist.append(emptyState('Chưa có khoản thanh toán nào.', 'No payments yet.'));
   } else {
     const row = (...cells) => el('tr', {}, ...cells);
@@ -683,7 +709,7 @@ export function renderPayment(b, host) {
         el('th', { scope: 'col' }, t('Trạng thái', 'Status')),
         el('th', { scope: 'col' }, t('Mã tham chiếu', 'Reference')))));
     const body = el('tbody');
-    for (const p of b.history) {
+    for (const p of history) {
       body.append(row(
         el('td', { text: formatDate(p.date, { day: 'numeric', month: 'short', year: 'numeric' }) }),
         el('td', {}, t(money(p.amount, p.currency, 'vi'), money(p.amount, p.currency, 'en'))),
@@ -694,10 +720,5 @@ export function renderPayment(b, host) {
     table.append(body);
     hist.append(el('div', { class: 'pay-table-wrap' }, table));
   }
-  host.append(hist);
-
-  /* What we hold and what we never will. */
-  host.append(el('p', { class: 'pay-wide pay-trust' }, icon('shield'),
-    el('span', {}, t('Trang web GLOW không lưu số thẻ hay thông tin tài khoản ngân hàng của bạn. Khi GLOW mở thanh toán trực tuyến, khoản thanh toán sẽ được xử lý qua một đơn vị thanh toán bên ngoài.',
-      'This site never stores your card number or bank details. When GLOW opens online payment, payments will be processed by a separate payment provider.'))));
+  return hist;
 }

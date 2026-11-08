@@ -107,6 +107,9 @@ collections:
               - { label: "Stories", name: stories, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
+              - { label: "Tuition", name: tuition, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
               - { label: "About GLOW", name: about, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
@@ -303,6 +306,9 @@ collections:
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
               - { label: "Liên kết: Tin tức / Stories", name: linkStories, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết: Học phí / Tuition", name: linkTuition, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
               - { label: "Liên kết: Đăng nhập / Sign in", name: linkSignin, widget: object, fields: [

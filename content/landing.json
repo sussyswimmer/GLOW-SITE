@@ -14,6 +14,7 @@
     "courses":   { "vi": "Khoá học", "en": "Courses" },
     "resources": { "vi": "Tài nguyên", "en": "Resources" },
     "stories":   { "vi": "Tin tức", "en": "Stories" },
+    "tuition":   { "vi": "Học phí", "en": "Tuition" },
     "about":     { "vi": "Về GLOW", "en": "About GLOW" },
     "signin":    { "vi": "Đăng nhập", "en": "Sign in" }
   },
@@ -205,6 +206,7 @@
     "linkChatbots":      { "vi": "Chatbot AI", "en": "AI Chatbots" },
     "linkTips":          { "vi": "Mẹo tự học", "en": "Self-learning tips" },
     "linkStories":       { "vi": "Tin tức", "en": "Stories" },
+    "linkTuition":       { "vi": "Học phí", "en": "Tuition" },
     "linkSignin":        { "vi": "Đăng nhập", "en": "Sign in" },
     "copyright": "© 2026 Pacific Links Foundation"
   }

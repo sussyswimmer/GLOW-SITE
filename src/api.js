@@ -82,6 +82,7 @@ export const api = {
   course:    (id)    => request(`/api/courses/${encodeURIComponent(id)}`),
   catalog:   (key)   => request(`/api/catalog/${encodeURIComponent(key)}`),
   billing:   ()      => request('/api/billing'),
+  tuition:   ()      => request('/api/tuition'),
 };
 
 /* Signing out is a navigation, not a fetch — the redirect has to survive

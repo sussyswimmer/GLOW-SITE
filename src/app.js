@@ -201,11 +201,16 @@ const ROUTES = {
     render: renderCourses,
     skeleton: 'tiles',
   },
+  /* PUBLIC, unlike the other signed-in pages: someone deciding whether to
+     join needs to see what GLOW costs before they have an account. Signed in,
+     the same page adds their own status and history. */
   'payment.html': {
     host: '#view',
     load: () => api.billing(),
+    publicLoad: () => api.tuition(),
     render: renderPayment,
     skeleton: 'rows',
+    public: true,
   },
   'course.html': {
     host: '#view',
@@ -317,13 +322,15 @@ async function boot() {
      is nothing to fetch that it does not already have, and blanking real,
      indexed content to show a skeleton — then an error panel, because the
      API needs a session — would be strictly worse than doing nothing. */
-  if (route.public && !me) {
+  if (route.public && !me && !route.publicLoad) {
     i18n?.refresh();
     ScrollTrigger.refresh();
     return;
   }
 
-  await region(host, route.load, (data, node) => {
+  /* The tuition page has no build-time markup to keep, so a signed-out
+     reader gets its public half from an open endpoint instead. */
+  await region(host, me ? route.load : route.publicLoad, (data, node) => {
     if (data?.demo) demoBanner();
     route.render(data, node);
     afterRender(node);
