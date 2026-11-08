@@ -134,7 +134,7 @@ ${noindex
      so the first item in the navigation read "./index.html". It has a word
      now, and the icon is decoration beside it.
 
-     data-private marks the two items that only mean anything with a session.
+     data-private marks the items that only mean anything with a session.
      On a public page they start hidden and src/app.js reveals them if there
      is one; on a private page they are always there, because you cannot be
      looking at one of those signed out. -->
@@ -146,6 +146,7 @@ ${noindex
     </a>
     <a href="./dashboard.html" data-page="dashboard.html" data-private${isPublic ? ' hidden' : ''} data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
     <a href="./courses.html" data-page="courses.html" data-private${isPublic ? ' hidden' : ''} data-i18n data-vi="Khoá học của tôi" data-en="My courses">Khoá học của tôi</a>
+    <a href="./payment.html" data-page="payment.html" data-private${isPublic ? ' hidden' : ''} data-i18n data-vi="Thanh toán" data-en="Payment">Thanh toán</a>
     <a href="./english.html" data-page="english.html" data-i18n data-vi="Học tiếng Anh" data-en="English self-learning">Học tiếng Anh</a>
     <a href="./resources.html" data-page="resources.html" data-i18n data-vi="Tài nguyên giáo dục" data-en="Educational Resources">Tài nguyên giáo dục</a>
     <a href="./stories.html" data-page="stories.html" data-i18n data-vi="Tin tức" data-en="Stories">Tin tức</a>
@@ -208,7 +209,21 @@ const PAGES = [
     h1: 'Bảng điều khiển', h1en: 'Dashboard',
     sub: 'Tiếp tục từ chỗ bạn đang học, và xem những gì sắp tới.',
     suben: "Pick up where you left off, and see what's coming up.",
-    main: '<main class="shell shell-2col" id="view" tabindex="-1"></main>',
+    /* .dash, not .shell-2col: the dashboard lays out its own cards in DOM
+       order = phone order, and a separate rail column would push the tuition
+       card below every course tile on a phone. */
+    main: '<main class="shell dash" id="view" tabindex="-1"></main>',
+  },
+  {
+    file: 'payment.html',
+    titleVi: 'Thanh toán | GLOW', titleEn: 'Payment | GLOW',
+    descVi: 'Học phí, trạng thái thanh toán và hỗ trợ học phí trên GLOW.',
+    descEn: 'Tuition, payment status and fee support on GLOW.',
+    h1: 'Thanh toán', h1en: 'Payment',
+    sub: 'Học phí, trạng thái thanh toán của bạn, và cách xin hỗ trợ học phí.',
+    suben: 'Your tuition, your payment status, and how to ask for fee support.',
+    crumbs: crumbDash + sep + '<span data-i18n data-vi="Thanh toán" data-en="Payment">Thanh toán</span>',
+    main: '<main class="shell pay" id="view" tabindex="-1"></main>',
   },
   {
     file: 'courses.html',
@@ -241,8 +256,8 @@ const PAGES = [
   {
     file: 'english.html',
     titleVi: 'Học tiếng Anh | GLOW', titleEn: 'English self-learning | GLOW',
-    descVi: 'Các lộ trình tự học tiếng Anh miễn phí trên GLOW: TED Talks, phát âm, ETOP, luyện thi TOEIC và IELTS — chia theo trình độ.',
-    descEn: 'Free English self-study tracks on GLOW: TED Talks, pronunciation, ETOP, TOEIC and IELTS preparation — split by level.',
+    descVi: 'Các lộ trình tự học tiếng Anh trên GLOW: TED Talks, phát âm, ETOP, luyện thi TOEIC và IELTS — chia theo trình độ.',
+    descEn: 'English self-study tracks on GLOW: TED Talks, pronunciation, ETOP, TOEIC and IELTS preparation — split by level.',
     h1: 'Học tiếng Anh', h1en: 'English self-learning',
     sub: 'Các lộ trình tự học, chia theo trình độ để bạn bắt đầu đúng chỗ.',
     suben: 'Self-study tracks, split by level so you start in the right place.',
@@ -278,8 +293,8 @@ const PAGES = [
   {
     file: 'stories.html',
     titleVi: 'Tin tức | GLOW', titleEn: 'Stories | GLOW',
-    descVi: 'Thông báo, câu chuyện học viên và tin tức từ GLOW — nền tảng tự học miễn phí của Pacific Links Foundation.',
-    descEn: 'Announcements, learner stories and news from GLOW — the free self-learning platform from Pacific Links Foundation.',
+    descVi: 'Thông báo, câu chuyện học viên và tin tức từ GLOW — nền tảng tự học của Pacific Links Foundation.',
+    descEn: 'Announcements, learner stories and news from GLOW — the self-learning platform from Pacific Links Foundation.',
     h1: 'Tin tức', h1en: 'Stories',
     sub: 'Thông báo, câu chuyện học viên và tin tức từ GLOW.',
     suben: 'Announcements, learner stories and news from GLOW.',

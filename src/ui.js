@@ -42,6 +42,16 @@ export function t(vi, en) {
   return el('span', { 'data-i18n': '', 'data-vi': vi, 'data-en': en, text: currentLang() === 'en' ? en : vi });
 }
 
+/** Bilingual text set on an existing element — the dashboard greeting and
+    summary, which live in the page shell rather than in the view. */
+export function bilingual(node, vi, en) {
+  node.setAttribute('data-i18n', '');
+  node.dataset.vi = vi;
+  node.dataset.en = en;
+  node.textContent = currentLang() === 'en' ? en : vi;
+  return node;
+}
+
 export function currentLang() {
   return document.documentElement.lang === 'en' ? 'en' : 'vi';
 }
@@ -70,6 +80,13 @@ const ICONS = {
      and belongs to "nothing scheduled". A stale course link is not an empty
      diary. */
   missing: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/><path d="M8.5 8.5l5 5M13.5 8.5l-5 5"/>',
+  /* The dashboard and the Payment tab. */
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  chevron: '<path d="M9 6l6 6-6 6"/>',
+  bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+  wallet: '<rect x="2" y="5" width="20" height="15" rx="2"/><path d="M2 10h20M16 15h2"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
   offline: '<path d="M1 1l22 22"/><path d="M16.7 16.7A10.9 10.9 0 0 1 12 18l-.7.7"/><path d="M5 12.6a10.9 10.9 0 0 1 4-2.4M10.7 5.1a16 16 0 0 1 10.9 4.4"/><path d="M2.4 9.5a16 16 0 0 1 3.7-2.6"/><path d="M12 20h.01"/>',
 };
 

@@ -104,8 +104,24 @@
  * @property {Learner}       learner
  * @property {Course[]}      recent      most recently accessed, max 3
  * @property {Course[]}      courses     everything they are enrolled in
- * @property {CalendarEvent[]} events    upcoming, next 60 days
+ * @property {CalendarEvent[]} events    open action events: overdue from the
+ *                                       last 14 days, then the next 60 days
  * @property {number}        unread      notification count for the bell
+ */
+
+/**
+ * @typedef {object} Billing   the learner's tuition, as the Payment tab shows it
+ * @property {'unknown'|'unpaid'|'pending'|'paid'|'aid-review'|'aid-approved'} status
+ *           `unknown` until a payment provider is connected — the UI says
+ *           "no payment information yet" rather than guessing "unpaid".
+ * @property {{amount:number|null, currency:string, termVi:string|null,
+ *            termEn:string|null, includes:{vi:string,en:string}[]}} tuition
+ *           `amount: null` means not announced yet. Never 0 — GLOW is paid.
+ * @property {string|null} provider   null = online payment not open yet
+ * @property {{payPath:string, aidPath:string}} contact  site-relative Moodle paths
+ * @property {{date:string, amount:number, currency:string, method:string,
+ *            status:string, reference:string}[]} history
+ * @property {string=} paidThrough   ISO date, when status is `paid`
  */
 
 /* ── validation ──────────────────────────────────────────────
@@ -177,6 +193,28 @@ export function assertCourseDetail(d) {
     s.activities.forEach(assertActivity);
   }
   return d;
+}
+
+const BILLING_STATUS = ['unknown', 'unpaid', 'pending', 'paid', 'aid-review', 'aid-approved'];
+
+export function assertBilling(b) {
+  if (!b || !BILLING_STATUS.includes(b.status)) {
+    throw new ContractError('billing.status', `expected one of ${BILLING_STATUS.join('|')}, got ${peek(b?.status)}`);
+  }
+  const amt = b.tuition?.amount;
+  /* 0 would render as a price of nothing, which is "free" by another name. */
+  if (amt !== null && (!isNum(amt) || amt <= 0)) {
+    throw new ContractError('billing.tuition.amount', `expected a positive number or null, got ${peek(amt)}`);
+  }
+  if (!Array.isArray(b.tuition.includes)) throw new ContractError('billing.tuition.includes', 'expected an array');
+  if (!Array.isArray(b.history)) throw new ContractError('billing.history', 'expected an array');
+  for (const p of [b.contact?.payPath, b.contact?.aidPath]) {
+    /* Both go through /api/sso, which only accepts site-relative paths. */
+    if (!isStr(p) || !p.startsWith('/') || p.startsWith('//')) {
+      throw new ContractError('billing.contact', `expected a site-relative path, got ${peek(p)}`);
+    }
+  }
+  return b;
 }
 
 /* A short, safe rendering of a bad value for the log. Deliberately

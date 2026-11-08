@@ -18,7 +18,8 @@
    ═══════════════════════════════════════════════════════════ */
 
 import { config } from '../config.js';
-import { assertDashboard, assertCourseDetail, ContractError } from './contract.js';
+import { assertDashboard, assertCourseDetail, assertBilling, ContractError } from './contract.js';
+import { billingFor } from './billing.js';
 
 const REST = () => `${config.MOODLE_URL}/webservice/rest/server.php`;
 
@@ -253,10 +254,17 @@ export async function getDashboard(session) {
      should cost the learner their calendar, not their whole dashboard. */
   const [coursesR, eventsR, unreadR] = await Promise.allSettled([
     call(session.token, 'core_enrol_get_users_courses', { userid: learner.id, returnusercount: 0 }),
+    /* From two weeks back, the way Moodle's own Timeline block asks: an
+       action event that is still open after its date is overdue work, and
+       starting the window at "now" made exactly those items vanish. */
     call(session.token, 'core_calendar_get_action_events_by_timesort', {
-      timesortfrom: Math.floor(Date.now() / 1000),
+      timesortfrom: Math.floor(Date.now() / 1000) - 14 * 86400,
       timesortto: Math.floor(Date.now() / 1000) + 60 * 86400,
-      limitnum: 12,
+      /* Oldest first, so overdue items fill the cap before upcoming ones;
+         50 is Moodle's maximum and the UI shows five at a time anyway.
+         shortcut: past 50 open items the newest are cut — split into two
+         calls ([−14d, now) and [now, +60d]) if that ever happens. */
+      limitnum: 50,
     }),
     call(session.token, 'message_popup_get_unread_popup_notification_count'),
   ]);
@@ -290,6 +298,15 @@ export async function getDashboard(session) {
     events,
     unread: unreadR.status === 'fulfilled' ? Number(unreadR.value ?? 0) : 0,
   });
+}
+
+/* No payment provider is connected yet, so there is no status to read and
+   the honest answer is "unknown" — not "unpaid", which would tell every
+   learner they owe money on the strength of nothing. When a provider is
+   chosen, look the learner up there by their Moodle id (session.uid or
+   getLearner) and return the real status and history. */
+export async function getBilling() {
+  return assertBilling(billingFor('unknown'));
 }
 
 export async function getCourse(session, courseId) {

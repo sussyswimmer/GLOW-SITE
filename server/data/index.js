@@ -7,7 +7,7 @@ import { config } from '../config.js';
 import * as moodle from './moodle.js';
 import * as mock from './mock.js';
 
-const SURFACE = ['login', 'getLearner', 'getDashboard', 'getCourse', 'getCatalog', 'getSsoUrl', 'fetchMedia'];
+const SURFACE = ['login', 'getLearner', 'getDashboard', 'getCourse', 'getCatalog', 'getBilling', 'getSsoUrl', 'fetchMedia'];
 
 const chosen = config.live ? moodle : mock;
 

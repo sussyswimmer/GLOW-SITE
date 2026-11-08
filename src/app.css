@@ -575,3 +575,178 @@ html[lang="en"] .story-body-vi{display:none}
 .story-back{margin-top:34px;padding-top:18px;border-top:1px solid var(--line)}
 .story-back a{color:var(--moss);text-decoration:none;font-weight:700;font-size:.9rem}
 .story-back a:hover{text-decoration:underline}
+
+/* ═══════════════════════════════════════════════════════════
+   The dashboard. One deep-green "continue" card leads — the brand's
+   ripple rising out of its corner, the same rings the sign-in screen and
+   the landing hero carry — and everything else is quiet white panels in
+   a two-column grid. DOM order is phone order; the grid only places it.
+   ═══════════════════════════════════════════════════════════ */
+.dash{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start}
+/* On a phone the tuition card follows "coming up"; on a wide screen it is
+   lifted to the top of the right column, beside the hero. */
+@media(min-width:1000px){
+  .dash{grid-template-columns:minmax(0,1fr) 340px}
+  .dash-pay{grid-column:2;grid-row:1}
+}
+/* Grid gap does the spacing here; .panel + .panel would push the second
+   column's first card down out of line with the first. */
+.dash > .panel{margin-top:0}
+.dash > .skel,.dash > .state,.dash-courses{grid-column:1 / -1}
+
+.dash-hero{
+  position:relative;overflow:hidden;isolation:isolate;
+  display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+  min-height:248px;padding:clamp(24px,3.4vw,40px);
+  background:var(--deep);color:#fff;border-radius:var(--r-lg);box-shadow:var(--sh-md);
+}
+/* The rings are drawn by the card itself, so the decoration cannot come
+   loose from it in the DOM or be read out. */
+.dash-hero::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  right:-18%;bottom:-62%;width:min(540px,88%);aspect-ratio:1;border-radius:50%;
+  mix-blend-mode:screen;opacity:.2;
+  background:radial-gradient(circle at 50% 50%,
+    var(--band-1) 0 9.8%,   var(--band-1) 10.56%,
+    var(--band-2) 11.3%,    var(--band-2) 26.9%,
+    var(--band-3) 28.4%,    var(--band-3) 54.5%,
+    var(--band-4) 56.1%,    var(--band-4) 100%);
+}
+.dash-kick{
+  font-family:var(--display);font-size:.74rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--mint);
+}
+.dash-hero h2{color:#fff;font-size:clamp(1.45rem,2.6vw,2.1rem);line-height:1.15;max-width:24ch}
+.dash-hero-meta{font-size:.88rem;color:rgba(255,255,255,.84);max-width:52ch}
+.dash-progress{width:min(100%,380px);padding-top:4px;margin-top:0}
+.dash-hero .bar{background:rgba(255,255,255,.2)}
+.dash-hero .bar-pct{color:#fff}
+.dash-hero .btn{margin-top:auto}
+.dash-hero .dash-progress + .btn,.dash-hero-meta + .btn{margin-top:14px}
+/* The spring ring is 3.8:1 on this field, but white is clearer still. */
+.dash-hero a:focus-visible{outline-color:#fff}
+
+.btn-ico{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.btn:hover .btn-ico{transform:translateX(3px)}
+
+/* A count or a "see all" link sits after the heading's green rule. */
+.sec-head .count,.sec-head .sec-link{order:2;margin-left:auto}
+.sec-head .count{font-size:.74rem;font-weight:700;color:var(--muted)}
+.sec-link{
+  font-size:.84rem;font-weight:700;color:var(--moss);text-decoration:none;
+  padding:10px 4px;margin-block:-10px;   /* a 44px target without moving the row */
+}
+.sec-link:hover{text-decoration:underline}
+
+/* ── status words ────────────────────────────────────────────
+   Every one of these says its state in a word; the colour only agrees. */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;flex:none;
+  padding:4px 10px;border-radius:999px;white-space:nowrap;
+  font-size:.74rem;font-weight:700;line-height:1.35;
+  background:var(--paper-3);color:var(--deep);
+}
+.pill svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;
+  stroke-linecap:round;stroke-linejoin:round}
+.pill-lg{padding:7px 14px;font-size:.84rem}
+.pill-lg svg{width:16px;height:16px}
+.pill-soon{background:var(--spring);color:var(--ink)}
+.pill-ok{background:#CDF2E2;color:#0A5C3C}
+.pill-due{background:var(--paper);color:var(--deep);box-shadow:inset 0 0 0 1.5px var(--spring-x)}
+/* The sign-in screen's error pair, kept for overdue work only. */
+.pill-alert{background:#FDECEA;color:#8C1D18}
+
+/* ── coming up ── */
+.dash-due .event{gap:14px}
+.dash-due .event-main{flex:1}
+.event.is-alert .event-date{background:#FDECEA;color:#8C1D18}
+.dash-more{margin-top:12px}
+@media(max-width:479px){
+  /* The tag drops under the title rather than squeezing it to one word a
+     line. 66px = the 52px date block + the 14px gap, so it lines up. */
+  .dash-due .event{flex-wrap:wrap;row-gap:4px}
+  .dash-due .event-main{flex:1 1 calc(100% - 66px)}
+  .dash-due .event .pill{margin-left:66px}
+}
+
+/* ── tuition card ── */
+.pay-hint{font-size:.88rem;color:var(--muted);margin:12px 0 18px;max-width:58ch}
+
+/* ── shortcuts ── */
+.links{list-style:none;display:flex;flex-direction:column;gap:2px;margin:-6px}
+.links a{
+  display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 10px;
+  border-radius:var(--r-sm);text-decoration:none;color:var(--ink);
+  font-size:.92rem;font-weight:500;transition:background .2s,color .2s;
+}
+.links a:hover{background:var(--paper-2);color:var(--deep)}
+.links-ico{
+  width:34px;height:34px;border-radius:8px;flex:none;display:grid;place-items:center;
+  background:var(--paper-3);color:var(--deep);
+}
+.links-ico svg,.links-chev{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.links-label{flex:1;min-width:0}
+.links-chev{flex:none;color:var(--faint);transition:transform .2s}
+.links a:hover .links-chev{transform:translateX(2px)}
+.badge{
+  flex:none;min-width:22px;height:22px;padding:0 7px;border-radius:999px;
+  display:inline-grid;place-items:center;
+  background:var(--spring);color:var(--ink);font-size:.72rem;font-weight:700;
+}
+
+.skel-card .skel-item{height:150px}
+
+/* ═══════════════════════════════════════════════════════════
+   The Payment tab. Status and tuition side by side, then paying and
+   fee support at equal weight in one panel, then the history.
+   ═══════════════════════════════════════════════════════════ */
+.pay{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+@media(min-width:880px){.pay{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pay > .panel{margin-top:0}
+.pay-wide,.pay > .skel,.pay > .state{grid-column:1 / -1}
+
+.pay-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0 0 6px}
+.pay-facts dt{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.pay-facts dd{margin:4px 0 0;font-size:1rem;color:var(--deep);font-weight:500}
+.pay-facts dd.pay-amount{font-family:var(--display);font-size:1.5rem;font-weight:800}
+/* "To be announced" is not a price, so it is set as a note, not a number. */
+.pay .tbd{font-family:var(--sans);font-size:1rem;font-weight:500;color:var(--muted);font-style:italic}
+.pay-note{font-size:.84rem;color:var(--muted);margin:6px 0 0}
+.pay-sub{font-size:.96rem;margin:22px 0 10px}
+.pay-includes{list-style:none;display:flex;flex-direction:column;gap:8px}
+.pay-includes li{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;color:var(--ink)}
+.pay-includes svg{flex:none;width:18px;height:18px;margin-top:3px;fill:none;stroke:var(--spring-x);
+  stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+.pay-split{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+@media(min-width:720px){.pay-split{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pay-how .pay-sub{margin-top:0}
+/* Disabled, but its label is news a learner needs to read — so it is set
+   quiet and dashed instead of faded to 2.8:1 like a busy button. */
+.pay-how .btn[disabled]{opacity:1;background:var(--paper-2);color:var(--muted);border:1px dashed var(--line-2)}
+.pay-how .pay-hint{margin:12px 0 14px}
+.pay-aid{
+  display:flex;flex-direction:column;gap:10px;padding:24px;
+  background:var(--deep);color:#fff;border-radius:var(--r-md);
+}
+.pay-aid h3{color:#fff;font-size:1.25rem;margin:0}
+.pay-aid p:not(.dash-kick){font-size:.9rem;color:rgba(255,255,255,.86);margin:0 0 6px}
+.pay-aid .btn{margin-top:auto}
+.pay-aid a:focus-visible{outline-color:#fff}
+
+.pay-table-wrap{overflow-x:auto}
+.pay-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.pay-table th{text-align:left;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);
+  padding:10px 12px;border-bottom:1px solid var(--line-2)}
+.pay-table td{padding:12px;border-bottom:1px solid var(--line);color:var(--ink)}
+.pay-ref{font-family:var(--mono);letter-spacing:.04em}
+
+.pay-trust{display:flex;gap:12px;align-items:flex-start;font-size:.84rem;color:var(--muted);max-width:80ch}
+.pay-trust svg{flex:none;width:20px;height:20px;fill:none;stroke:var(--moss);stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+
+@media(prefers-reduced-motion:reduce){
+  .btn-ico,.links-chev{transition:none}
+}

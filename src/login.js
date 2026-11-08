@@ -29,7 +29,7 @@ const params = new URLSearchParams(location.search);
    to somebody else's site is a credible phishing hop. Only a known page
    of this app is accepted; anything else silently becomes the dashboard. */
 const ALLOWED_NEXT = new Set([
-  'dashboard.html', 'courses.html', 'course.html', 'english.html', 'resources.html',
+  'dashboard.html', 'courses.html', 'course.html', 'payment.html', 'english.html', 'resources.html',
 ]);
 
 function destination() {
