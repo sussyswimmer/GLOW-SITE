@@ -57,7 +57,10 @@ export function setDocTitle(vi, en) {
 
 export function initI18n({ onSwapped, onBeforeSwap, reduced } = {}) {
   const btn = document.getElementById('langBtn');
-  let lang = remembered() || 'vi';
+  /* Vietnamese unless the host page says otherwise. Only the Moodle embed
+     (src/moodle-embed.js) says otherwise: it follows Moodle's own language,
+     so an English Moodle shows the English landing page. */
+  let lang = remembered() || (document.documentElement.dataset.glowDefaultLang === 'en' ? 'en' : 'vi');
   let busy = false;
 
   /* Re-queried on every apply rather than captured once: the signed-in

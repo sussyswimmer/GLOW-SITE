@@ -84,10 +84,11 @@ for (const [i, page] of PAGES.entries()) {
    main quietly left Moodle's home page unstyled for anyone without the old
    files cached (every new visitor, every incognito window).
 
-   These two copies never change name. Moodle points at /embed/landing.css
-   and /embed/landing.js once, and every deploy updates what is behind them.
-   They are served no-cache (revalidate each load) with CORS open; see the
-   /embed/* block in netlify.toml and setHeaders in server/app.js. */
+   Everything under dist/embed/ keeps one name forever. Moodle holds a
+   single <script src=".../embed/moodle.js"> (src/moodle-embed.js), which
+   fetches the rest below on every visit, so every deploy updates what is
+   behind them. Served no-cache (revalidate each load) with CORS open; see
+   the /embed/* block in netlify.toml and setHeaders in server/app.js. */
 const indexHtml = readFileSync(r('dist/index.html'), 'utf8');
 const built = ext => {
   const m = indexHtml.match(new RegExp(`(?:href|src)="\\./(assets/[^"]+\\.${ext})"`));
@@ -101,5 +102,43 @@ writeFileSync(r('dist/embed/landing.css'),
   built('css').replace(/url\((["']?)\.\/(?!\.)/g, 'url($1../assets/'));
 writeFileSync(r('dist/embed/landing.js'), built('js'));
 
+/* The markup, so Moodle holds no copy of it either. src/moodle-embed.js
+   fetches this on every visit, which is what makes a CMS edit or a deploy
+   show up on Moodle's home page with nobody touching Moodle.
+
+   Relative links cannot stay relative on Moodle's origin. Each kind is
+   listed here once: anything signed-in goes to Moodle itself (this site's
+   own sign-in and dashboard need its API, which Moodle's page does not
+   have), public pages and images come from this site. %%GLOW%% and
+   %%MOODLE%% are filled in by the embed at runtime, so one build serves
+   glowtest and glow alike. */
+const EMBED_LINKS = [
+  [/(href)="\.\/login\.html"/g,                  '$1="%%MOODLE%%/login/index.php"'],
+  [/(href)="\.\/dashboard\.html"/g,              '$1="%%MOODLE%%/my/"'],
+  [/(href)="\.\/course\.html\?id=(\d+)"/g,       '$1="%%MOODLE%%/course/view.php?id=$2"'],
+  [/(href)="\.\/((?:english|resources|stories)\.html(?:#[\w-]*)?)"/g, '$1="%%GLOW%%/$2"'],
+  [/(src|href)="\.\/(assets\/[^"]+)"/g,          '$1="%%GLOW%%/$2"'],
+];
+const bodyHtml = indexHtml.slice(indexHtml.indexOf('<body>') + 6, indexHtml.lastIndexOf('</body>'))
+  .replace(/<script\b[\s\S]*?<\/script>\s*/g, '');
+let embedHtml = bodyHtml;
+for (const [from, to] of EMBED_LINKS) embedHtml = embedHtml.replace(from, to);
+const unhandled = [...embedHtml.matchAll(/(?:href|src|srcset)="(\.{1,2}\/[^"]*)"/g)].map(m => m[1]);
+if (unhandled.length) {
+  throw new Error(`embed: no Moodle rewrite for ${[...new Set(unhandled)].join(', ')} — add one to EMBED_LINKS`);
+}
+const attr = name => {
+  const m = indexHtml.match(new RegExp(`${name}="([^"]*)"`));
+  if (!m) throw new Error(`embed: dist/index.html has no ${name}`);
+  return m[1].replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+};
+writeFileSync(r('dist/embed/landing.json'), JSON.stringify({
+  v: 1,
+  title: { vi: attr('data-title-vi'), en: attr('data-title-en') },
+  desc: { vi: attr('data-desc-vi'), en: attr('data-desc-en') },
+  html: embedHtml,
+}));
+writeFileSync(r('dist/embed/moodle.js'), readFileSync(r('src/moodle-embed.js'), 'utf8'));
+
 console.log(`\nbuilt ${PAGES.length} pages: ${PAGES.join(', ')}`);
-console.log('embed: dist/embed/landing.css, dist/embed/landing.js (stable names for Moodle)');
+console.log('embed: dist/embed/{moodle.js, landing.json, landing.css, landing.js} (stable names for Moodle)');

@@ -120,28 +120,39 @@ host: `SESSION_SECRET`, `PUBLIC_ORIGIN`, `NODE_ENV=production`, `DATA_SOURCE`.
 ## The Moodle front page
 
 `glowtest.mata9.com` (and later `glow.mata9.com`) shows this landing page as
-Moodle's own home page. A script in **Site administration → Appearance →
-Additional HTML → Before BODY is closed** swaps the body for the landing
-markup and loads this page's CSS and JS from the Netlify site.
+Moodle's own home page. **Site administration → Appearance → Additional
+HTML → Before BODY is closed** holds exactly one line:
 
-Point it at these two URLs and nothing else:
-
-```
-https://glow-pacific-links.netlify.app/embed/landing.css
-https://glow-pacific-links.netlify.app/embed/landing.js
+```html
+<script src="https://glow-pacific-links.netlify.app/embed/moodle.js"></script>
 ```
 
-**Never at `/assets/style.<hash>.css` or `/assets/index.<hash>.js`.** Those
-names change on every deploy and the old files are deleted, so each merge to
-`main` left Moodle's home page unstyled for every visitor without the old
-files cached. It looked fine in the browser that set it up (cached for a year)
-and broken in incognito, which is how it was found. `tools/build.mjs` writes
-the `/embed/` copies on every build; `netlify.toml` serves them no-cache with
-CORS open, and opens CORS on `/assets/*` because browsers block a cross-origin
-font without it.
+That is the whole integration, and it never needs editing again.
+`moodle.js` (source: `src/moodle-embed.js`) runs on Moodle's home page only.
+On every visit it fetches the landing markup, CSS and JS that are live on
+this site and swaps them in, so a deploy or a CMS edit is on Moodle's home
+page the next time anyone opens it. Links are rewritten for Moodle by the
+`EMBED_LINKS` table in `tools/build.mjs`: sign-in, "Start learning" and the
+course cards go to Moodle itself, everything else comes from this site. The
+landing page follows Moodle's language (English Moodle, English page).
 
-The markup itself is still a copy pasted into that Moodle setting, so copy
-changes from the CMS reach Netlify but **not** Moodle until it is re-pasted.
+It fails safe. If anything is missing, slow (10 s) or down, visitors get
+Moodle's ordinary home page, never a half-styled one, and the browser
+console says why (`[GLOW] landing page not loaded…`). Admins can add
+`?glow=off` to the URL to see and edit Moodle's real home page.
+
+**Never paste the landing markup into Moodle, and never link
+`/assets/style.<hash>.css` or `/assets/index.<hash>.js`.** That is what the
+setup used to be: the hashed names change on every deploy and the old files
+are deleted, so each merge to `main` left Moodle's home page unstyled for
+every visitor without the old files cached (it looked fine in the browser
+that set it up, broken in incognito), and the pasted copy never picked up
+copy changes. `netlify.toml` serves `/embed/*` no-cache with CORS open, and
+opens CORS on `/assets/*` because browsers block a cross-origin font without
+it.
+
+`/embed/` only works once it is deployed: point Moodle at it after the
+change that adds it is live, or the home page shows plain Moodle until then.
 
 ## Verifying a deploy
 
