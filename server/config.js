@@ -132,6 +132,12 @@ export const config = {
   MOODLE_URL,
   MOODLE_SERVICE,
 
+  /* EMMAI and the lesson drafter. Optional: without a key both answer 503
+     `emmai_off` and the rest of the site is unaffected. The key is read from
+     the host's secret store only; it is never sent to the browser. */
+  ANTHROPIC_API_KEY: optional('ANTHROPIC_API_KEY', ''),
+  EMMAI_MODEL: optional('EMMAI_MODEL', 'claude-opus-5-5'),
+
   /* Where the built front end is served from. */
   STATIC_DIR: optional('STATIC_DIR', 'dist'),
 

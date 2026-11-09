@@ -1,0 +1,169 @@
+/* ═══════════════════════════════════════════════════════════
+   English through the news: the list, the reader and the Studio.
+   Same tokens as the rest of the app (styles.css), no new colours except
+   the one amber used for "check this" notes.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── the list ── */
+.lessons-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+.lesson-filter{display:flex;flex-wrap:wrap;gap:9px}
+.lesson-filter[hidden]{display:none}
+.lesson-filter .chip{min-height:44px;cursor:pointer;font-family:var(--sans);font-weight:500}
+.lesson-filter .chip[aria-pressed="true"]{background:var(--deep);border-color:var(--deep);color:#fff}
+.lesson-filter .chip[aria-pressed="true"]:hover{background:var(--deep-lift)}
+
+.lessons{display:grid;gap:18px}
+@media(min-width:720px){.lessons{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1100px){.lessons{grid-template-columns:repeat(3,1fr)}}
+
+.lesson-card{
+  display:flex;flex-direction:column;gap:10px;padding:22px;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
+  text-decoration:none;color:var(--ink);
+  transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s,border-color .25s;
+}
+.lesson-card:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--mint)}
+.lesson-card[hidden]{display:none}
+.lesson-card h3{margin:0;font-size:1.2rem;line-height:1.3}
+.lesson-card p{margin:0;font-size:.9rem;line-height:1.55;color:var(--muted)}
+.lesson-card .story-more{margin-top:auto;padding-top:4px}
+
+.lesson-tags{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0}
+.lesson-tags time{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.lesson-level,.lesson-sample{
+  display:inline-flex;align-items:center;padding:3px 11px;border-radius:999px;
+  font-size:.72rem;font-weight:700;letter-spacing:.04em;line-height:1.4;
+}
+.lv-beginner{background:var(--paper-3);color:var(--deep);border:1px solid var(--mint)}
+.lv-intermediate{background:#D7F5E7;color:var(--spring-t);border:1px solid #9EE0C2}
+.lv-advanced{background:var(--deep);color:#fff;border:1px solid var(--deep)}
+.lesson-sample{border:1px dashed var(--line-2);color:var(--muted);background:var(--paper)}
+
+/* ── the reader ── */
+.lesson-layout{display:grid;gap:28px;align-items:start}
+@media(min-width:960px){
+  .lesson-layout{grid-template-columns:minmax(0,1fr) 320px}
+  .bank{position:sticky;top:96px}
+}
+.lesson-col{display:flex;flex-direction:column;gap:24px;min-width:0}
+.lesson-main{position:relative;max-width:68ch}
+.lesson-head{margin-bottom:18px}
+.lesson-titlevi{margin:12px 0 4px;font-family:var(--display);font-size:1.15rem;font-weight:700;color:var(--moss)}
+.lesson-lede{margin:0;font-size:1rem;line-height:1.6;color:var(--muted)}
+
+.lesson-sum{margin:0 0 20px}
+.lesson-sumbtn{
+  min-height:44px;padding:0;background:none;border:0;cursor:pointer;
+  font:inherit;font-weight:700;font-size:.9rem;color:var(--moss);text-decoration:underline;text-underline-offset:3px;
+}
+.lesson-sumvi{margin:6px 0 0;padding:14px 16px;background:var(--paper-3);border-radius:var(--r-sm);line-height:1.65}
+.lesson-sumvi[hidden]{display:none}
+
+.lesson-listen{
+  display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:0 0 24px;
+  padding:14px 16px;background:var(--paper-3);border:1px solid var(--mint);border-radius:var(--r-md);
+}
+.lesson-listen audio{flex:1 1 240px;min-width:0;max-width:100%}
+.lesson-listen-label,.lesson-speed-label{font-family:var(--display);font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--deep)}
+.lesson-listen-note{font-size:.78rem;color:var(--muted)}
+.lesson-speed,.studio select{
+  min-height:44px;padding:8px 12px;border:1px solid var(--line-2);border-radius:var(--r-sm);
+  background:var(--paper);color:var(--ink);font:inherit;
+}
+.lesson-speed:focus-visible,.studio select:focus-visible{outline:3px solid var(--spring-x);outline-offset:2px}
+
+.lesson-body{font-size:1.14rem;line-height:1.9;color:var(--ink)}
+.lesson-body p{margin:0 -8px 1.15em;padding:2px 8px;border-radius:var(--r-sm);transition:background .2s}
+.lesson-body ul,.lesson-body ol{margin:0 0 1.15em;padding-left:1.4em}
+.lesson-body li{margin:.35em 0;border-radius:var(--r-sm);transition:background .2s}
+.lesson-body .is-reading{background:#E8F8F1}
+.lesson-body h2,.lesson-body h3{margin:1.5em 0 .5em}
+
+/* A keyword: underlined like a link, a button underneath. The tap area is
+   padded as far as a line of running text allows. */
+.kw{
+  display:inline;padding:1px 3px;margin:0 -1px;font:inherit;color:inherit;cursor:pointer;
+  background:#E8F8F1;border:0;border-bottom:2px solid var(--spring-x);border-radius:3px 3px 0 0;
+}
+.kw:hover,.kw[aria-expanded="true"]{background:#CDEFE0}
+.kw:focus-visible{outline:3px solid var(--spring-x);outline-offset:2px}
+
+.kw-pop{
+  position:absolute;z-index:30;width:min(320px,100%);padding:16px 18px;
+  background:var(--paper);border:1px solid var(--line-2);border-radius:var(--r-md);box-shadow:var(--sh-md);
+  font-size:1rem;line-height:1.5;
+}
+.kw-pop[hidden]{display:none}
+.kw-pop:focus{outline:none}
+.kw-word{margin:0;font-family:var(--display);font-size:1.3rem;font-weight:700;color:var(--deep)}
+.kw-vi{margin:4px 0 0;font-size:1.1rem;font-weight:700;color:var(--moss)}
+.kw-meaning{margin:6px 0 0;font-size:.92rem;color:var(--muted)}
+.kw-actions{display:flex;align-items:center;gap:8px;margin-top:14px}
+.kw-actions .kw-save{padding:9px 16px;font-size:.85rem}
+.kw-speak,.kw-close{
+  flex:none;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;
+  background:var(--paper);border:1px solid var(--line-2);border-radius:50%;color:var(--deep);cursor:pointer;
+  font:inherit;font-size:1.3rem;line-height:1;
+}
+.kw-speak:hover,.kw-close:hover{background:var(--paper-2);border-color:var(--mint)}
+.kw-close{margin-left:auto;border-color:transparent;background:none}
+
+.bank h2,.kwlist h2,.studio h2{margin:0;font-size:1.05rem}
+.bank-head{display:flex;align-items:center;gap:12px}
+.bank-head .count{margin-left:auto;min-width:28px;padding:2px 10px;border-radius:999px;background:var(--deep);color:#fff;font-size:.78rem;font-weight:700;text-align:center}
+.bank-sub{margin:4px 0 12px;font-size:.8rem;color:var(--muted)}
+.bank-list,.kwlist ul{list-style:none;margin:0;padding:0}
+.kwlist h2{margin-bottom:6px}
+.bank-item,.kwlist-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.bank-item:first-child,.kwlist-item:first-child{border-top:0}
+.bank-text{flex:1;min-width:0;font-size:.95rem;line-height:1.45}
+.bank-text strong{color:var(--deep)}
+.bank-text small{display:block;margin-top:2px;font-size:.8rem;color:var(--muted)}
+.bank-empty{padding:6px 0;font-size:.9rem;color:var(--muted)}
+.bank-remove{
+  min-height:44px;padding:0 6px;background:none;border:0;cursor:pointer;
+  font:inherit;font-size:.8rem;font-weight:700;color:#8C1D18;text-decoration:underline;text-underline-offset:3px;
+}
+.bank-note{margin:10px 0 0;font-size:.8rem;color:#8C1D18}
+.kw-save-sm{padding:8px 14px;font-size:.8rem;white-space:nowrap}
+.kw-save-sm[aria-pressed="true"]{background:var(--paper-3);border-color:var(--mint)}
+
+/* ── Lesson Studio ── */
+.studio{max-width:760px;margin:0 auto}
+.studio > * + *,.studio-draft > * + *{margin-top:20px}
+.studio-guide{margin:0 0 18px;font-size:1.02rem;line-height:1.6;color:var(--ink)}
+.studio-row{display:grid;gap:0 18px}
+@media(min-width:640px){.studio-row{grid-template-columns:220px 1fr}}
+.studio .field textarea,.studio .field select{
+  width:100%;padding:12px 14px;border:1px solid var(--line-2);border-radius:var(--r-sm);
+  background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:1rem;line-height:1.55;
+}
+.studio .field textarea{resize:vertical}
+.studio .field textarea:focus,.studio .field select:focus{border-color:var(--moss);box-shadow:var(--ring);outline:none}
+.field-hint{margin:6px 0 0;font-size:.82rem;color:var(--muted)}
+.studio-count{display:block;margin:-10px 0 14px;font-size:.78rem;color:var(--faint);text-align:right}
+.studio-warn{
+  margin:0 0 16px;padding:10px 14px;border:1px solid var(--spring-x);background:var(--paper-3);
+  font-size:.9rem;font-weight:500;color:var(--deep);border-radius:var(--r-sm);
+}
+.studio-msg{padding:14px 16px;border-radius:var(--r-sm);font-size:.95rem;line-height:1.55}
+.studio-msg p{margin:6px 0 12px}
+.studio-msg.is-error{background:#FDECEA;color:#8C1D18;border:1px solid #F5C6C2}
+.studio-msg.is-notice{background:var(--paper-3);color:var(--deep);border:1px solid var(--mint)}
+.studio-msg a:not(.btn){color:inherit;font-weight:700}
+.studio-msg code{font-size:.85em;background:rgba(255,255,255,.7);padding:1px 5px;border-radius:4px;word-break:break-all}
+.studio-notes{padding:16px 18px;background:#FFF6E0;border:1px solid #E7C96A;border-radius:var(--r-md);color:#5C4300}
+.studio-notes h2{color:#5C4300;font-size:.95rem;margin-bottom:6px}
+.studio-notes-body{margin:0;white-space:pre-wrap;line-height:1.6;font-size:.95rem}
+.studio-edit h2{margin-bottom:18px}
+.studio-actions{display:flex;flex-wrap:wrap;gap:12px}
+.studio-mdbox summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700;color:var(--moss)}
+.studio-md{width:100%;margin-top:6px;padding:12px;border:1px solid var(--line-2);border-radius:var(--r-sm);font:.82rem/1.5 ui-monospace,Consolas,monospace;background:var(--paper-2);color:var(--ink)}
+.studio-locked p{margin:0 0 14px;font-size:1.02rem}
+.studio-wait{color:var(--muted)}
+
+@media(prefers-reduced-motion:reduce){
+  .lesson-card,.lesson-body p,.lesson-body li{transition:none}
+  .lesson-card:hover{transform:none}
+}
+.studio-out{scroll-margin-top:200px}

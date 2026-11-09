@@ -1,3 +1,8 @@
+@import './css/catalogue.css';
+@import './css/dashboard.css';
+@import './css/nav.css';
+@import './css/emmai.css';
+@import './css/lessons.css';
 /* ═══════════════════════════════════════════════════════════
    App chrome — the signed-in side of GLOW.
    White brand bar over a deep-green nav strip, section headings
@@ -575,56 +580,6 @@ html[lang="en"] .story-body-vi{display:none}
 .story-back{margin-top:34px;padding-top:18px;border-top:1px solid var(--line)}
 .story-back a{color:var(--moss);text-decoration:none;font-weight:700;font-size:.9rem}
 .story-back a:hover{text-decoration:underline}
-
-/* ═══════════════════════════════════════════════════════════
-   The dashboard. One deep-green "continue" card leads — the brand's
-   ripple rising out of its corner, the same rings the sign-in screen and
-   the landing hero carry — and everything else is quiet white panels in
-   a two-column grid. DOM order is phone order; the grid only places it.
-   ═══════════════════════════════════════════════════════════ */
-.dash{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start}
-/* On a phone the tuition card follows "coming up"; on a wide screen it is
-   lifted to the top of the right column, beside the hero. */
-@media(min-width:1000px){
-  .dash{grid-template-columns:minmax(0,1fr) 340px}
-  .dash-pay{grid-column:2;grid-row:1}
-}
-/* Grid gap does the spacing here; .panel + .panel would push the second
-   column's first card down out of line with the first. */
-.dash > .panel{margin-top:0}
-.dash > .skel,.dash > .state,.dash-courses{grid-column:1 / -1}
-
-.dash-hero{
-  position:relative;overflow:hidden;isolation:isolate;
-  display:flex;flex-direction:column;align-items:flex-start;gap:10px;
-  min-height:248px;padding:clamp(24px,3.4vw,40px);
-  background:var(--deep);color:#fff;border-radius:var(--r-lg);box-shadow:var(--sh-md);
-}
-/* The rings are drawn by the card itself, so the decoration cannot come
-   loose from it in the DOM or be read out. */
-.dash-hero::before{
-  content:"";position:absolute;z-index:-1;pointer-events:none;
-  right:-18%;bottom:-62%;width:min(540px,88%);aspect-ratio:1;border-radius:50%;
-  mix-blend-mode:screen;opacity:.2;
-  background:radial-gradient(circle at 50% 50%,
-    var(--band-1) 0 9.8%,   var(--band-1) 10.56%,
-    var(--band-2) 11.3%,    var(--band-2) 26.9%,
-    var(--band-3) 28.4%,    var(--band-3) 54.5%,
-    var(--band-4) 56.1%,    var(--band-4) 100%);
-}
-.dash-kick{
-  font-family:var(--display);font-size:.74rem;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;color:var(--mint);
-}
-.dash-hero h2{color:#fff;font-size:clamp(1.45rem,2.6vw,2.1rem);line-height:1.15;max-width:24ch}
-.dash-hero-meta{font-size:.88rem;color:rgba(255,255,255,.84);max-width:52ch}
-.dash-progress{width:min(100%,380px);padding-top:4px;margin-top:0}
-.dash-hero .bar{background:rgba(255,255,255,.2)}
-.dash-hero .bar-pct{color:#fff}
-.dash-hero .btn{margin-top:auto}
-.dash-hero .dash-progress + .btn,.dash-hero-meta + .btn{margin-top:14px}
-/* The spring ring is 3.8:1 on this field, but white is clearer still. */
-.dash-hero a:focus-visible{outline-color:#fff}
 
 .btn-ico{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;
   stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}

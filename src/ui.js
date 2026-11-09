@@ -86,6 +86,8 @@ const ICONS = {
   bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
   wallet: '<rect x="2" y="5" width="20" height="15" rx="2"/><path d="M2 10h20M16 15h2"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
   offline: '<path d="M1 1l22 22"/><path d="M16.7 16.7A10.9 10.9 0 0 1 12 18l-.7.7"/><path d="M5 12.6a10.9 10.9 0 0 1 4-2.4M10.7 5.1a16 16 0 0 1 10.9 4.4"/><path d="M2.4 9.5a16 16 0 0 1 3.7-2.6"/><path d="M12 20h.01"/>',
 };
@@ -180,14 +182,14 @@ export function errorState(err, retry) {
     offline ? t('Kiểm tra kết nối mạng rồi thử lại.', 'Check your connection and try again.')
     : auth ? t('Đăng nhập lại để tiếp tục.', 'Sign in again to continue.')
     : missing ? t('Đường dẫn có thể đã cũ, hoặc khoá học đã được gỡ. Hãy chọn lại từ danh sách khoá học.',
-                  'The link may be out of date, or the course may have been removed. Pick it again from your course list.')
+                  'The link may be out of date, or the course may have been removed. Pick it again from the course list.')
     : t('Sự cố tạm thời. Thử lại sau giây lát.', 'A temporary problem. Try again in a moment.')));
 
   if (auth) {
     wrap.append(el('a', { class: 'btn btn-primary', href: './login.html' }, t('Đăng nhập', 'Sign in')));
   } else if (missing) {
     wrap.append(el('a', { class: 'btn btn-primary', href: './courses.html' },
-      t('Khoá học của tôi', 'My courses')));
+      t('Xem tất cả khoá học', 'Browse all courses')));
   } else if (retry) {
     wrap.append(el('button', { class: 'btn btn-quiet', type: 'button', onclick: retry },
       t('Thử lại', 'Try again')));

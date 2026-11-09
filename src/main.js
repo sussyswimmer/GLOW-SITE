@@ -8,6 +8,7 @@ import Lenis from 'lenis';
 import { initSquiggle } from './squiggle.js';
 import { initI18n } from './i18n.js';
 import { initInteractions } from './interact.js';
+import { initNav, loadAuth } from './nav.js';
 import { initScroll, splitText, revertText, ScrollTrigger } from './scroll.js';
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -152,6 +153,8 @@ async function boot() {
   initSquiggle({ reduced });
 
   initInteractions({ reduced });
+  initNav();
+  loadAuth();   // one api.me(): header chip + staff-only links; 401 or no API = signed out
 
   initI18n({
     reduced,

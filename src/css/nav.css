@@ -1,0 +1,215 @@
+/* ═══════════════════════════════════════════════════════════
+   Site chrome — the header pieces and the footer shared by the landing page
+   (#hdr, over the hero) and every shell page (.appbar + .appnav).
+
+   Loaded by index.html directly, and by every other page through the
+   @import at the top of app.css. Tokens only; no one-off colours.
+   Order matters: app.css comes after this file, so selectors that have to
+   beat `.appnav a` are written with enough specificity to win on their own.
+   ═══════════════════════════════════════════════════════════ */
+
+/* app.css has this too; the landing page does not load app.css. */
+[hidden]{display:none!important}
+
+/* ── partnership line, beside the logo ─────────────────── */
+.partner{
+  margin:0;max-width:22ch;padding-left:14px;border-left:1px solid var(--line-2);
+  font-size:.7rem;line-height:1.35;color:var(--muted);
+}
+.appbar .partner{display:none}
+@media(min-width:720px){.appbar .partner{display:block}}
+#hdr .partner{display:none}
+@media(min-width:1180px){#hdr .partner{display:block}}
+#hdr:not(.scrolled) .partner{color:rgba(255,255,255,.82);border-left-color:rgba(255,255,255,.35)}
+
+/* ── Courses dropdown ──────────────────────────────────── */
+.navdd{position:relative;display:flex;align-items:stretch}
+.navdd-btn{
+  display:inline-flex;align-items:center;gap:6px;min-height:44px;
+  font:inherit;color:inherit;background:none;border:0;cursor:pointer;
+}
+.navdd-btn svg{
+  width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;
+}
+.navdd-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.navdd-menu{
+  position:absolute;top:100%;left:0;z-index:80;min-width:260px;padding:6px;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:var(--sh-md);
+}
+.navdd .navdd-menu a,
+#hdr .nav-links .navdd-menu a,
+#hdr:not(.scrolled) .nav-links .navdd-menu a,
+#hdr:not(.scrolled) .nav-links .navdd-menu a:hover{
+  display:flex;align-items:center;min-height:44px;padding:10px 14px;
+  border:0;border-radius:var(--r-sm);white-space:nowrap;
+  font-size:.9rem;font-weight:500;color:var(--ink);text-decoration:none;
+}
+.navdd .navdd-menu a:hover,
+#hdr .nav-links .navdd-menu a:hover{background:var(--paper-3);color:var(--deep)}
+
+/* in the deep-green strip the button wears the same clothes as its siblings */
+.appnav .appnav-in{overflow:visible}
+.appnav .navdd-btn{
+  padding:14px 16px;font-size:.88rem;font-weight:500;color:rgba(255,255,255,.82);
+  border-bottom:3px solid transparent;transition:color .2s,border-color .2s,background .2s;
+}
+.appnav .navdd-btn:hover,
+.appnav .navdd-btn[aria-expanded="true"]{color:#fff;background:rgba(255,255,255,.07)}
+.appnav .navdd-btn.is-here{color:#fff;border-bottom-color:var(--spring);font-weight:700}
+.appnav .navdd-btn:focus-visible{outline-color:#fff;outline-offset:-4px}
+
+/* over the hero the bar is transparent, so the button follows the links */
+#hdr:not(.scrolled) .nav-links .navdd-btn{color:rgba(255,255,255,.92)}
+#hdr .nav-links .navdd-btn.is-here{font-weight:700}
+
+/* ── search ────────────────────────────────────────────── */
+.navsearch-wrap{position:relative;display:flex;align-items:center}
+.navsearch-btn{
+  display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;
+  color:var(--deep);text-decoration:none;transition:background .2s;
+}
+.navsearch-btn:hover,.navsearch-btn[aria-expanded="true"]{background:var(--paper-3)}
+.navsearch-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round}
+#hdr:not(.scrolled) .navsearch-btn{color:var(--paper)}
+#hdr:not(.scrolled) .navsearch-btn:hover,
+#hdr:not(.scrolled) .navsearch-btn[aria-expanded="true"]{background:rgba(255,255,255,.14)}
+
+.navsearch{
+  position:absolute;top:calc(100% + 10px);right:0;z-index:80;
+  width:min(360px,calc(100vw - 2 * var(--gut)));display:grid;gap:8px;padding:16px;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-md);
+}
+.navsearch label{font-size:.78rem;line-height:1.4;color:var(--muted)}
+.navsearch-row{display:flex;gap:8px}
+.navsearch input{
+  flex:1;min-width:0;min-height:44px;padding:0 14px;font:inherit;color:var(--ink);
+  background:var(--paper);border:1px solid var(--line-2);border-radius:var(--r-sm);
+}
+.navsearch input:focus-visible{outline-offset:1px}
+.navsearch button{
+  min-height:44px;padding:0 18px;border:0;border-radius:999px;cursor:pointer;
+  background:var(--spring);color:var(--ink);font:inherit;font-weight:700;font-size:.88rem;
+  transition:background .2s;
+}
+.navsearch button:hover{background:var(--spring-d)}
+
+/* ── signed-in chip: "<code> <full name>" ──────────────── */
+.who-name{display:flex;align-items:baseline;gap:8px}
+.who-code{font-size:.78rem;font-weight:700;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.who-full{font-weight:500}
+
+/* the landing bar has no app.css, so it carries its own copy of the chip */
+#hdr .who{display:flex;align-items:center;gap:10px;text-decoration:none;min-height:44px}
+#hdr .who-name{font-size:.86rem;color:var(--deep);white-space:nowrap}
+#hdr:not(.scrolled) .who-name{color:var(--paper)}
+#hdr .avatar{
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:var(--mint);color:var(--deep);font-weight:700;font-size:.86rem;letter-spacing:.02em;
+}
+#hdr button.btn-login{background:none;font:inherit;font-size:.84rem;cursor:pointer;min-height:44px}
+#hdr .btn-login{display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:899px){#hdr .who-name{display:none}}
+
+/* ── landing header: room for the new items ────────────── */
+#hdr .lang,#hdr .btn-login{white-space:nowrap}
+/* Sign out is an icon on the landing bar: the word has no room beside a
+   signed-in chip. It keeps its name for screen readers. */
+#hdr button.btn-login{padding:0;width:44px;justify-content:center}
+#hdr button.btn-login svg{width:18px;height:18px}
+#hdr button.btn-login span{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+/* the signed-in chip and the partnership line do not both fit below 1500px */
+@media(max-width:1499px){#hdr:has(.who:not([hidden])) .partner{display:none}}
+#hdr .nav-links .navdd-btn{font-size:.86rem;font-weight:500}
+#hdr .nav-links > a{display:inline-flex;align-items:center;min-height:44px}
+@media(min-width:900px){
+  #hdr .nav{gap:18px}
+  #hdr .nav-links{gap:20px;align-items:center}
+}
+/* Below 900px the old bar had no menu at all. The links drop to a row of
+   their own under the logo, which is the cheapest way to keep every
+   destination one tap away without a hamburger. */
+@media(max-width:899px){
+  #hdr .nav{flex-wrap:wrap;row-gap:0;padding-top:12px;padding-bottom:6px}
+  #hdr.scrolled .nav{padding-top:10px;padding-bottom:4px}
+  #hdr .nav{gap:8px}
+  #hdr .logo img{height:24px}
+  #hdr .lang{padding:9px 9px}
+  #hdr .btn-login{padding:0 12px;font-size:.78rem}
+  #hdr .nav-spacer{flex:1}
+  /* basis is the row minus the search icon, so the links drop to a second
+     row (the first is full) and the icon sits at the end of it */
+  #hdr .nav-links{
+    display:flex;flex-wrap:wrap;order:5;flex:1 1 calc(100% - 48px);gap:0;margin:0 -6px;
+    align-items:center;
+  }
+  #hdr .nav-links > a,#hdr .nav-links .navdd-btn{padding:0 6px;white-space:nowrap;font-size:.76rem}
+  #hdr .navsearch-wrap{order:6}
+  #hdr .navdd{position:static}
+  #hdr .navdd-menu{left:var(--gut);right:var(--gut);min-width:0}
+  #hdr .navsearch-wrap{position:static}
+  #hdr .navsearch{left:var(--gut);right:var(--gut);width:auto;top:100%}
+}
+/* an open menu must not be clipped by, or hide behind, a hidden-until-scroll bar */
+#hdr .navdd-menu,#hdr .navsearch{z-index:90}
+
+/* ── shell strip on a phone ────────────────────────────── */
+@media(max-width:719px){
+  /* app.css comes after this file and sets the same selectors, so these
+     carry an extra class to win without !important */
+  .appbar .appbar-in{gap:4px;padding-top:10px;padding-bottom:10px}
+  .appbar .appbar-in .logo img{height:clamp(22px,6vw,40px)}
+  .appbar .appbar-in .lang{padding:9px 8px;white-space:nowrap}
+  .appbar .appbar-in .signout{padding:7px 8px;white-space:nowrap;font-size:.78rem}
+  .appbar .navsearch-btn{width:40px}
+  .appnav .appnav-in{flex-wrap:wrap;padding:0 calc(var(--gut) - 8px)}
+  .appnav .appnav-in > a,.appnav .appnav-in .navdd-btn{padding:13px 8px;font-size:.8rem}
+  .appnav a svg{display:none}
+  .appnav .navdd{position:static}
+  .appnav .navdd-menu{left:var(--gut);right:var(--gut);min-width:0}
+  .appbar .navsearch-wrap{position:static}
+  .appbar .navsearch{left:var(--gut);right:var(--gut);width:auto;top:100%}
+}
+
+/* ── footer, the one on every page ─────────────────────── */
+.foot .foot-in{grid-template-columns:1fr}
+@media(min-width:1000px){.foot .foot-in{grid-template-columns:1fr 2.6fr}}
+.foot-cols{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.foot-cols a{padding:9px 0;min-height:44px;display:flex;align-items:center}
+.foot-cols a:hover{text-decoration:underline}
+.foot-partners{display:flex;align-items:center;gap:28px;margin-top:24px}
+.foot-partners img{display:block;height:64px;width:auto}
+.foot-partners a{display:block;border-radius:6px}
+/* The shell pages share the footer but not the landing page's scroll
+   sequence, so the full-height breathing room is cut back. */
+body.app .foot{padding-top:56px}
+
+@media(prefers-reduced-motion:reduce){
+  .navdd-btn svg,.navsearch-btn,.navsearch button{transition:none}
+}
+
+/* The logo carries width/height attributes for layout reservation; without
+   `width:auto` they stretch it as soon as a CSS height is set. */
+.appbar .appbar-in .logo img,#hdr .logo img{width:auto}
+.appbar .appbar-in .logo{flex:none}
+.appbar .appbar-in .signout,#hdr .btn-login{white-space:nowrap}
+
+/* Narrowest phones: Home keeps only its icon (its word stays for screen
+   readers), so the strip stays one row at 360px in Vietnamese. */
+@media(max-width:420px){
+  .appnav .appnav-in > a[data-page="index.html"] svg{display:block}
+  .appnav .appnav-in > a[data-page="index.html"] span{
+    position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;
+  }
+  /* sign in keeps its word, but its icon goes to give the word room */
+  .appbar .appbar-in #signIn svg{display:none}
+}
+
+@media(max-width:380px){
+  #hdr .nav-links > a,#hdr .nav-links .navdd-btn{padding:0 4px;font-size:.72rem}
+}
+.foot-cols a[hidden]{display:none}

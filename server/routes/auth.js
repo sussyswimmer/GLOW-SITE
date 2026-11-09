@@ -84,12 +84,14 @@ export default async function authRoutes(app) {
       userId: learner.id,
       username: learner.username || username.trim(),
       fullname: learner.fullname,
+      idnumber: learner.idnumber,
+      role: learner.role,
     });
 
     setSession(reply, session);
     req.log.info({ userId: learner.id }, 'signed in');
 
-    return { learner, demo: isDemo };
+    return { learner: learnerOf(session), demo: isDemo };
   });
 
   /* ── POST /api/auth/logout ──────────────────────────────── */
@@ -109,12 +111,7 @@ export default async function authRoutes(app) {
     if (!session) return reply.code(401).send({ error: 'unauthorised' });
 
     return {
-      learner: {
-        id: session.userId,
-        username: session.username,
-        fullname: session.fullname,
-        initials: initials(session.fullname),
-      },
+      learner: learnerOf(session),
       demo: isDemo,
       expiresAt: new Date(session.exp).toISOString(),
     };
@@ -134,6 +131,18 @@ export function readSession(req, reply) {
     return null;
   }
   return touchSession(reply, session);
+}
+
+/* The one shape the browser sees for who is signed in. */
+function learnerOf(session) {
+  return {
+    id: session.userId,
+    username: session.username,
+    fullname: session.fullname,
+    initials: initials(session.fullname),
+    idnumber: session.idnumber,
+    role: session.role || 'learner',
+  };
 }
 
 function initials(fullname) {

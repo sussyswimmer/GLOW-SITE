@@ -23,7 +23,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request(path, { method = 'GET', body } = {}) {
+async function request(path, { method = 'GET', body, timeout = TIMEOUT_MS } = {}) {
   /* Checked before the fetch, because a dropped connection otherwise
      surfaces as a generic TypeError several seconds later and the
      learner gets a worse message than the browser already knows. */
@@ -32,7 +32,7 @@ async function request(path, { method = 'GET', body } = {}) {
   }
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeout);
 
   let res;
   try {
@@ -78,18 +78,28 @@ export const api = {
   login:     (b)     => request('/api/auth/login', { method: 'POST', body: b }),
   logout:    ()      => request('/api/auth/logout', { method: 'POST' }),
   dashboard: ()      => request('/api/dashboard'),
-  courses:   ()      => request('/api/courses'),
+  /* Public: the session is optional and only changes what the viewer may see. */
+  catalogue: ()      => request('/api/catalogue'),
+  catalogueCourse: (code) => request(`/api/catalogue/courses/${encodeURIComponent(code)}`),
   course:    (id)    => request(`/api/courses/${encodeURIComponent(id)}`),
   catalog:   (key)   => request(`/api/catalog/${encodeURIComponent(key)}`),
   billing:   ()      => request('/api/billing'),
   tuition:   ()      => request('/api/tuition'),
+  /* The server gives the AI service 25 s and never retries, so 30 s is enough. */
+  emmai:     (b)     => request('/api/emmai', { method: 'POST', body: b, timeout: 30_000 }),
+  /* Staff only. A structured AI draft takes longer than the 15 s default (server limit 55 s). */
+  lessonDraft: (b)   => request('/api/lessons/draft', { method: 'POST', body: b, timeout: 60_000 }),
 };
 
 /* Signing out is a navigation, not a fetch — the redirect has to survive
    the cookie being cleared, and a half-signed-out tab is worse than a
    reload. Failures are swallowed on purpose: if the request did not get
    through, sending them to the login page is still the right outcome. */
+/* EMMAI keeps its chat in sessionStorage; it must not outlive the session. */
+const clearChat = () => { try { sessionStorage.removeItem('glow.emmai'); } catch { /* storage blocked */ } };
+
 export async function signOut() {
+  clearChat();
   try { await api.logout(); } catch { /* going to the login page regardless */ }
   location.href = './login.html';
 }
@@ -97,6 +107,7 @@ export async function signOut() {
 /* Where to send someone whose session has ended, remembering where they
    were so they land back there rather than on a generic dashboard. */
 export function toLogin(reason) {
+  clearChat();
   const here = location.pathname.split('/').pop() || 'dashboard.html';
   const url = new URL('./login.html', location.href);
   if (here !== 'login.html') url.searchParams.set('next', here + location.search);

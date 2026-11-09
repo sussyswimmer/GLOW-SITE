@@ -29,13 +29,17 @@
   <div class="signin-card">
 
     <a class="signin-logo" href="./index.html">
-      <img src="./assets/img/glow-logo.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="132" height="44">
+      <img src="./assets/img/glow-wordmark.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="224" height="44">
     </a>
 
     <h1 data-i18n data-vi="Đăng nhập" data-en="Sign in">Đăng nhập</h1>
-    <p class="signin-sub" data-i18n
+    <!-- Spans, not one element: the language swap rewrites textContent, which
+         would flatten a link sitting inside it. -->
+    <p class="signin-sub"><span data-i18n
        data-vi="Dùng tài khoản GLOW của bạn để tiếp tục học."
-       data-en="Use your GLOW account to carry on learning.">Dùng tài khoản GLOW của bạn để tiếp tục học.</p>
+       data-en="Use your GLOW account to carry on learning.">Dùng tài khoản GLOW của bạn để tiếp tục học.</span>
+       <span data-i18n data-vi="Chưa có tài khoản?" data-en="Don't have an account?">Chưa có tài khoản?</span>
+       <a href="./payment.html" data-i18n data-vi="Xem cách tham gia" data-en="See how to get access">Xem cách tham gia</a>.</p>
 
     <!-- role=alert so a screen reader announces a failed attempt the
          moment the message appears, without moving the user. -->

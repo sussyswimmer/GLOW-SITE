@@ -135,6 +135,52 @@ during an incident.
 
 ---
 
+## EMMAI (the AI advisor) and Lesson Studio drafting
+
+Both are **off until an API key is added**, and nothing else on the site
+depends on them. Learners then see "EMMAI is switching on soon", and Lesson
+Studio says drafting switches on when the key is added.
+
+**To switch them on:** in the host's secret store (Netlify: Site
+configuration, Environment variables) set `ANTHROPIC_API_KEY` to a key from
+the Anthropic Console, then redeploy. Never put the key in a file in git.
+
+**Choosing the model (cost).** `EMMAI_MODEL` defaults to `claude-opus-5-5`
+(about $4 in / $20 out per million tokens). `claude-haiku-5-5` is much
+cheaper (about $0.10 / $0.50 per million) and fine for short course advice;
+the lesson drafter benefits more from the larger model. One variable
+covers both, so this is the owner's call. Each EMMAI reply is a few
+thousand input tokens (the course list, which is cached) and about 150
+words out.
+
+**What it does with data.** Message text is sent to Anthropic to get a
+reply and is never written to our logs. Learners are told not to share
+passwords or personal details. EMMAI only recommends courses the signed-in
+person is allowed to see (staff-only courses are never in a learner's
+prompt).
+
+**Limits.** 20 messages a minute and 6 lesson drafts a minute per IP.
+Replies are short on purpose: the Netlify function cannot stream, and its
+synchronous time limit is 60 seconds in current Netlify docs but 10 seconds
+in older forum answers. The server gives the AI service 25 seconds for
+EMMAI and 55 seconds for a lesson draft, and never retries (a retry would
+be billed twice and could overrun the function limit). If your plan really
+is 10 seconds, EMMAI will show its "try again" message under load and
+lesson drafting will time out; check the limit on your Netlify plan. The
+browser waits 30 s (EMMAI) and 60 s (draft).
+
+**Spend exposure.** The demo login is public and production runs the mock
+data source, so once `ANTHROPIC_API_KEY` is set anyone who signs in with
+the demo account can use EMMAI on the foundation's bill (20 messages a
+minute per IP is the only brake). Before setting the key, set a monthly
+spend limit in the Anthropic Console, or keep the key unset until the site
+runs on live Moodle (real sign-in only).
+
+**If a safety filter declines a request,** the API automatically retries on
+a fallback model (the `server-side-fallback` beta). It is on by default.
+
+---
+
 ## Regular maintenance
 
 | How often | What |

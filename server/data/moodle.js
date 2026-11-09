@@ -20,6 +20,7 @@
 import { config } from '../config.js';
 import { assertDashboard, assertCourseDetail, assertBilling, ContractError } from './contract.js';
 import { billingFor } from './billing.js';
+import { courseByMoodleId, CATEGORIES } from './catalogue.js';
 
 const REST = () => `${config.MOODLE_URL}/webservice/rest/server.php`;
 
@@ -242,8 +243,30 @@ export async function getLearner(session) {
     username: info.username,
     fullname: plain(info.fullname),
     initials: initialsOf(info.fullname),
+    /* shortcut: every Moodle user is a learner until the team says how staff,
+       GEMS and SEEDS are marked in Moodle (cohort, idnumber pattern or profile
+       field), so role-gated courses stay hidden on the live adapter until then.
+       idnumber is left undefined: site_info does not return it. */
+    role: 'learner',
   };
 }
+
+/* Give a Moodle course its catalogue identity and its site page. A course
+   the catalogue does not know keeps Moodle's own names and links by id. */
+function enrich(c) {
+  const k = courseByMoodleId(c.id);
+  if (!k) return { ...c, href: `./course.html?id=${c.id}` };
+  return {
+    ...c,
+    code: k.code,
+    title: k.en,
+    titleVi: k.vi || undefined,
+    categoryKey: k.cat,
+    category: CATEGORY_EN[k.cat],
+    href: `./course.html?code=${k.code}`,
+  };
+}
+const CATEGORY_EN = Object.fromEntries(CATEGORIES.map(c => [c.key, c.en]));
 
 export async function getDashboard(session) {
   const learner = await getLearner(session);
@@ -271,7 +294,7 @@ export async function getDashboard(session) {
 
   if (coursesR.status === 'rejected') throw coursesR.reason;
 
-  const courses = (coursesR.value || []).map(normaliseCourse);
+  const courses = (coursesR.value || []).map(normaliseCourse).map(enrich);
 
   const events = eventsR.status === 'fulfilled'
     ? (eventsR.value?.events || []).map(e => ({
@@ -295,6 +318,9 @@ export async function getDashboard(session) {
        empty "recently accessed" row reads as a broken page. Fall back to
        the first few enrolments so there is always somewhere to click. */
     recent: recent.length ? recent : courses.slice(0, 3),
+    recommended: [],
+    pinned: null,
+    emmai: null,
     events,
     unread: unreadR.status === 'fulfilled' ? Number(unreadR.value ?? 0) : 0,
   });
@@ -337,7 +363,7 @@ export async function getCourse(session, courseId) {
     activities: (s.modules || []).map(normaliseModule).filter(Boolean),
   })).filter(s => s.activities.length || s.summary);
 
-  return assertCourseDetail({ course: normaliseCourse(raw), sections });
+  return assertCourseDetail({ course: enrich(normaliseCourse(raw)), sections });
 }
 
 /* ── the catalogue pages ─────────────────────────────────────

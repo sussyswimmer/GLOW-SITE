@@ -29,13 +29,23 @@
  * @property {string}  fullname  display name, already HTML-decoded
  * @property {string}  initials  1–2 chars for the avatar chip
  * @property {string=} idnumber  the institutional ID shown under the name
+ * @property {'learner'|'gems'|'seeds'|'staff'} role  decides which courses
+ *                               the catalogue shows; always set by the server
  */
 
 /**
  * @typedef {object} Course
- * @property {number}  id
- * @property {string}  code       short name, e.g. "EMM231" — shown as the tile chip
- * @property {string}  title      full name
+ * @property {number=} id        Moodle course id, when there is one
+ * @property {string}  code       short name, e.g. "EM7101" — shown as the tile chip
+ * @property {string}  title      English or canonical name
+ * @property {string=} titleVi    Vietnamese name, when the catalogue has one
+ * @property {('english'|'skills'|'training')=} categoryKey  catalogue category
+ * @property {number=} hours      hours studied
+ * @property {number=} lessonsDone
+ * @property {number=} lessonsTotal
+ * @property {string}  href       site-relative page for the course:
+ *                                ./course.html?code=CODE when it is in the
+ *                                catalogue, otherwise ./course.html?id=N
  * @property {string}  summary    one line, plain text, no markup
  * @property {string=} image      absolute or site-relative cover image URL
  * @property {number}  progress   0–100 integer. Moodle reports null for courses
@@ -94,6 +104,7 @@
  * @typedef {object} CalendarEvent
  * @property {number}  id
  * @property {string}  title
+ * @property {string=} titleVi
  * @property {string}  when      ISO datetime
  * @property {string=} courseTitle
  * @property {string=} href
@@ -104,8 +115,11 @@
  * @property {Learner}       learner
  * @property {Course[]}      recent      most recently accessed, max 3
  * @property {Course[]}      courses     everything they are enrolled in
+ * @property {Course[]}      recommended up to 3; empty on the live adapter
+ * @property {{titleVi:string,titleEn:string,courses:Course[]}|null} pinned
  * @property {CalendarEvent[]} events    open action events: overdue from the
  *                                       last 14 days, then the next 60 days
+ * @property {{vi:string,en:string}|null} emmai  the role's line for Ask EMMAI
  * @property {number}        unread      notification count for the bell
  */
 
@@ -150,8 +164,8 @@ export function assertLearner(l) {
 }
 
 export function assertCourse(c) {
-  if (!c || !isNum(c.id) || !isStr(c.title)) {
-    throw new ContractError('course', `expected {id:number, title:string}, got ${peek(c)}`);
+  if (!c || !isStr(c.title) || !(isNum(c.id) || isStr(c.code))) {
+    throw new ContractError('course', `expected {title:string, id:number|code:string}, got ${peek(c)}`);
   }
   if (!isNum(c.progress) || c.progress < 0 || c.progress > 100) {
     throw new ContractError('course.progress', `expected 0–100 for "${c.title}", got ${peek(c.progress)}`);
@@ -179,8 +193,11 @@ export function assertDashboard(d) {
   if (!Array.isArray(d.courses)) throw new ContractError('dashboard.courses', 'expected an array');
   if (!Array.isArray(d.recent)) throw new ContractError('dashboard.recent', 'expected an array');
   if (!Array.isArray(d.events)) throw new ContractError('dashboard.events', 'expected an array');
+  if (!Array.isArray(d.recommended)) throw new ContractError('dashboard.recommended', 'expected an array');
   d.courses.forEach(assertCourse);
   d.recent.forEach(assertCourse);
+  d.recommended.forEach(assertCourse);
+  d.pinned?.courses.forEach(assertCourse);
   return d;
 }
 

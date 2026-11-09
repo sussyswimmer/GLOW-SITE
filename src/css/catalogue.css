@@ -1,0 +1,95 @@
+/* ═══════════════════════════════════════════════════════════
+   The catalogue pages — courses, English, Skills, Training — and the
+   public course page. Tokens from styles.css only; the card follows the
+   dashboard tile (.tile) so the two read as one family.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── category cards (courses.html) ─────────────────────── */
+.catcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-bottom:32px}
+.catcard{
+  display:flex;flex-direction:column;gap:8px;padding:22px;text-decoration:none;color:var(--ink);
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
+  transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s,border-color .25s;
+}
+.catcard:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--mint);border-top-color:var(--spring-d)}
+.catcard-name{font-family:var(--display);font-weight:700;font-size:1.15rem;color:var(--deep);line-height:1.25}
+.catcard-blurb{font-size:.88rem;color:var(--muted)}
+.catcard-n{margin-top:auto;padding-top:6px;font-size:.78rem;font-weight:700;color:var(--moss)}
+
+/* ── search, sort, filter tabs ─────────────────────────── */
+.cctl{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-bottom:16px}
+.cfield{display:flex;flex-direction:column;gap:6px;flex:1 1 280px}
+.cfield-sort{flex:0 1 200px}
+.cfield label{font-size:.78rem;font-weight:700;color:var(--muted)}
+.cfield input,.cfield select{
+  min-height:44px;padding:10px 14px;font:inherit;color:var(--ink);
+  background:var(--paper);border:1px solid var(--line-2);border-radius:var(--r-sm);
+}
+.cfield input:focus-visible,.cfield select:focus-visible{outline:3px solid var(--spring-x);outline-offset:2px}
+.ctabs{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:12px}
+.ctab{min-height:44px;cursor:pointer;font:inherit;font-size:.85rem}
+.ctab[aria-pressed="true"]{background:var(--deep);border-color:var(--deep);color:#fff}
+.ctab-n{font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--paper-3);color:var(--deep)}
+.ctab[aria-pressed="true"] .ctab-n{background:rgba(255,255,255,.2);color:#fff}
+.cstatus{font-size:.8rem;color:var(--muted);margin:0 0 20px;min-height:1.2em}
+
+/* ── the course card ───────────────────────────────────── */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.ccard{
+  display:flex;flex-direction:column;gap:8px;padding:16px 18px;text-decoration:none;color:var(--ink);
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);
+  transition:transform .25s cubic-bezier(.2,.7,.3,1),box-shadow .25s,border-color .25s;
+}
+.ccard:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--mint)}
+.ccard:focus-visible,.catcard:focus-visible,.feature:focus-visible{outline:3px solid var(--spring-x);outline-offset:2px}
+.ccard-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ccode{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--paper-3);color:var(--deep);font-size:.72rem;font-weight:700;letter-spacing:.05em}
+.cbadge{display:inline-block;padding:2px 9px;border-radius:999px;background:#E8F8F1;border:1px solid var(--spring-x);color:var(--spring-t);font-size:.7rem;font-weight:700}
+.ccard-name{font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.3;color:var(--deep)}
+.ccard-cat{font-size:.78rem;color:var(--faint)}
+.ccard .tile-foot{padding-top:6px}
+
+/* ── sections on the category pages ────────────────────── */
+.catsec{scroll-margin-top:96px}
+.catsec + .catsec,.cgroup-block + .cgroup-block{margin-top:44px}
+.catsec-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.catsec-head h2{font-size:1.4rem;margin:0}
+.catsec-head::after{content:"";order:1;flex:1;height:2px;max-width:64px;background:var(--spring);border-radius:2px}
+.catsec-head .count{order:2;margin-left:auto;font-size:.74rem;font-weight:700;color:var(--muted)}
+.catsec-desc{max-width:70ch;color:var(--muted);margin:0 0 18px}
+.cgroup{margin-top:24px}
+.cgroup-title{font-size:1rem;margin:0 0 12px;color:var(--moss)}
+.catsec > .cgrid{margin-top:4px}
+.cgroup-block .sec-head .count{margin-left:auto}
+
+/* English through the news: a link into another part of the site, so it is
+   built as a banner, not as a course card. */
+.feature{
+  display:flex;flex-direction:column;gap:4px;margin:6px 0 20px;padding:18px 22px;text-decoration:none;
+  background:var(--deep);color:#fff;border-radius:var(--r-md);
+  transition:background .2s;
+}
+.feature:hover{background:var(--deep-lift)}
+.feature-title{font-family:var(--display);font-weight:700;font-size:1.1rem}
+.feature-desc{font-size:.88rem;color:rgba(255,255,255,.88)}
+.feature-go{margin-top:6px;font-size:.85rem;font-weight:700;color:var(--mint)}
+.feature:focus-visible{outline-color:var(--spring)}
+
+/* ── the course page ───────────────────────────────────── */
+.course-alt{color:var(--muted);margin-top:6px}
+.cmeta{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.cpresenter{font-size:.88rem;color:var(--muted)}
+.course-progress{margin-top:16px;max-width:360px}
+.course-progress .tile-foot{padding-top:0}
+.panel + .section-block,.panel + .state{margin-top:24px}
+.staff-gate p{margin:0 0 16px;max-width:60ch}
+.staff-gate p:last-child{margin:0}
+
+@media (max-width:480px){
+  .cgrid{grid-template-columns:1fr}
+  .cfield-sort{flex:1 1 100%}
+}
+@media (prefers-reduced-motion:reduce){
+  .catcard,.ccard,.feature{transition:none}
+  .catcard:hover,.ccard:hover{transform:none}
+}

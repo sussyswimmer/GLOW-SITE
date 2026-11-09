@@ -20,6 +20,11 @@
 
 import { writeFileSync } from 'node:fs';
 import { GROUPS, TRACKS } from '../server/data/glow-catalogue.js';
+import { CATEGORIES, GROUPS as CAT_GROUPS, catalogueFor } from '../server/data/catalogue.js';
+
+/* The course catalogue, signed out: role null is public courses only, so
+   nothing role-gated can reach the static HTML. */
+const PUBLIC = catalogueFor(null);
 
 /* Everything interpolated into the template goes through this. Most of it
    is our own copy, but the catalogue below is harvested from a system whose
@@ -55,6 +60,154 @@ function catalogMarkup(key) {
     ].join('\n');
   }).join('\n');
 }
+
+/* ── the course catalogue, as static markup ────────────────
+   The same class names and element shape as src/views/catalogue.js, so the
+   API's version replaces this one without the page moving. A name that exists
+   in one language only is written once, not as a fake translation. */
+const bs = (vi, en) => (vi && vi !== en ? `<span data-i18n data-vi="${esc(vi)}" data-en="${esc(en)}">${esc(vi)}</span>` : esc(en));
+const bt = (tag, cls, vi, en) => `<${tag} class="${cls}">${bs(vi, en)}</${tag}>`;
+
+const ACCESS_LABEL = { gems: ['Học bổng GEMS', 'GEMS scholars'], seeds: ['Học bổng SEEDS', 'SEEDS scholars'], staff: ['Nhân viên', 'Staff'] };
+
+function cardHtml(c) {
+  const cat = CATEGORIES.find(k => k.key === c.cat);
+  const a = ACCESS_LABEL[c.access];
+  return `<a class="ccard" href="./course.html?code=${esc(encodeURIComponent(c.code))}">`
+    + `${bt('span', 'ccard-name', c.vi, c.en)}<span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>${esc(c.code)}</span>`
+    + `${a ? `<span class="cbadge">${bs(a[0], a[1])}</span>` : ''}</span>`
+    + `${bt('span', 'ccard-cat', cat.vi, cat.en)}</a>`;
+}
+const gridHtml = list => `<div class="cgrid">${list.map(cardHtml).join('')}</div>`;
+
+/* courses.html: category cards, then every public course grouped by category. */
+function coursesIndexMarkup() {
+  const cards = PUBLIC.categories.map(c => {
+    const n = PUBLIC.courses.filter(x => x.cat === c.key).length;
+    return `      <a class="catcard" href="./${c.page}"><span class="catcard-name">${bs(c.vi, c.en)}</span>`
+      + `<span class="catcard-blurb">${bs(c.blurbVi, c.blurbEn)}</span>`
+      + `<span class="catcard-n"><span data-i18n data-vi="${n} khoá học" data-en="${n} courses">${n} khoá học</span></span></a>`;
+  }).join('\n');
+  const groups = PUBLIC.categories.map(c => {
+    const list = PUBLIC.courses.filter(x => x.cat === c.key);
+    return `      <section class="cgroup-block">\n        <div class="sec-head"><h2>${bs(c.vi, c.en)}</h2><span class="count">${list.length}</span></div>\n        ${gridHtml(list)}\n      </section>`;
+  }).join('\n');
+  return `<main class="shell" id="view" tabindex="-1">\n      <div class="catcards">\n${cards}\n      </div>\n${groups}\n</main>`;
+}
+
+/* english.html / skills.html: one section per sub-category, id = its key. */
+function categoryMarkup(catKey) {
+  const sections = PUBLIC.subcategories.filter(s => s.cat === catKey).map(s => {
+    const courses = PUBLIC.courses.filter(c => c.sub === s.key);
+    if (!courses.length) return '';
+    const parts = [`      <section class="catsec" id="${esc(s.key)}">`,
+      `        <div class="catsec-head"><h2>${bs(s.vi, s.en)}</h2><span class="count">${courses.length}</span></div>`];
+    if (s.descVi || s.descEn) parts.push(`        <p class="catsec-desc">${bs(s.descVi || s.descEn, s.descEn || s.descVi)}</p>`);
+    if (s.key === 'english-self-learning') {
+      parts.push('        <a class="feature" href="./lessons.html">'
+        + `<span class="feature-title">${bs('Bài học tiếng Anh qua tin tức', 'English through the news')}</span>`
+        + `<span class="feature-desc">${bs('Bài đọc mỗi ngày có audio, từ khoá và sổ từ vựng.', 'Daily lessons with audio, keywords and a word bank.')}</span>`
+        + `<span class="feature-go">${bs('Đọc bài học', 'Read the lessons')} →</span></a>`);
+    }
+    const loose = courses.filter(c => !c.group);
+    if (loose.length) parts.push('        ' + gridHtml(loose));
+    for (const g of CAT_GROUPS.filter(x => x.sub === s.key)) {
+      const list = courses.filter(c => c.group === g.key);
+      if (list.length) parts.push(`        <div class="cgroup">${bt('h3', 'cgroup-title', g.vi, g.en)}${gridHtml(list)}</div>`);
+    }
+    parts.push('      </section>');
+    return parts.join('\n');
+  }).filter(Boolean).join('\n');
+  return `<main class="shell" id="view" tabindex="-1">\n${sections}\n</main>`;
+}
+
+/* ── the chrome, written once ─────────────────────────────
+   Header menu and footer for every shell page. index.html carries its own
+   copy of the same items (its words come from content/landing.json), so a
+   change to the menu or the footer links is made in both places. The
+   behaviour lives in src/nav.js either way. */
+const ICON = {
+  chev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
+  search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>',
+};
+
+const link = (href, vi, en, extra = '') =>
+  `<a href="${href}"${extra} data-i18n data-vi="${esc(vi)}" data-en="${esc(en)}">${esc(vi)}</a>`;
+
+/* Training is for staff only: it ships hidden, and src/nav.js reveals it. */
+const COURSES_MENU = [
+  ['./courses.html', 'Tất cả khoá học', 'All courses'],
+  ['./english.html', 'Học tiếng Anh', 'English Learning'],
+  ['./skills.html', 'Kỹ năng & Kết nối', 'Skills & Network Building'],
+  ['./training.html', 'Đào tạo nội bộ', 'Training', true],
+].map(([h, vi, en, staff]) => '        ' + link(h, vi, en, staff ? ' data-staff hidden' : '')).join('\n');
+
+const SEARCH = `<div class="navsearch-wrap">
+      <a class="navsearch-btn" href="./courses.html">${ICON.search}<span class="sr-only" data-i18n data-vi="Tìm khoá học" data-en="Search courses">Tìm khoá học</span></a>
+      <form class="navsearch" id="navSearch" role="search" action="./courses.html" method="get" hidden>
+        <label for="navQ" data-i18n data-vi="Tìm khoá học (tên tiếng Anh hoặc tiếng Việt)" data-en="Search courses (English or Vietnamese names)">Tìm khoá học (tên tiếng Anh hoặc tiếng Việt)</label>
+        <div class="navsearch-row">
+          <input id="navQ" name="q" type="search" autocomplete="off">
+          <button type="submit" data-i18n data-vi="Tìm" data-en="Search">Tìm</button>
+        </div>
+      </form>
+    </div>`;
+
+const EXT = ' target="_blank" rel="noopener noreferrer"';
+const PL = 'https://pacificlinks.org';
+const FOOT_COLS = [
+  { vi: 'Học tiếng Anh', en: 'English Learning', links: [
+    ['./english.html#english-testing', 'Kiểm tra tiếng Anh', 'English Testing'],
+    ['./english.html#english-self-learning', 'Tự học tiếng Anh', 'English Self-Learning'],
+    ['./english.html#etop', 'ETOP', 'ETOP'],
+    ['./english.html#english-resources', 'Tài nguyên tiếng Anh', 'English Resources'],
+  ] },
+  { vi: 'Kỹ năng & Kết nối', en: 'Skills & Network Building', links: [
+    ['./skills.html#coffeetime', 'CoffeeTime', 'CoffeeTime'],
+    ['./skills.html#mentoring', 'Cố vấn', 'Mentoring'],
+    ['./skills.html#career-track', 'Lộ trình phát triển nghề nghiệp', 'Career Development Track'],
+    ['./skills.html#youth-empowerment', 'Chuỗi khoá học Trao quyền cho Thanh niên', 'Youth Empowerment Series'],
+  ] },
+  { vi: 'Đào tạo nội bộ', en: 'Training', staff: true, links: [
+    ['./training.html#staff-english', 'Tiếng Anh cho nhân viên', 'English for staff'],
+    ['./training.html#migration-trafficking', 'Phòng ngừa rủi ro di cư & mua bán người', 'Migration & trafficking prevention'],
+    ['./training.html#organization-skills', 'Kỹ năng tổ chức', 'Organisation skills'],
+    ['./training.html#technical-skills', 'Kỹ năng công nghệ', 'Technical skills'],
+  ] },
+  { vi: 'Khác', en: 'Other', links: [
+    ['./stories.html', 'Tin tức', 'Stories'],
+    ['./index.html#about', 'Về GLOW', 'About GLOW'],
+    ['./login.html', 'Đăng nhập', 'Sign in', ' data-guest'],
+    [PL, 'Trở thành tình nguyện viên', 'Become a Volunteer', EXT],
+    [PL, 'Quyên góp', 'Donate', EXT],
+    [PL, 'Hợp tác cùng chúng tôi', 'Partner With Us', EXT],
+    ['https://mypalo.vn', 'Ứng dụng PAXU', 'PAXU app', EXT],
+  ] },
+];
+
+const FOOTER = `<footer class="foot">
+  <div class="foot-in">
+    <div class="foot-brand">
+      <a class="logo" href="./index.html"><img src="./assets/img/glow-wordmark.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="459" height="90"></a>
+      <p data-i18n data-vi="Nền tảng tự học của Pacific Links Foundation, hợp tác cùng Matera." data-en="The self-learning platform from Pacific Links Foundation, in partnership with Matera.">Nền tảng tự học của Pacific Links Foundation, hợp tác cùng Matera.</p>
+      <div class="foot-partners">
+        <a href="${PL}"${EXT}><img src="./assets/img/partners/pacific-links-foundation.png" alt="Pacific Links Foundation" width="157" height="160"></a>
+        <img src="./assets/img/partners/matera-alliance.png" alt="Matera Alliance Inc" width="129" height="160">
+      </div>
+    </div>
+    <div class="foot-cols">
+${FOOT_COLS.map(c => `      <div${c.staff ? ' data-staff hidden' : ''}>
+        ${bi('h3', c.vi, c.en)}
+${c.links.map(([h, vi, en, x = '']) => '        ' + link(h, vi, en, x)).join('\n')}
+      </div>`).join('\n')}
+    </div>
+  </div>
+  <div class="foot-rule">
+    <span>© 2026 Pacific Links Foundation</span>
+    <span>GLOW — Growing Learning Opportunities Worldwide</span>
+  </div>
+  <div class="bands foot-bands" aria-hidden="true"></div>
+</footer>`;
 
 const shell = ({
   file, titleVi, titleEn, descVi, descEn,
@@ -99,19 +252,19 @@ ${noindex
 <!-- ══════ BRAND BAR ══════ -->
 <header class="appbar">
   <div class="appbar-in">
-    <a class="logo" href="./index.html"><img src="./assets/img/glow-logo.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="120" height="40"></a>
+    <a class="logo" href="./index.html"><img src="./assets/img/glow-wordmark.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="459" height="90"></a>
+    <p class="partner" data-i18n data-vi="Hợp tác cùng Pacific Links Foundation & Matera" data-en="In partnership with Pacific Links Foundation & Matera">Hợp tác cùng Pacific Links Foundation & Matera</p>
     <span class="appbar-spacer"></span>
+    ${SEARCH}
     <button id="langBtn" class="lang" type="button" aria-pressed="false" aria-label="Language / Ngôn ngữ">
       <span class="lang-vi">VI</span><span class="lang-sep"> · </span><span class="lang-en">EN</span>
     </button>
 
     <!-- SIGNED OUT is the state in the markup, because it is the state a
          crawler, a link preview and a first-time visitor are all actually in.
-         The shell used to ship an em dash where the name goes, a middle dot
-         for the avatar and a "Sign out" button beside them, so every page
-         rendered a header belonging to a learner who was not there — and
-         offered to sign out a visitor who had never signed in. src/app.js
-         turns these over once, and only once, it has a session in hand. -->
+         src/nav.js (applyAuth) turns these over once, and only once, it has
+         a session in hand: the chip reads "<learner code> <full name>", or
+         "Staff" for an account with no code. -->
     <a class="who" href="./dashboard.html" hidden>
       <span class="who-name"></span>
       <span class="avatar" aria-hidden="true"></span>
@@ -128,28 +281,29 @@ ${noindex
 </header>
 
 <!-- ══════ NAV ══════
-     The home link used to be an icon and nothing else. An icon-only link has
-     no text, and everything that reads a page by its text — a crawler, a
-     link audit, a reader-mode extraction — falls back to printing the href,
-     so the first item in the navigation read "./index.html". It has a word
-     now, and the icon is decoration beside it.
-
-     data-private marks the items that only mean anything with a session.
-     On a public page they start hidden and src/app.js reveals them if there
-     is one; on a private page they are always there, because you cannot be
-     looking at one of those signed out. -->
+     Home · Dashboard · Courses ▼ · Tuition. Dashboard is data-member: the
+     team's COMMENT tab (2026-11-09) says it appears only after sign-in, so
+     src/nav.js reveals it once there is a session. Tuition is not in the brief's menu; it stays because it was asked
+     for in every menu. English self-learning, Resources and Stories are no
+     longer here: they live under Courses and in the footer.
+     The Training entry is data-staff: hidden until src/nav.js sees a staff
+     session. -->
 <nav class="appnav" aria-label="Main">
   <div class="appnav-in">
     <a href="./index.html" data-page="index.html">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
       <span data-i18n data-vi="Trang chủ" data-en="Home">Trang chủ</span>
     </a>
-    <a href="./dashboard.html" data-page="dashboard.html" data-private${isPublic ? ' hidden' : ''} data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
-    <a href="./courses.html" data-page="courses.html" data-private${isPublic ? ' hidden' : ''} data-i18n data-vi="Khoá học của tôi" data-en="My courses">Khoá học của tôi</a>
+    <a href="./dashboard.html" data-page="dashboard.html" data-member hidden data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
+    <div class="navdd">
+      <button class="navdd-btn" type="button" aria-expanded="false" aria-controls="coursesMenu">
+        <span data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</span>${ICON.chev}
+      </button>
+      <div class="navdd-menu" id="coursesMenu" hidden>
+${COURSES_MENU}
+      </div>
+    </div>
     <a href="./payment.html" data-page="payment.html" data-i18n data-vi="Học phí" data-en="Tuition">Học phí</a>
-    <a href="./english.html" data-page="english.html" data-i18n data-vi="Học tiếng Anh" data-en="English self-learning">Học tiếng Anh</a>
-    <a href="./resources.html" data-page="resources.html" data-i18n data-vi="Tài nguyên giáo dục" data-en="Educational Resources">Tài nguyên giáo dục</a>
-    <a href="./stories.html" data-page="stories.html" data-i18n data-vi="Tin tức" data-en="Stories">Tin tức</a>
   </div>
 </nav>
 
@@ -181,12 +335,7 @@ ${main}
   </div>
 </noscript>
 
-<footer class="appfoot">
-  <div class="appfoot-in">
-    <span>© 2026 Pacific Links Foundation</span>
-    <span><a href="./index.html">GLOW</a> — Growing Learning Opportunities Worldwide</span>
-  </div>
-</footer>
+${FOOTER}
 
 <script type="module" src="${entry}"></script>
 </body>
@@ -197,7 +346,8 @@ ${main}
    not at the dashboard — sending a signed-out reader "up" to a page that
    will bounce them to sign in is not a trail. */
 const crumbHome = '<a href="./index.html" data-i18n data-vi="Trang chủ" data-en="Home">Trang chủ</a>';
-const crumbDash = '<a href="./dashboard.html" data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>';
+const crumbCourses = '<a href="./courses.html" data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</a>';
+const crumbDash ='<a href="./dashboard.html" data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>';
 const sep = '<span aria-hidden="true">/</span>';
 
 const PAGES = [
@@ -231,14 +381,15 @@ const PAGES = [
   },
   {
     file: 'courses.html',
-    titleVi: 'Khoá học của tôi | GLOW', titleEn: 'My courses | GLOW',
-    descVi: 'Mọi khoá học bạn đang tham gia trên GLOW.',
-    descEn: 'Every course you are enrolled in on GLOW.',
-    h1: 'Khoá học của tôi', h1en: 'My courses',
-    sub: 'Mọi khoá học bạn đang tham gia.',
-    suben: 'Every course you are enrolled in.',
-    crumbs: crumbDash + sep + '<span data-i18n data-vi="Khoá học của tôi" data-en="My courses">Khoá học của tôi</span>',
-    main: '<main class="shell" id="view" tabindex="-1"></main>',
+    titleVi: 'Khoá học | GLOW', titleEn: 'Courses | GLOW',
+    descVi: 'Tất cả khoá học trên GLOW: Học tiếng Anh, Kỹ năng & Kết nối.',
+    descEn: 'All GLOW courses: English Learning and Skills & Network Building.',
+    h1: 'Khoá học', h1en: 'Courses',
+    sub: 'Tất cả khoá học trên GLOW, chia thành ba danh mục: Học tiếng Anh, Kỹ năng & Kết nối và Đào tạo nội bộ.',
+    suben: 'All GLOW courses, in three categories: English Learning, Skills & Network Building, and Training.',
+    crumbs: crumbHome + sep + '<span data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</span>',
+    main: coursesIndexMarkup(),
+    noindex: false, isPublic: true,
   },
   {
     file: 'course.html',
@@ -252,22 +403,55 @@ const PAGES = [
     /* The last crumb used to be an empty <span>, so the trail ended in a
        slash with nothing after it. It names what is loading now, and the
        course name replaces the word. */
-    crumbs: crumbDash + sep
-      + '<a href="./courses.html" data-i18n data-vi="Khoá học của tôi" data-en="My courses">Khoá học của tôi</a>' + sep
+    crumbs: crumbHome + sep
+      + '<a href="./courses.html" data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</a>' + sep
       + '<span class="crumb-now" data-i18n data-vi="Khoá học" data-en="Course">Khoá học</span>',
     main: '<main class="shell" id="view" tabindex="-1"></main>',
   },
   {
     file: 'english.html',
-    titleVi: 'Học tiếng Anh | GLOW', titleEn: 'English self-learning | GLOW',
-    descVi: 'Các lộ trình tự học tiếng Anh trên GLOW: TED Talks, phát âm, ETOP, luyện thi TOEIC và IELTS — chia theo trình độ.',
-    descEn: 'English self-study tracks on GLOW: TED Talks, pronunciation, ETOP, TOEIC and IELTS preparation — split by level.',
-    h1: 'Học tiếng Anh', h1en: 'English self-learning',
+    titleVi: 'Học tiếng Anh | GLOW', titleEn: 'English Learning | GLOW',
+    descVi: 'Kiểm tra trình độ, tự học (TED Talks, phát âm, ngữ pháp, từ vựng), gia sư ETOP và tài nguyên tiếng Anh trên GLOW.',
+    descEn: 'English testing, self-learning (TED Talks, pronunciation, grammar, vocabulary), ETOP tutoring and English resources on GLOW.',
+    h1: 'Học tiếng Anh', h1en: 'English Learning',
     sub: 'Các lộ trình tự học, chia theo trình độ để bạn bắt đầu đúng chỗ.',
     suben: 'Self-study tracks, split by level so you start in the right place.',
-    crumbs: crumbHome + sep + '<span data-i18n data-vi="Học tiếng Anh" data-en="English self-learning">Học tiếng Anh</span>',
-    main: `<main class="shell" id="view" tabindex="-1">\n${catalogMarkup('english')}\n</main>`,
+    crumbs: crumbHome + sep + crumbCourses + sep + '<span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span>',
+    main: categoryMarkup('english'),
     noindex: false, isPublic: true,
+  },
+  {
+    file: 'skills.html',
+    titleVi: 'Kỹ năng & Kết nối | GLOW', titleEn: 'Skills & Network Building | GLOW',
+    descVi: 'CoffeeTime, cố vấn, lộ trình nghề nghiệp, chuỗi khoá học Trao quyền cho Thanh niên và di cư an toàn trên GLOW.',
+    descEn: 'CoffeeTime talks, mentoring, career tracks, the Youth Empowerment Series and safe migration on GLOW.',
+    h1: 'Kỹ năng & Kết nối', h1en: 'Skills & Network Building',
+    sub: 'Các buổi trò chuyện, cố vấn, lộ trình nghề nghiệp và khoá học tự học giúp bạn phát triển kỹ năng và mở rộng mạng lưới.',
+    suben: 'Talks, mentoring, career tracks and self-paced courses to build skills and grow your network.',
+    crumbs: crumbHome + sep + crumbCourses + sep + '<span data-i18n data-vi="Kỹ năng & Kết nối" data-en="Skills & Network Building">Kỹ năng & Kết nối</span>',
+    main: categoryMarkup('skills'),
+    noindex: false, isPublic: true,
+  },
+  {
+    /* STAFF ONLY. No course data in this markup: what is here is the panel a
+       signed-out visitor or a non-staff learner should see. src/app.js
+       replaces it with the Training courses only for a staff session. */
+    file: 'training.html',
+    titleVi: 'Đào tạo nội bộ | GLOW', titleEn: 'Training | GLOW',
+    descVi: 'Đào tạo dành cho nhân viên và đối tác Pacific Links.', descEn: 'Training for Pacific Links staff and partners.',
+    h1: 'Đào tạo nội bộ', h1en: 'Training',
+    sub: 'Đào tạo dành cho nhân viên và đối tác Pacific Links.',
+    suben: 'Training for Pacific Links staff and partners.',
+    crumbs: crumbHome + sep + crumbCourses + sep + '<span data-i18n data-vi="Đào tạo nội bộ" data-en="Training">Đào tạo nội bộ</span>',
+    main: [
+      '<main class="shell" id="view" tabindex="-1">',
+      '  <section class="panel staff-gate">',
+      '    <p data-i18n data-vi="Trang này dành cho nhân viên Pacific Links. Hãy đăng nhập bằng tài khoản nhân viên." data-en="This page is for Pacific Links staff. Please sign in with a staff account.">Trang này dành cho nhân viên Pacific Links. Hãy đăng nhập bằng tài khoản nhân viên.</p>',
+      '    <p><a class="btn btn-primary" href="./login.html?next=training.html" data-i18n data-vi="Đăng nhập" data-en="Sign in">Đăng nhập</a></p>',
+      '  </section>',
+      '</main>',
+    ].join('\n'),
+    isPublic: true, needsJs: true,
   },
   {
     file: 'resources.html',
@@ -330,6 +514,74 @@ const PAGES = [
     ].join('\n'),
     isPublic: true, needsJs: true,
     entry: './src/story.js',
+  },
+  /* ── LESSONS — English through the news ─────────────────
+     Same pattern as stories: static listing (<!--@lessons-->), reader with
+     its data inlined (<!--@lessons-json-->). One entry, src/lessons.js,
+     serves the list and the reader. The Studio is staff-only and noindex. */
+  {
+    file: 'lessons.html',
+    titleVi: 'Tiếng Anh qua tin tức | GLOW', titleEn: 'English through the news | GLOW',
+    descVi: 'Bài đọc tiếng Anh theo cấp độ, có nghe, từ khoá kèm nghĩa tiếng Việt và sổ từ vựng.',
+    descEn: 'Graded English reading with listening, keywords with Vietnamese meanings and a word bank.',
+    h1: 'Tiếng Anh qua tin tức', h1en: 'English through the news',
+    sub: 'Đọc, nghe và học từ mới qua những bài đọc theo cấp độ.',
+    suben: 'Read, listen and learn new words through graded reading.',
+    crumbs: crumbHome + sep + '<span data-i18n data-vi="Tiếng Anh qua tin tức" data-en="English through the news">Tiếng Anh qua tin tức</span>',
+    main: [
+      '<main class="shell" id="view" tabindex="-1">',
+      '  <div class="lessons-bar">',
+      '    <div class="lesson-filter" id="lessonFilter" role="group" aria-label="Lọc theo cấp độ / Filter by level" hidden>',
+      '      <button type="button" class="chip" data-filter="all" aria-pressed="true" data-i18n data-vi="Tất cả" data-en="All">Tất cả</button>',
+      '      <button type="button" class="chip" data-filter="beginner" aria-pressed="false" data-i18n data-vi="Cơ bản" data-en="Beginner">Cơ bản</button>',
+      '      <button type="button" class="chip" data-filter="intermediate" aria-pressed="false" data-i18n data-vi="Trung cấp" data-en="Intermediate">Trung cấp</button>',
+      '      <button type="button" class="chip" data-filter="advanced" aria-pressed="false" data-i18n data-vi="Nâng cao" data-en="Advanced">Nâng cao</button>',
+      '    </div>',
+      '    <a class="btn btn-quiet lessons-studio" href="./lesson-studio.html" data-staff hidden data-i18n data-vi="Lesson Studio (nhân viên)" data-en="Lesson Studio (staff)">Lesson Studio (nhân viên)</a>',
+      '  </div>',
+      '  <section class="lessons" id="lessonList">',
+      '    <!--@lessons-->',
+      '  </section>',
+      '  <p class="stories-empty" id="lessonNone" hidden data-i18n data-vi="Chưa có bài học ở cấp độ này." data-en="No lessons at this level yet.">Chưa có bài học ở cấp độ này.</p>',
+      '</main>',
+    ].join('\n'),
+    noindex: false, isPublic: true,
+    entry: './src/lessons.js',
+  },
+  {
+    file: 'lesson.html',
+    titleVi: 'Bài học | GLOW', titleEn: 'Lesson | GLOW',
+    descVi: 'Bài đọc tiếng Anh từ GLOW.', descEn: 'An English reading lesson from GLOW.',
+    h1: 'Đang tải…', h1en: 'Loading…',
+    crumbs: crumbHome + sep
+      + '<a href="./lessons.html" data-i18n data-vi="Tiếng Anh qua tin tức" data-en="English through the news">Tiếng Anh qua tin tức</a>' + sep
+      + '<span class="crumb-now" data-i18n data-vi="Bài học" data-en="Lesson">Bài học</span>',
+    main: [
+      '<main class="shell" id="view" tabindex="-1">',
+      '  <div class="lesson" id="lesson"></div>',
+      '</main>',
+      '<script type="application/json" id="glowLessons"><!--@lessons-json--></script>',
+    ].join('\n'),
+    isPublic: true, needsJs: true,
+    entry: './src/lessons.js',
+  },
+  {
+    file: 'lesson-studio.html',
+    titleVi: 'Lesson Studio | GLOW', titleEn: 'Lesson Studio | GLOW',
+    descVi: 'Công cụ soạn bài đọc dành cho nhân viên Pacific Links.', descEn: 'A lesson drafting tool for Pacific Links staff.',
+    h1: 'Lesson Studio', h1en: 'Lesson Studio',
+    sub: 'Soạn bản nháp bài đọc từ nguồn tin đáng tin cậy, rồi duyệt và đăng trong CMS.',
+    suben: 'Draft a reading lesson from a trusted source, then review and publish it in the CMS.',
+    crumbs: crumbHome + sep
+      + '<a href="./lessons.html" data-i18n data-vi="Tiếng Anh qua tin tức" data-en="English through the news">Tiếng Anh qua tin tức</a>' + sep
+      + '<span data-i18n data-vi="Lesson Studio" data-en="Lesson Studio">Lesson Studio</span>',
+    main: [
+      '<main class="shell" id="view" tabindex="-1">',
+      '  <div class="studio" id="studio"></div>',
+      '</main>',
+    ].join('\n'),
+    isPublic: true, needsJs: true,
+    entry: './src/lesson-studio.js',
   },
 ];
 

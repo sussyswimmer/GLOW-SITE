@@ -138,3 +138,75 @@ export function storiesListMarkup(stories) {
 export function storiesJson(stories) {
   return JSON.stringify(stories).replace(/</g, '\\u003c');
 }
+
+/* ── lessons: English through the news ──────────────────────
+   content/lessons/<yyyy-mm-dd>-<slug>.md — graded English reading. The
+   body is the English text; keywords are ONE string, a line each in the
+   form `word | tiếng Việt | English meaning`, because a Decap new-entry
+   URL can prefill a text field but not a list. Same build-time pipeline
+   as the stories above: marked, then inlined, so the reader needs no API. */
+
+const LEVELS = { beginner: 'Cơ bản', intermediate: 'Trung cấp', advanced: 'Nâng cao' };
+const LEVELS_EN = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' };
+
+export function parseKeywords(text) {
+  return String(text ?? '').split(/\r?\n/)
+    .map(line => line.split('|').map(p => p.trim()))
+    .filter(p => p[0] && p[1])
+    .map(([word, vi, meaning]) => ({ word, vi, meaning: meaning || '' }));
+}
+
+export function loadLessons() {
+  const dir = r('content/lessons');
+  if (!existsSync(dir)) return [];
+
+  return readdirSync(dir)
+    .filter(f => f.endsWith('.md'))
+    .map(f => {
+      const { data, content } = matter(readFileSync(resolve(dir, f), 'utf8'));
+      const slug = basename(f, '.md');
+      const date = data.date instanceof Date
+        ? data.date.toISOString().slice(0, 10)
+        : String(data.date ?? '');
+      const level = data.level in LEVELS ? data.level : 'beginner';
+      return {
+        slug,
+        title: data.title ?? slug,
+        titleVi: data.titleVi || data.title || slug,
+        summary: data.summary ?? '',
+        summaryVi: data.summaryVi || data.summary || '',
+        level,
+        date: formatDate(date),
+        keywords: parseKeywords(data.keywords),
+        audio: data.audio || '',
+        sample: data.sample === true,
+        body: md(content),
+      };
+    })
+    .sort((a, b) => b.date.iso.localeCompare(a.date.iso));
+}
+
+/* The lessons listing as static markup, like the stories one. The level
+   filter in src/lessons.js only hides cards; with JavaScript off every
+   lesson is still listed. */
+export function lessonsListMarkup(lessons) {
+  if (!lessons.length) {
+    return `<p class="stories-empty" data-i18n data-vi="Chưa có bài học nào." data-en="No lessons yet.">Chưa có bài học nào.</p>`;
+  }
+  return lessons.map(l => [
+    `<a class="lesson-card" data-level="${l.level}" href="./lesson.html?slug=${encodeURIComponent(l.slug)}">`,
+    '  <span class="lesson-tags">',
+    `    <span class="lesson-level lv-${l.level}" data-i18n data-vi="${LEVELS[l.level]}" data-en="${LEVELS_EN[l.level]}">${LEVELS[l.level]}</span>`,
+    l.sample ? '    <span class="lesson-sample" data-i18n data-vi="Bài mẫu" data-en="Sample lesson">Bài mẫu</span>' : '',
+    `    <time datetime="${esc(l.date.iso)}" data-i18n data-vi="${esc(l.date.vi)}" data-en="${esc(l.date.en)}">${esc(l.date.vi)}</time>`,
+    '  </span>',
+    `  <h3 lang="en">${esc(l.title)}</h3>`,
+    `  <p data-i18n data-vi="${esc(l.summaryVi)}" data-en="${esc(l.summary)}">${esc(l.summaryVi)}</p>`,
+    '  <span class="story-more" aria-hidden="true" data-i18n data-vi="Đọc bài →" data-en="Read the lesson →">Đọc bài →</span>',
+    '</a>',
+  ].filter(Boolean).join('\n')).join('\n');
+}
+
+export function lessonsJson(lessons) {
+  return JSON.stringify(lessons).replace(/</g, '\\u003c');
+}

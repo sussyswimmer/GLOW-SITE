@@ -8,13 +8,14 @@
    - {{token.path}}      → content/landing.json values   (index.html)
    - <!--@stories-->     → the static story listing      (stories.html)
    - <!--@stories-json--> → the stories as inline JSON   (story.html)
+   - <!--@lessons-->, <!--@lessons-json--> → the same, for lessons
 
    In dev, editing anything under content/ full-reloads the page, so the
    authoring loop is: edit → save → see it, same as editing the HTML.
    ═══════════════════════════════════════════════════════════ */
 
 import { resolve } from 'node:path';
-import { loadLanding, loadStories, injectTokens, storiesListMarkup, storiesJson } from './content.mjs';
+import { loadLanding, loadStories, injectTokens, storiesListMarkup, storiesJson, loadLessons, lessonsListMarkup, lessonsJson } from './content.mjs';
 
 export function contentPlugin() {
   /* Loaded per-transform rather than cached: the files are a few KB, and a
@@ -26,6 +27,12 @@ export function contentPlugin() {
       html = html
         .replace('<!--@stories-->', () => storiesListMarkup(stories))
         .replace('<!--@stories-json-->', () => storiesJson(stories));
+    }
+    if (html.includes('<!--@lessons-->') || html.includes('<!--@lessons-json-->')) {
+      const lessons = loadLessons();
+      html = html
+        .replace('<!--@lessons-->', () => lessonsListMarkup(lessons))
+        .replace('<!--@lessons-json-->', () => lessonsJson(lessons));
     }
     return html;
   }

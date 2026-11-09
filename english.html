@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi"
-      data-title-vi="Học tiếng Anh | GLOW" data-title-en="English self-learning | GLOW"
-      data-desc-vi="Các lộ trình tự học tiếng Anh trên GLOW: TED Talks, phát âm, ETOP, luyện thi TOEIC và IELTS — chia theo trình độ." data-desc-en="English self-study tracks on GLOW: TED Talks, pronunciation, ETOP, TOEIC and IELTS preparation — split by level.">
+      data-title-vi="Học tiếng Anh | GLOW" data-title-en="English Learning | GLOW"
+      data-desc-vi="Kiểm tra trình độ, tự học (TED Talks, phát âm, ngữ pháp, từ vựng), gia sư ETOP và tài nguyên tiếng Anh trên GLOW." data-desc-en="English testing, self-learning (TED Talks, pronunciation, grammar, vocabulary), ETOP tutoring and English resources on GLOW.">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,7 @@
      when the learner switches to English — the page used to render a
      Vietnamese interface under an English title in both languages. -->
 <title>Học tiếng Anh | GLOW</title>
-<meta name="description" content="Các lộ trình tự học tiếng Anh trên GLOW: TED Talks, phát âm, ETOP, luyện thi TOEIC và IELTS — chia theo trình độ.">
+<meta name="description" content="Kiểm tra trình độ, tự học (TED Talks, phát âm, ngữ pháp, từ vựng), gia sư ETOP và tài nguyên tiếng Anh trên GLOW.">
 <link rel="canonical" href="https://glow-pacific-links.netlify.app/english.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,19 +28,28 @@
 <!-- ══════ BRAND BAR ══════ -->
 <header class="appbar">
   <div class="appbar-in">
-    <a class="logo" href="./index.html"><img src="./assets/img/glow-logo.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="120" height="40"></a>
+    <a class="logo" href="./index.html"><img src="./assets/img/glow-wordmark.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="459" height="90"></a>
+    <p class="partner" data-i18n data-vi="Hợp tác cùng Pacific Links Foundation & Matera" data-en="In partnership with Pacific Links Foundation & Matera">Hợp tác cùng Pacific Links Foundation & Matera</p>
     <span class="appbar-spacer"></span>
+    <div class="navsearch-wrap">
+      <a class="navsearch-btn" href="./courses.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><span class="sr-only" data-i18n data-vi="Tìm khoá học" data-en="Search courses">Tìm khoá học</span></a>
+      <form class="navsearch" id="navSearch" role="search" action="./courses.html" method="get" hidden>
+        <label for="navQ" data-i18n data-vi="Tìm khoá học (tên tiếng Anh hoặc tiếng Việt)" data-en="Search courses (English or Vietnamese names)">Tìm khoá học (tên tiếng Anh hoặc tiếng Việt)</label>
+        <div class="navsearch-row">
+          <input id="navQ" name="q" type="search" autocomplete="off">
+          <button type="submit" data-i18n data-vi="Tìm" data-en="Search">Tìm</button>
+        </div>
+      </form>
+    </div>
     <button id="langBtn" class="lang" type="button" aria-pressed="false" aria-label="Language / Ngôn ngữ">
       <span class="lang-vi">VI</span><span class="lang-sep"> · </span><span class="lang-en">EN</span>
     </button>
 
     <!-- SIGNED OUT is the state in the markup, because it is the state a
          crawler, a link preview and a first-time visitor are all actually in.
-         The shell used to ship an em dash where the name goes, a middle dot
-         for the avatar and a "Sign out" button beside them, so every page
-         rendered a header belonging to a learner who was not there — and
-         offered to sign out a visitor who had never signed in. src/app.js
-         turns these over once, and only once, it has a session in hand. -->
+         src/nav.js (applyAuth) turns these over once, and only once, it has
+         a session in hand: the chip reads "<learner code> <full name>", or
+         "Staff" for an account with no code. -->
     <a class="who" href="./dashboard.html" hidden>
       <span class="who-name"></span>
       <span class="avatar" aria-hidden="true"></span>
@@ -57,75 +66,68 @@
 </header>
 
 <!-- ══════ NAV ══════
-     The home link used to be an icon and nothing else. An icon-only link has
-     no text, and everything that reads a page by its text — a crawler, a
-     link audit, a reader-mode extraction — falls back to printing the href,
-     so the first item in the navigation read "./index.html". It has a word
-     now, and the icon is decoration beside it.
-
-     data-private marks the items that only mean anything with a session.
-     On a public page they start hidden and src/app.js reveals them if there
-     is one; on a private page they are always there, because you cannot be
-     looking at one of those signed out. -->
+     Home · Dashboard · Courses ▼ · Tuition. Dashboard is data-member: the
+     team's COMMENT tab (2026-11-09) says it appears only after sign-in, so
+     src/nav.js reveals it once there is a session. Tuition is not in the brief's menu; it stays because it was asked
+     for in every menu. English self-learning, Resources and Stories are no
+     longer here: they live under Courses and in the footer.
+     The Training entry is data-staff: hidden until src/nav.js sees a staff
+     session. -->
 <nav class="appnav" aria-label="Main">
   <div class="appnav-in">
     <a href="./index.html" data-page="index.html">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
       <span data-i18n data-vi="Trang chủ" data-en="Home">Trang chủ</span>
     </a>
-    <a href="./dashboard.html" data-page="dashboard.html" data-private hidden data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
-    <a href="./courses.html" data-page="courses.html" data-private hidden data-i18n data-vi="Khoá học của tôi" data-en="My courses">Khoá học của tôi</a>
+    <a href="./dashboard.html" data-page="dashboard.html" data-member hidden data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
+    <div class="navdd">
+      <button class="navdd-btn" type="button" aria-expanded="false" aria-controls="coursesMenu">
+        <span data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="navdd-menu" id="coursesMenu" hidden>
+        <a href="./courses.html" data-i18n data-vi="Tất cả khoá học" data-en="All courses">Tất cả khoá học</a>
+        <a href="./english.html" data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</a>
+        <a href="./skills.html" data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</a>
+        <a href="./training.html" data-staff hidden data-i18n data-vi="Đào tạo nội bộ" data-en="Training">Đào tạo nội bộ</a>
+      </div>
+    </div>
     <a href="./payment.html" data-page="payment.html" data-i18n data-vi="Học phí" data-en="Tuition">Học phí</a>
-    <a href="./english.html" data-page="english.html" data-i18n data-vi="Học tiếng Anh" data-en="English self-learning">Học tiếng Anh</a>
-    <a href="./resources.html" data-page="resources.html" data-i18n data-vi="Tài nguyên giáo dục" data-en="Educational Resources">Tài nguyên giáo dục</a>
-    <a href="./stories.html" data-page="stories.html" data-i18n data-vi="Tin tức" data-en="Stories">Tin tức</a>
   </div>
 </nav>
 
 <!-- ══════ PAGE HEAD ══════ -->
 <div class="pagehead">
   <div class="pagehead-in">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="./index.html" data-i18n data-vi="Trang chủ" data-en="Home">Trang chủ</a><span aria-hidden="true">/</span><span data-i18n data-vi="Học tiếng Anh" data-en="English self-learning">Học tiếng Anh</span></nav>
-    <h1 data-i18n data-vi="Học tiếng Anh" data-en="English self-learning">Học tiếng Anh</h1>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="./index.html" data-i18n data-vi="Trang chủ" data-en="Home">Trang chủ</a><span aria-hidden="true">/</span><a href="./courses.html" data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</a><span aria-hidden="true">/</span><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></nav>
+    <h1 data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</h1>
     <p data-i18n data-vi="Các lộ trình tự học, chia theo trình độ để bạn bắt đầu đúng chỗ." data-en="Self-study tracks, split by level so you start in the right place.">Các lộ trình tự học, chia theo trình độ để bạn bắt đầu đúng chỗ.</p>
   </div>
 </div>
 
 <main class="shell" id="view" tabindex="-1">
-      <section class="track" id="ted" data-rise>
-        <div class="track-head">
-          <h3 data-i18n data-vi="TED Talks" data-en="TED Talks">TED Talks</h3>
-          <span class="count">6</span>
-        </div>
-        <div class="chips"><a class="chip" href="./course.html?id=1105">General 1</a><a class="chip" href="./course.html?id=1991">General 2</a><a class="chip" href="./course.html?id=1992">General 3</a><a class="chip" href="./course.html?id=1749">Careers</a><a class="chip" href="./course.html?id=2205">Ted Talks Career Deck</a><a class="chip" href="./course.html?id=2219">Ted Talks AI</a></div>
+      <section class="catsec" id="english-testing">
+        <div class="catsec-head"><h2><span data-i18n data-vi="Kiểm tra tiếng Anh" data-en="English Testing">Kiểm tra tiếng Anh</span></h2><span class="count">6</span></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="Kiểm tra xếp lớp" data-en="Placement Test">Kiểm tra xếp lớp</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL0001"><span class="ccard-name">English Placement Assessment</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL0001</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title">IELTS</h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL1001"><span class="ccard-name">IELTS Practice</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL1001</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL1002"><span class="ccard-name">IELTS Speaking</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL1002</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL1003"><span class="ccard-name">IELTS Writing</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL1003</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title">TOEIC</h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL1101"><span class="ccard-name">TOEIC Practice</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL1101</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="Luyện phỏng vấn" data-en="Interview Prep">Luyện phỏng vấn</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL1201"><span class="ccard-name">Donor's Interview Practice</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL1201</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
       </section>
-      <section class="track" id="pronunciation" data-rise>
-        <div class="track-head">
-          <h3 data-i18n data-vi="Phát âm" data-en="Pronunciation">Phát âm</h3>
-          <span class="count">4</span>
-        </div>
-        <div class="chips"><a class="chip" href="./course.html?id=281">Beginner</a><a class="chip" href="./course.html?id=279">Intermediate</a><a class="chip" href="./course.html?id=278">Advanced</a><a class="chip" href="./course.html?id=1736">Practice for Donor's interview</a></div>
+      <section class="catsec" id="english-self-learning">
+        <div class="catsec-head"><h2><span data-i18n data-vi="Tự học tiếng Anh" data-en="English Self-Learning">Tự học tiếng Anh</span></h2><span class="count">10</span></div>
+        <a class="feature" href="./lessons.html"><span class="feature-title"><span data-i18n data-vi="Bài học tiếng Anh qua tin tức" data-en="English through the news">Bài học tiếng Anh qua tin tức</span></span><span class="feature-desc"><span data-i18n data-vi="Bài đọc mỗi ngày có audio, từ khoá và sổ từ vựng." data-en="Daily lessons with audio, keywords and a word bank.">Bài đọc mỗi ngày có audio, từ khoá và sổ từ vựng.</span></span><span class="feature-go"><span data-i18n data-vi="Đọc bài học" data-en="Read the lessons">Đọc bài học</span> →</span></a>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="TED Talks &amp; Phát triển kỹ năng" data-en="TED Talks &amp; Skills Building">TED Talks &amp; Phát triển kỹ năng</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL2011"><span class="ccard-name">TED Talks - General 1</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2011</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL2012"><span class="ccard-name">TED Talks - General 2</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2012</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL2021"><span class="ccard-name">TED Talks Career</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2021</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="Phát âm" data-en="Pronunciation">Phát âm</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL2101"><span class="ccard-name">Pronunciation - Beginner</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2101</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL2103"><span class="ccard-name">Pronunciation - Advanced</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2103</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="Ngữ pháp &amp; Viết" data-en="Grammar &amp; Writing">Ngữ pháp &amp; Viết</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL2201"><span class="ccard-name">Grammar</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2201</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="Từ vựng" data-en="Vocabulary">Từ vựng</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL2301"><span class="ccard-name">Learn Vocabulary with Quizlet</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2301</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="Kỹ năng tổng hợp" data-en="Comprehensive Skills">Kỹ năng tổng hợp</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EL2401"><span class="ccard-name">English for Starters</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2401</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL2402"><span class="ccard-name">Learn English through Books</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2402</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL2404"><span class="ccard-name">Learn English through Movies</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL2404</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div></div>
       </section>
-      <section class="track" id="etop" data-rise>
-        <div class="track-head">
-          <h3 data-i18n data-vi="ETOP" data-en="ETOP">ETOP</h3>
-          <span class="count">4</span>
-        </div>
-        <div class="chips"><a class="chip" href="./course.html?id=241">Beginner</a><a class="chip" href="./course.html?id=287">Intermediate</a><a class="chip" href="./course.html?id=246">Advanced</a><a class="chip" href="./course.html?id=106">Coaching</a></div>
+      <section class="catsec" id="etop">
+        <div class="catsec-head"><h2><span data-i18n data-vi="Chương trình gia sư tiếng Anh trực tuyến (ETOP)" data-en="English Tutoring Online Program (ETOP)">Chương trình gia sư tiếng Anh trực tuyến (ETOP)</span></h2><span class="count">5</span></div>
+        <div class="cgrid"><a class="ccard" href="./course.html?code=EL3001"><span class="ccard-name">ETOP Beginner</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL3001</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL3002"><span class="ccard-name">ETOP Intermediate</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL3002</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL3003"><span class="ccard-name">ETOP Advanced</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL3003</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL3011"><span class="ccard-name">Coaching for College</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL3011</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL5001"><span class="ccard-name">IELTS Speaking Tutor Orientation</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL5001</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div>
       </section>
-      <section class="track" id="testing" data-rise>
-        <div class="track-head">
-          <h3 data-i18n data-vi="Kiểm tra" data-en="Testing">Kiểm tra</h3>
-          <span class="count">5</span>
-        </div>
-        <div class="chips"><a class="chip" href="./course.html?id=62">TOEIC</a><a class="chip" href="./course.html?id=61">IELTS</a><a class="chip" href="./course.html?id=1734">IELTS Speaking</a><a class="chip" href="./course.html?id=2245">IELTS Writing</a><a class="chip" href="./course.html?id=245">Placement Assessment</a></div>
-      </section>
-      <section class="track" id="other" data-rise>
-        <div class="track-head">
-          <h3 data-i18n data-vi="Khác" data-en="Other">Khác</h3>
-          <span class="count">8</span>
-        </div>
-        <div class="chips"><a class="chip" href="./course.html?id=1753">Quizlet</a><a class="chip" href="./course.html?id=1750">Movies</a><a class="chip" href="./course.html?id=1135">Idioms/ collocation</a><a class="chip" href="./course.html?id=1128">Sentence Diagramming</a><a class="chip" href="./course.html?id=60">Grammar</a><a class="chip" href="./course.html?id=1999">Songs</a><a class="chip" href="./course.html?id=1983">Books</a><a class="chip" href="./course.html?id=2005">English for beginners</a></div>
+      <section class="catsec" id="english-resources">
+        <div class="catsec-head"><h2><span data-i18n data-vi="Tài nguyên tiếng Anh" data-en="English Resources">Tài nguyên tiếng Anh</span></h2><span class="count">4</span></div>
+        <div class="cgrid"><a class="ccard" href="./course.html?code=EL5002"><span class="ccard-name">Tips for GLOW Self-Learning</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL5002</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL5003"><span class="ccard-name">How to use ChatBot AI</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL5003</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL5007"><span class="ccard-name">Report Non-GLOW English Self-study Time</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL5007</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a><a class="ccard" href="./course.html?code=EL5008"><span class="ccard-name">Khan Academy</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EL5008</span></span><span class="ccard-cat"><span data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</span></span></a></div>
       </section>
 </main>
 
@@ -144,11 +146,55 @@
   </div>
 </noscript>
 
-<footer class="appfoot">
-  <div class="appfoot-in">
-    <span>© 2026 Pacific Links Foundation</span>
-    <span><a href="./index.html">GLOW</a> — Growing Learning Opportunities Worldwide</span>
+<footer class="foot">
+  <div class="foot-in">
+    <div class="foot-brand">
+      <a class="logo" href="./index.html"><img src="./assets/img/glow-wordmark.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="459" height="90"></a>
+      <p data-i18n data-vi="Nền tảng tự học của Pacific Links Foundation, hợp tác cùng Matera." data-en="The self-learning platform from Pacific Links Foundation, in partnership with Matera.">Nền tảng tự học của Pacific Links Foundation, hợp tác cùng Matera.</p>
+      <div class="foot-partners">
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer"><img src="./assets/img/partners/pacific-links-foundation.png" alt="Pacific Links Foundation" width="157" height="160"></a>
+        <img src="./assets/img/partners/matera-alliance.png" alt="Matera Alliance Inc" width="129" height="160">
+      </div>
+    </div>
+    <div class="foot-cols">
+      <div>
+        <h3 data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</h3>
+        <a href="./english.html#english-testing" data-i18n data-vi="Kiểm tra tiếng Anh" data-en="English Testing">Kiểm tra tiếng Anh</a>
+        <a href="./english.html#english-self-learning" data-i18n data-vi="Tự học tiếng Anh" data-en="English Self-Learning">Tự học tiếng Anh</a>
+        <a href="./english.html#etop" data-i18n data-vi="ETOP" data-en="ETOP">ETOP</a>
+        <a href="./english.html#english-resources" data-i18n data-vi="Tài nguyên tiếng Anh" data-en="English Resources">Tài nguyên tiếng Anh</a>
+      </div>
+      <div>
+        <h3 data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</h3>
+        <a href="./skills.html#coffeetime" data-i18n data-vi="CoffeeTime" data-en="CoffeeTime">CoffeeTime</a>
+        <a href="./skills.html#mentoring" data-i18n data-vi="Cố vấn" data-en="Mentoring">Cố vấn</a>
+        <a href="./skills.html#career-track" data-i18n data-vi="Lộ trình phát triển nghề nghiệp" data-en="Career Development Track">Lộ trình phát triển nghề nghiệp</a>
+        <a href="./skills.html#youth-empowerment" data-i18n data-vi="Chuỗi khoá học Trao quyền cho Thanh niên" data-en="Youth Empowerment Series">Chuỗi khoá học Trao quyền cho Thanh niên</a>
+      </div>
+      <div data-staff hidden>
+        <h3 data-i18n data-vi="Đào tạo nội bộ" data-en="Training">Đào tạo nội bộ</h3>
+        <a href="./training.html#staff-english" data-i18n data-vi="Tiếng Anh cho nhân viên" data-en="English for staff">Tiếng Anh cho nhân viên</a>
+        <a href="./training.html#migration-trafficking" data-i18n data-vi="Phòng ngừa rủi ro di cư &amp; mua bán người" data-en="Migration &amp; trafficking prevention">Phòng ngừa rủi ro di cư &amp; mua bán người</a>
+        <a href="./training.html#organization-skills" data-i18n data-vi="Kỹ năng tổ chức" data-en="Organisation skills">Kỹ năng tổ chức</a>
+        <a href="./training.html#technical-skills" data-i18n data-vi="Kỹ năng công nghệ" data-en="Technical skills">Kỹ năng công nghệ</a>
+      </div>
+      <div>
+        <h3 data-i18n data-vi="Khác" data-en="Other">Khác</h3>
+        <a href="./stories.html" data-i18n data-vi="Tin tức" data-en="Stories">Tin tức</a>
+        <a href="./index.html#about" data-i18n data-vi="Về GLOW" data-en="About GLOW">Về GLOW</a>
+        <a href="./login.html" data-guest data-i18n data-vi="Đăng nhập" data-en="Sign in">Đăng nhập</a>
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer" data-i18n data-vi="Trở thành tình nguyện viên" data-en="Become a Volunteer">Trở thành tình nguyện viên</a>
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer" data-i18n data-vi="Quyên góp" data-en="Donate">Quyên góp</a>
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer" data-i18n data-vi="Hợp tác cùng chúng tôi" data-en="Partner With Us">Hợp tác cùng chúng tôi</a>
+        <a href="https://mypalo.vn" target="_blank" rel="noopener noreferrer" data-i18n data-vi="Ứng dụng PAXU" data-en="PAXU app">Ứng dụng PAXU</a>
+      </div>
+    </div>
   </div>
+  <div class="foot-rule">
+    <span>© 2026 Pacific Links Foundation</span>
+    <span>GLOW — Growing Learning Opportunities Worldwide</span>
+  </div>
+  <div class="bands foot-bands" aria-hidden="true"></div>
 </footer>
 
 <script type="module" src="./src/app.js"></script>

@@ -80,7 +80,7 @@ human decided when learners get new code, turn it off and deploy manually.
 There is a **second, live deployment** — a review link, not the production
 plan above:
 
-> **https://glow-pacific-links.netlify.app** — `demo` / `glow-demo-2026`
+> **https://glow-pacific-links.netlify.app** — `demo` / `glow-demo-2026` (more accounts under "Demo accounts" below)
 
 It exists so the site can be shown to people before there is a Pacific Links
 host account. It is not where this should live. Two reasons, both worth
@@ -204,6 +204,26 @@ npm run dev               # site on 5173  ← open this one
 ```
 
 Sign in with `demo` / `glow-demo-2026`.
+
+### Demo accounts
+
+`DATA_SOURCE=mock` serves one account per role, so every role-gated view can
+be reviewed. The role always comes from the server, never the browser.
+
+| username | password | name | ID number | role |
+|---|---|---|---|---|
+| `demo` | `glow-demo-2026` | Lê Thị A | QT20P0007 | learner |
+| `demo-gems` | `glow-demo-2026` | Nguyễn Văn B | HU21G0012 | GEMS scholar |
+| `demo-seeds` | `glow-demo-2026` | Trần Thị C | QT24S0031 | SEEDS scholar |
+| `demo-staff` | `glow-staff-2026` | Phạm Minh D | none | Pacific Links staff |
+
+The sign-in page hint lists only the first three. **The staff login is
+documented here only, and it is not a secret**: this repository is public, so
+anyone can read the password. That is acceptable because the mock adapter
+holds no real data. Real staff gating comes from Moodle once the team says
+how staff, GEMS and SEEDS are marked there (see "Roles and the catalogue" in
+`ARCHITECTURE.md`); on the live adapter everyone is a learner until then, and
+role-gated courses stay hidden.
 
 To develop against the real platform, set `DATA_SOURCE=moodle` and
 `MOODLE_URL` in `.env` and sign in with a real account. Be aware you are

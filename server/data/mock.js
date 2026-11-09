@@ -14,7 +14,7 @@
    • Real, lifted from the platform: every course code, course title,
      category and track name, and the syllabus lines. Sourced in
      CONTENT.md.
-   • Not real, and marked as such: the signed-in learner, all progress
+   • Not real, and marked as such: the four demo accounts, all progress
      percentages, the calendar events, and the activity rows inside a
      course. Course interiors sit behind the login and were never
      accessible, so they are illustrative structure, not their content.
@@ -28,21 +28,36 @@
 import { assertDashboard, assertCourseDetail, assertBilling } from './contract.js';
 import { billingFor } from './billing.js';
 import { catalogGroups, trackById } from './glow-catalogue.js';
+import { CATEGORIES, courseByCode, courseByMoodleId } from './catalogue.js';
 
-/* The one account that can sign in against the mock. Documented in
-   docs/DEPLOY.md; with DATA_SOURCE=moodle this adapter is never loaded. */
-const DEMO_USER = 'demo';
-const DEMO_PASS = 'glow-demo-2026';
-
-const LEARNER = {
-  id: 1,
-  username: DEMO_USER,
-  fullname: 'Học viên GLOW',
-  /* First + last initial, matching the rule in moodle.js: Vietnamese names
-     are family-name-first, so the last part is the given name. */
-  initials: 'HG',
-  idnumber: 'DEMO-0000',
+/* The accounts that can sign in against the mock, one per role. Documented
+   in docs/DEPLOY.md; with DATA_SOURCE=moodle this adapter is never loaded.
+   The repo is public, so these passwords are not secrets — real staff
+   gating comes from Moodle. Initials are first + last, matching the rule in
+   moodle.js: Vietnamese names are family-name-first. */
+const ACCOUNTS = {
+  demo:         { pass: 'glow-demo-2026',  id: 1, fullname: 'Lê Thị A',     initials: 'LA', idnumber: 'QT20P0007', role: 'learner' },
+  'demo-gems':  { pass: 'glow-demo-2026',  id: 2, fullname: 'Nguyễn Văn B', initials: 'NB', idnumber: 'HU21G0012', role: 'gems' },
+  'demo-seeds': { pass: 'glow-demo-2026',  id: 3, fullname: 'Trần Thị C',   initials: 'TC', idnumber: 'QT24S0031', role: 'seeds' },
+  'demo-staff': { pass: 'glow-staff-2026', id: 4, fullname: 'Phạm Minh D',  initials: 'PD', idnumber: undefined,   role: 'staff' },
 };
+
+function learnerOf(username) {
+  const { pass, ...learner } = ACCOUNTS[username];
+  return { ...learner, username };
+}
+
+/* The token is `mock:<username>`, so getLearner and getDashboard know whose
+   data to serve. Anything else (an old cookie) is a signed-out request. */
+function usernameOf(session) {
+  const u = String(session?.token || '').replace(/^mock:/, '');
+  if (!Object.hasOwn(ACCOUNTS, u)) {
+    const e = new Error('invalid_token');
+    e.statusCode = 401;
+    throw e;
+  }
+  return u;
+}
 
 const img = name => `/assets/img/${name}`;
 
@@ -171,32 +186,144 @@ function daysAgo(n) {
 /* ── the adapter surface — same as moodle.js ─────────────── */
 
 export async function login(username, password) {
-  const ok = username === DEMO_USER && password === DEMO_PASS;
-  if (!ok) {
+  const acct = Object.hasOwn(ACCOUNTS, username) ? ACCOUNTS[username] : null;
+  if (!acct || acct.pass !== password) {
     const e = new Error('invalid_credentials');
     e.statusCode = 401;
     throw e;
   }
-  return { token: 'mock-token' };
+  return { token: `mock:${username}` };
 }
 
-export async function getLearner() {
-  return { ...LEARNER };
+export async function getLearner(session) {
+  return learnerOf(usernameOf(session));
 }
 
-export async function getDashboard() {
-  const courses = COURSES.map(stripInternal);
-  return assertDashboard({
-    learner: { ...LEARNER },
-    courses,
-    recent: COURSES.filter(c => c.lastAccess)
-      .sort((a, b) => new Date(b.lastAccess) - new Date(a.lastAccess))
-      .slice(0, 3).map(stripInternal),
+/* ── per-account dashboards ──────────────────────────────────
+   From the prototype's ROLES (.omc/plans/prototype-data.js). `recent` rows
+   are [code, progress %, hours studied, lessons done, lessons total]. Event
+   dates are relative to now so "Coming Up" never goes empty: [days from today,
+   "HH:MM" Vietnam time, English, Vietnamese, course code]. */
+const DASH = {
+  learner: {
+    mine: ['EL3001', 'EL2101', 'EL2011', 'EM7101', 'EM1012'],
+    recent: [['EL3001', 60, 12, 6, 10], ['EM7101', 45, 5, 4, 9], ['EL2101', 30, 3, 3, 10]],
+    rec: ['EM1012', 'EL2301', 'EM7108'],
+    pin: null,
     events: [
-      { id: 1, title: 'Meeting with your Student', when: soon(0), courseTitle: 'ETOP Beginner' },
-      { id: 3, title: 'Teamwork Skills — reflection', when: soon(2), courseTitle: 'Kỹ Năng Làm Việc Nhóm' },
-      { id: 2, title: 'ETOP Intermediate — session', when: soon(6), courseTitle: 'ETOP Intermediate' },
+      [1, '14:00', 'Meeting with your tutor', 'Buổi gặp gia sư của bạn', 'EL3001'],
+      [3, '15:00', 'English Day', 'Ngày hội tiếng Anh'],
+      [6, '14:00', 'ETOP Intermediate session', 'Buổi học ETOP Trung cấp', 'EL3002'],
     ],
+    emmai: {
+      vi: 'Chưa biết nên học gì tiếp theo? EMMAI gợi ý khoá học phù hợp với mục tiêu của bạn và đồng hành cùng hành trình tự học.',
+      en: 'Not sure what to learn next? EMMAI recommends courses for your goals and guides your self-learning journey.',
+    },
+  },
+  gems: {
+    mine: ['EL1001', 'EM5002', 'EM7112', 'EL5004', 'EL5005'],
+    recent: [['EL1001', 40, 9, 4, 10], ['EM5002', 70, 14, 7, 10], ['EM7112', 25, 2, 2, 8]],
+    rec: ['EL1002', 'EM4202', 'EM2606'],
+    pin: { vi: 'Dành cho học bổng GEMS', en: 'For GEMS scholars', courses: ['EL5004', 'EL5005'] },
+    events: [
+      [3, '15:00', 'English Day', 'Ngày hội tiếng Anh'],
+      [6, '19:30', 'SuccessPath mentor meeting', 'Buổi gặp cố vấn SuccessPath', 'EM5002'],
+      [12, '09:00', 'IELTS practice test', 'Bài thi thử IELTS', 'EL1001'],
+    ],
+    emmai: {
+      vi: 'Đang chuẩn bị vào đại học? EMMAI giúp bạn chọn các khoá học phù hợp với ngành học và định hướng nghề nghiệp.',
+      en: 'Planning for university? EMMAI can help you choose courses that prepare you for your major and your career.',
+    },
+  },
+  seeds: {
+    mine: ['EL2401', 'EM1012', 'EM7110', 'EL5006'],
+    recent: [['EL2401', 55, 6, 5, 9], ['EM1012', 80, 3, 4, 5], ['EM7110', 20, 1, 1, 6]],
+    rec: ['EL2101', 'EM1001', 'EM2001'],
+    pin: { vi: 'Dành cho học bổng SEEDS', en: 'For SEEDS scholars', courses: ['EL5006'] },
+    events: [
+      [3, '15:00', 'English Day', 'Ngày hội tiếng Anh'],
+      [9, '19:00', 'Study group', 'Nhóm học tập', 'EL2401'],
+    ],
+    emmai: {
+      vi: 'Muốn xây dựng thói quen học tập tốt? EMMAI gợi ý những khoá học ngắn giúp bạn tự học hiệu quả.',
+      en: 'Want to build good study habits? EMMAI suggests short courses to help you learn on your own.',
+    },
+  },
+  staff: {
+    mine: ['PT4004', 'PT2003', 'PT3006', 'PT1002'],
+    recent: [['PT4004', 100, 2, 5, 5], ['PT2003', 50, 3, 3, 6], ['PT3006', 30, 2, 2, 7]],
+    rec: ['PT2004', 'PT3004', 'PT4002'],
+    pin: { vi: 'Đào tạo nội bộ', en: 'Staff training', courses: ['PT3007', 'PT2001'] },
+    events: [
+      [3, '09:00', 'Tech Against Trafficking conference', 'Hội nghị Công nghệ chống mua bán người'],
+      [10, '15:00', 'Staff Policy Training', 'Tập huấn chính sách nhân viên', 'PT3007'],
+    ],
+    emmai: {
+      vi: 'Cần ôn lại kiến thức? EMMAI có thể chỉ cho bạn khoá đào tạo nội bộ phù hợp.',
+      en: 'Need a refresher? EMMAI can point you to the right staff training.',
+    },
+  },
+};
+
+const CATEGORY_EN = Object.fromEntries(CATEGORIES.map(c => [c.key, c.en]));
+
+/* A Course built from the catalogue entry. */
+function courseOf(code, extra = {}) {
+  const k = courseByCode(code);
+  return {
+    ...(k.moodleId ? { id: k.moodleId, moodlePath: `/course/view.php?id=${k.moodleId}` } : {}),
+    code: k.code,
+    title: k.en,
+    ...(k.vi ? { titleVi: k.vi } : {}),
+    summary: '',
+    progress: 0,
+    tracked: true,
+    category: CATEGORY_EN[k.cat],
+    categoryKey: k.cat,
+    enrolled: false,
+    href: `./course.html?code=${k.code}`,
+    ...extra,
+  };
+}
+
+/* "Vietnam time, N days from today" as an ISO instant. */
+function inDays(days, hhmm) {
+  const day = new Date(Date.now() + 7 * 3_600_000 + days * 86_400_000).toISOString().slice(0, 10);
+  return new Date(`${day}T${hhmm}:00+07:00`).toISOString();
+}
+
+export async function getDashboard(session) {
+  const role = learnerOf(usernameOf(session)).role;
+  const d = DASH[role];
+
+  const recent = d.recent.map(([code, progress, hours, lessonsDone, lessonsTotal], i) =>
+    courseOf(code, { progress, hours, lessonsDone, lessonsTotal, enrolled: true, lastAccess: daysAgo(i + 1) }));
+  const byCode = new Map(recent.map(c => [c.code, c]));
+
+  const courses = d.mine.map(code => byCode.get(code) ||
+    /* Enrolled but not recently opened: a modest, deterministic progress. */
+    courseOf(code, { enrolled: true, progress: 10 + [...code].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 26 }));
+
+  /* Recommended and pinned reuse the My courses object when enrolled, so the
+     same course never shows two different progress values; otherwise it is
+     an untracked card with no bar. */
+  const mine = new Map(courses.map(c => [c.code, c]));
+  const card = code => mine.get(code) || courseOf(code, { tracked: false });
+
+  return assertDashboard({
+    learner: learnerOf(usernameOf(session)),
+    courses,
+    recent,
+    recommended: d.rec.map(card),
+    pinned: d.pin && { titleVi: d.pin.vi, titleEn: d.pin.en, courses: d.pin.courses.map(card) },
+    events: d.events.map(([days, time, title, titleVi, code], i) => ({
+      id: i + 1,
+      title,
+      titleVi,
+      when: inDays(days, time),
+      ...(code ? { courseTitle: courseByCode(code).en } : {}),
+    })),
+    emmai: d.emmai,
     unread: 1,
   });
 }
@@ -209,11 +336,14 @@ export async function getBilling() {
   return assertBilling(billingFor('unknown'));
 }
 
-export async function getCourse(_session, courseId) {
+export async function getCourse(session, courseId) {
   const course = COURSES.find(c => c.id === Number(courseId));
   if (course) {
+    /* Progress and enrolment are this account's, so the course page agrees
+       with the dashboard. The interior is illustrative for everyone. */
+    const mine = (await getDashboard(session)).courses.find(c => c.id === course.id);
     return assertCourseDetail({
-      course: stripInternal(course),
+      course: { ...stripInternal(course), progress: mine?.progress ?? 0, enrolled: Boolean(mine) },
       sections: sectionsFor(course),
     });
   }
@@ -273,14 +403,15 @@ export async function fetchMedia() {
 
 /* Keep the syllabus (used only to build sections) out of the API response.
    moodlePath is derived rather than written on each row, so a course can
-   never end up with an id and a path that disagree. */
+   never end up with an id and a path that disagree. The catalogue gives
+   the code, names and page, so a course here matches what the dashboard says. */
 function stripInternal(c) {
-  const { syllabus, ...rest } = c;
-  return { ...rest, moodlePath: `/course/view.php?id=${c.id}` };
-}
-
-function soon(days) {
-  const d = new Date(Date.now() + days * 86_400_000);
-  d.setHours(19, 0, 0, 0);
-  return d.toISOString();
+  const { syllabus, titleEn, ...rest } = c;
+  const k = courseByMoodleId(c.id);
+  return {
+    ...rest,
+    ...(k ? { code: k.code, title: k.en, ...(k.vi ? { titleVi: k.vi } : {}), categoryKey: k.cat, category: CATEGORY_EN[k.cat] } : {}),
+    moodlePath: `/course/view.php?id=${c.id}`,
+    href: k ? `./course.html?code=${k.code}` : `./course.html?id=${c.id}`,
+  };
 }

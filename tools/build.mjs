@@ -68,7 +68,7 @@ const common = (input, name, emptyOutDir) => ({
    blocked on file://. There is also nothing to fetch, since the whole
    point is that a server holds the session. They are served by
    `npm start` like any other application. */
-const PAGES = ['index', 'login', 'dashboard', 'courses', 'payment', 'course', 'english', 'resources', 'stories', 'story'];
+const PAGES = ['index', 'login', 'dashboard', 'courses', 'payment', 'course', 'english', 'skills', 'training', 'resources', 'stories', 'story', 'lessons', 'lesson', 'lesson-studio'];
 
 rmSync(r('dist'), { recursive: true, force: true });
 

@@ -61,6 +61,33 @@ story is better than an empty one.
 There is one sample story in `content/stories/`. Delete it once the first
 real one is published; it says so in its own text.
 
+### Lessons (English through the news)
+
+Graded reading at `/lessons.html`. One file per lesson in
+`content/lessons/`, created in the CMS under **Tiếng Anh qua tin tức /
+Lessons**: English title and story, Vietnamese title and summary, a level,
+an optional MP3, and **Keywords** — one per line as
+`word | tiếng Việt | English meaning`. A keyword only lights up in the
+story if the word appears there exactly as written; its first occurrence
+becomes the tappable one. Without an MP3 the page reads the story aloud
+with the browser's own voice. Lessons marked **Sample lesson** carry a
+"Bài mẫu" tag; the three shipped ones are samples, so delete them or switch
+the flag off when real lessons exist.
+
+**Lesson Studio** (`/lesson-studio.html`, staff only) has EMMAI draft a
+lesson from facts a staff member pastes. It needs `ANTHROPIC_API_KEY` on
+the server; until then it says so and offers a blank lesson in the CMS.
+Nothing is published from the Studio: **Open in CMS** pre-fills a new
+lesson, and a person reads it and presses **Publish**.
+
+How the hand-off works, because it is not obvious: Decap 3.15 fills a new
+entry from the URL (`/admin/#/collections/lessons/new?title=…`), for any
+top-level field including the markdown body and the keywords text. But it
+HTML-escapes each value first, so an apostrophe would be saved as
+`&#039;`. The Studio therefore turns straight quotes into curly ones, and
+leaves out (and names on screen) any field that still contains `& < >`;
+the draft boxes and **Copy as Markdown** cover those.
+
 ### What cannot be edited, on purpose
 
 - **The number of things.** Three pillars, six course cards, three stats,

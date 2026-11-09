@@ -1,0 +1,140 @@
+/* ═══════════════════════════════════════════════════════════
+   The dashboard (src/views/dashboard.js). Main column of course cards on
+   the left, a rail of calendar / coming up / tuition on the right. DOM
+   order is phone order; the grid only places it.
+   ═══════════════════════════════════════════════════════════ */
+
+.dash{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-items:start}
+@media(min-width:1000px){.dash{grid-template-columns:minmax(0,1fr) 352px}}
+.dash > .skel,.dash > .state{grid-column:1 / -1}
+.dash-main{display:flex;flex-direction:column;gap:36px;min-width:0}
+.dash-rail{display:flex;flex-direction:column;gap:20px;min-width:0}
+.dash-rail .panel,.dash-rail .panel + .panel{padding:20px;margin-top:0}
+.dash-sec .state{padding:36px 20px}
+
+.dash-hello{margin:0 0 -12px;font-size:.95rem;color:var(--muted)}
+.dash-hello-link{color:var(--moss);font-weight:700}
+
+/* ── Ask EMMAI ─────────────────────────────────────────────
+   The deep-green card, with the brand's ripple rising out of its corner. */
+.dash-emmai{
+  position:relative;overflow:hidden;isolation:isolate;
+  display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+  padding:clamp(24px,3.4vw,36px);
+  background:var(--deep);color:#fff;border-radius:var(--r-lg);box-shadow:var(--sh-md);
+}
+.dash-emmai::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  right:-16%;bottom:-70%;width:min(520px,90%);aspect-ratio:1;border-radius:50%;
+  mix-blend-mode:screen;opacity:.2;
+  background:radial-gradient(circle at 50% 50%,
+    var(--band-1) 0 9.8%,   var(--band-1) 10.56%,
+    var(--band-2) 11.3%,    var(--band-2) 26.9%,
+    var(--band-3) 28.4%,    var(--band-3) 54.5%,
+    var(--band-4) 56.1%,    var(--band-4) 100%);
+}
+.dash-kick{
+  font-family:var(--display);font-size:.74rem;font-weight:700;margin:0;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--mint);
+}
+.dash-emmai h2{color:#fff;font-size:clamp(1.3rem,2.3vw,1.8rem);line-height:1.2;max-width:34ch}
+.dash-emmai-sub{margin:0;font-size:.9rem;color:rgba(255,255,255,.84);max-width:52ch}
+.dash-emmai .btn{margin-top:10px}
+.dash-emmai a:focus-visible,.dash-emmai button:focus-visible{outline-color:#fff}
+
+/* ── course cards ──────────────────────────────────────────── */
+.dc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(224px,1fr));gap:16px}
+.dc-grid-recent{grid-template-columns:repeat(auto-fill,minmax(224px,1fr))}
+.dc{
+  position:relative;display:flex;flex-direction:column;gap:8px;min-width:0;
+  padding:18px 18px 16px;border-radius:var(--r-md);text-decoration:none;color:var(--ink);
+  background:var(--paper);border:1px solid var(--line);box-shadow:var(--sh-sm);
+  overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+.dc:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--mint)}
+.dc:focus-visible{outline:3px solid var(--spring-x);outline-offset:2px}
+.dc-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:2px 0 0;font-size:.7rem;font-weight:700;letter-spacing:.04em}
+.dc-code{padding:2px 8px;border-radius:999px;background:var(--paper-3);color:var(--deep)}
+.dc-cat{color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+.dc h3{font-size:1.02rem;line-height:1.3;margin:0;color:var(--deep)}
+.dc-sum{margin:0;font-size:.84rem;color:var(--muted);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dc-prog{padding-top:6px}
+.dc-stats{list-style:none;margin:2px 0 0;padding:10px 0 0;border-top:1px solid var(--line);
+  display:flex;flex-direction:column;gap:6px;font-size:.8rem;color:var(--muted)}
+.dc-stats li{display:flex;align-items:center;gap:8px}
+.dc-stats svg{flex:none;width:15px;height:15px;fill:none;stroke:var(--moss);stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* ── calendar ──────────────────────────────────────────────── */
+.dash-cal .sec-head{flex-wrap:wrap;row-gap:10px}
+.dash-cal .sec-head::after{display:none}
+.cal-new{margin-left:auto;min-height:44px;padding:8px 16px;font-size:.84rem}
+.cal-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.cal-month{margin:0;font-size:1rem;text-align:center}
+.cal-nav{
+  flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid var(--line-2);background:var(--paper);color:var(--deep);cursor:pointer;
+  transition:background .2s,border-color .2s;
+}
+.cal-nav:hover{background:var(--paper-3);border-color:var(--mint)}
+.cal-nav svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cal-prev{transform:scaleX(-1)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;text-align:center}
+.cal-wd{padding:6px 0;font-size:.68rem;font-weight:700;letter-spacing:.06em;color:var(--faint);text-transform:uppercase}
+.cal-d{
+  position:relative;aspect-ratio:1;min-height:40px;display:grid;place-items:center;
+  border:0;border-radius:var(--r-sm);background:transparent;color:var(--ink);cursor:pointer;
+  font:600 .88rem var(--sans);transition:background .15s;
+}
+.cal-d:hover{background:var(--paper-3)}
+.cal-d.is-today{box-shadow:inset 0 0 0 2px var(--spring-x);color:var(--deep);font-weight:800}
+.cal-d.is-sel{background:var(--deep);color:#fff}
+.cal-d.is-sel:hover{background:var(--deep-lift)}
+.cal-d.has-ev::after{
+  content:"";position:absolute;bottom:5px;left:50%;width:5px;height:5px;margin-left:-2.5px;
+  border-radius:50%;background:var(--spring-d);
+}
+.cal-d.is-sel.has-ev::after{background:var(--spring)}
+.cal-d:focus-visible{outline:3px solid var(--spring-x);outline-offset:1px;z-index:1}
+.cal-day{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.cal-day h4{margin:0 0 6px;font-size:.88rem;color:var(--deep)}
+.cal-empty,.cal-hint{margin:0;font-size:.84rem;color:var(--muted)}
+.cal-note,.cal-err{margin:10px 0 0;font-size:.8rem;color:#8C1D18}
+.cal-note:empty,.cal-err:empty{display:none}
+.cal-links{display:flex;flex-wrap:wrap;gap:4px 18px;margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.cal-links a{font-size:.84rem;font-weight:700;color:var(--moss);padding:12px 0;margin-block:-8px}
+.cal-del{
+  flex:none;width:44px;height:44px;margin:-8px -6px -8px 0;border:0;border-radius:50%;
+  display:grid;place-items:center;background:transparent;color:var(--muted);cursor:pointer;
+}
+.cal-del:hover{background:#FDECEA;color:#8C1D18}
+.cal-del svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+.dash-due .event{gap:12px;padding:10px 6px}
+.dash-due .event-main{flex:1}
+.dash-due .state{padding:24px 12px}
+.dash-cal .event{padding:8px 4px}
+.dash-cal .event-main{flex:1}
+
+/* ── new event dialog ──────────────────────────────────────── */
+.cal-dialog{
+  margin:auto;width:min(420px,calc(100vw - 32px));padding:26px;border:0;border-radius:var(--r-lg);
+  background:var(--paper);color:var(--ink);box-shadow:var(--sh-md);
+}
+.cal-dialog::backdrop{background:rgba(0,36,31,.55)}
+.cal-dialog h2{margin:0 0 6px;font-size:1.25rem}
+.cal-dialog label{display:block;margin:16px 0 6px;font-size:.84rem;font-weight:700;color:var(--deep)}
+.cal-dialog input{
+  width:100%;min-height:44px;padding:9px 12px;border:1px solid var(--line-2);border-radius:var(--r-sm);
+  background:var(--paper);color:var(--ink);font:inherit;
+}
+.cal-dialog input:focus-visible{outline:3px solid var(--spring-x);outline-offset:1px}
+.cal-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+
+@media(max-width:479px){
+  .dc-grid,.dc-grid-recent{grid-template-columns:minmax(0,1fr)}
+  .dash-main{gap:30px}
+}
+@media(prefers-reduced-motion:reduce){.dc,.btn-ico{transition:none}.dc:hover{transform:none}}

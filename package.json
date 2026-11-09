@@ -19,6 +19,7 @@
     "check": "node --env-file-if-exists=.env tools/check-config.mjs",
     "catalogue": "node tools/crawl-public.mjs && node tools/pull-course-art.mjs && node tools/build-catalogue.mjs",
     "test": "node tools/smoke.mjs",
+    "test:ai": "node tools/ai-test.mjs",
     "test:fixes": "node tools/verify-fixes.mjs",
     "test:app": "node tools/app-shots.mjs",
     "test:contrast": "node tools/app-contrast.mjs",
@@ -26,6 +27,7 @@
     "deploy:share": "npm run build && node tools/build-share.mjs && netlify deploy --prod --dir dist-share"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/helmet": "^13.0.1",
     "@fastify/rate-limit": "^10.2.2",
