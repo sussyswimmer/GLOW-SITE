@@ -146,7 +146,7 @@ ${noindex
     </a>
     <a href="./dashboard.html" data-page="dashboard.html" data-private${isPublic ? ' hidden' : ''} data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
     <a href="./courses.html" data-page="courses.html" data-private${isPublic ? ' hidden' : ''} data-i18n data-vi="Khoá học của tôi" data-en="My courses">Khoá học của tôi</a>
-    <a href="./payment.html" data-page="payment.html" data-private${isPublic ? ' hidden' : ''} data-i18n data-vi="Thanh toán" data-en="Payment">Thanh toán</a>
+    <a href="./payment.html" data-page="payment.html" data-i18n data-vi="Học phí" data-en="Tuition">Học phí</a>
     <a href="./english.html" data-page="english.html" data-i18n data-vi="Học tiếng Anh" data-en="English self-learning">Học tiếng Anh</a>
     <a href="./resources.html" data-page="resources.html" data-i18n data-vi="Tài nguyên giáo dục" data-en="Educational Resources">Tài nguyên giáo dục</a>
     <a href="./stories.html" data-page="stories.html" data-i18n data-vi="Tin tức" data-en="Stories">Tin tức</a>
@@ -215,15 +215,19 @@ const PAGES = [
     main: '<main class="shell dash" id="view" tabindex="-1"></main>',
   },
   {
+    /* PUBLIC: what GLOW costs is something to read before joining, not after.
+       Rendered after load (signed in or not), so it fails the private way
+       without JavaScript — hence needsJs. */
     file: 'payment.html',
-    titleVi: 'Thanh toán | GLOW', titleEn: 'Payment | GLOW',
-    descVi: 'Học phí, trạng thái thanh toán và hỗ trợ học phí trên GLOW.',
-    descEn: 'Tuition, payment status and fee support on GLOW.',
-    h1: 'Thanh toán', h1en: 'Payment',
-    sub: 'Học phí, trạng thái thanh toán của bạn, và cách xin hỗ trợ học phí.',
-    suben: 'Your tuition, your payment status, and how to ask for fee support.',
-    crumbs: crumbDash + sep + '<span data-i18n data-vi="Thanh toán" data-en="Payment">Thanh toán</span>',
+    titleVi: 'Học phí và thanh toán | GLOW', titleEn: 'Tuition and payment | GLOW',
+    descVi: 'Học phí GLOW, những gì học phí bao gồm, cách thanh toán và cách xin hỗ trợ học phí.',
+    descEn: "GLOW's tuition, what it covers, how to pay, and how to ask for fee support.",
+    h1: 'Học phí và thanh toán', h1en: 'Tuition and payment',
+    sub: 'Học phí, những gì học phí bao gồm, và cách xin hỗ trợ học phí nếu bạn cần.',
+    suben: "The tuition, what it covers, and how to ask for fee support if you need it.",
+    crumbs: crumbHome + sep + '<span data-i18n data-vi="Học phí và thanh toán" data-en="Tuition and payment">Học phí và thanh toán</span>',
     main: '<main class="shell pay" id="view" tabindex="-1"></main>',
+    noindex: false, isPublic: true, needsJs: true,
   },
   {
     file: 'courses.html',

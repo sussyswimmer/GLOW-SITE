@@ -28,6 +28,7 @@ import { existsSync } from 'node:fs';
 
 import { config } from './config.js';
 import { isDemo } from './data/index.js';
+import { billingFor } from './data/billing.js';
 import authRoutes from './routes/auth.js';
 import apiRoutes from './routes/api.js';
 
@@ -150,6 +151,16 @@ export async function buildApp({ serveStatic = true, logger } = {}) {
     demo: isDemo,
     version: process.env.npm_package_version || 'dev',
   }));
+
+  /* What GLOW costs, what it covers and where to ask for help — public, like
+     /api/health, because someone deciding whether to join has no account yet.
+     It carries no learner data: a learner's own status and history stay
+     behind the session at /api/billing. `moodleOrigin` is for the help links,
+     which a signed-out visitor cannot take through /api/sso. */
+  app.get('/api/tuition', async () => {
+    const { tuition, provider, contact } = billingFor('unknown');
+    return { tuition, provider, contact, moodleOrigin: config.MOODLE_URL || 'https://glow.mata9.com', demo: isDemo };
+  });
 
   /* ── the front end ───────────────────────────────────────── */
   const staticRoot = resolve(process.cwd(), config.STATIC_DIR);
