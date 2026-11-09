@@ -26,6 +26,24 @@
         ],
         "createdAt": "2026-11-09T00:54:46.190Z",
         "reason": "Claude (Opus) triage 2026-11-09: the only hit is .story-body blockquote's 3px left rule, committed before this session — a conventional quotation rule, not a side-tab card"
+      },
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-09T12:57:42.947Z",
+        "reason": "Claude (Opus) triage 2026-11-09: the only hit is div.hero-stage, a 3-stop tonal ramp of Matera Alliance Brand Guideline SS4.1 'Logo Dark Color' #014E45 (hue 173deg): --deep #014E45 itself, then --deep-d #013B36 and --deep-x #00241F, all within 2deg of it. Declared as 'shades of it for the hero field' at styles.css:22-28 (CONTENT.md:44 records --deep-d/--deep-x as 'the hero field'); gradient at styles.css:455. A dark brand-green field, not a cyan/neon accent gradient. Applies to file scans and /index.html, not a root-URL scan."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-09T12:57:43.117Z",
+        "reason": "Claude (Opus) triage 2026-11-09: fires only in static file scans, not on the rendered page. section.hero is a deliberate full-bleed stage (styles.css:444-456, index.html:239); the flush children are the gradient stage and aria-hidden decorative layers (.pattern, the .hero-type marquee set to run off both edges per styles.css:458-459, .hero-veil). The readable .hero-copy is inset by --gut (styles.css:512): 64px at 1280, 20px at 390. The file's other hit, section.stats, has padding:16vh var(--gut) (styles.css:742) and its flush children are the decorative marquee and the full-bleed SS6.3 stripe bands (index.html:398, styles.css:382)."
       }
     ]
   }
