@@ -542,13 +542,13 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
     background:linear-gradient(96deg,
       rgba(0,36,31,.95) 0%,rgba(0,36,31,.88) 28%,rgba(0,36,31,.44) 50%,rgba(0,36,31,0) 68%);
   }
-  /* `translate`, not `transform` — the scrub tweens this element's y, and a
-     transform-based centering would be wiped out the moment it did. */
+  /* Centred with auto margins, not `translate`: GSAP folds `translate` into
+     the transform it scrubs, and keeps it after the layout changes. */
   /* Sized in vw, not ch: `ch` resolves against this box's inherited 17px,
      not the 60px+ headline inside it, and capping at 34ch broke the tagline
      over five lines the moment the display scale went up. The `.lead` keeps
      its own ch cap, so the paragraph measure stays readable regardless. */
-  .hero-copy{right:auto;bottom:auto;top:50%;translate:0 -50%;width:min(58vw,920px)}
+  .hero-copy{right:auto;top:0;bottom:0;margin-block:auto;height:fit-content;width:min(58vw,920px)}
 }
 
 /* ── the start state, supplied only when the motion system is live ── */
@@ -576,11 +576,18 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
 
 /* No sequence to play: cancel the start state so the default (finished)
    layout stands, and drop the scroll length that only existed to scrub. */
-@media(prefers-reduced-motion:reduce){
+@media(prefers-reduced-motion:reduce),(max-height:620px){
   .js-anim .hero{height:auto}
   .js-anim .hero-stage{position:relative;height:auto;min-height:100svh}
   .js-anim .hero-copy{opacity:1}
   .js-anim .hero-cue{display:none}
+}
+
+/* The copy is up to 544px tall at 320px wide, so on a screen this short one
+   pinned screen crops its first lines. The stage grows with the copy instead. */
+@media(max-height:620px){
+  .hero-stage{display:grid;align-items:end}
+  .hero-copy{position:relative;inset:auto;margin:0 var(--gut);padding:48px 0 40px}
 }
 
 /* ═══════ 2 · MANIFESTO ═══════ */
@@ -841,6 +848,7 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   #preloader,.curtain{display:none!important}
   .js-anim .display .ln i{transform:none!important;opacity:1!important}
+  .quote{transform:rotate(var(--tilt))}
   .mani-line .w{opacity:1!important}
   .shot{clip-path:none!important}
   .shot:not(:first-child){display:none}

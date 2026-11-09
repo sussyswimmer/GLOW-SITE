@@ -101,9 +101,8 @@ function hero(reduced) {
 
   if (cue) tl.fromTo(cue, { opacity: 0.5 }, { opacity: 0, ease: 'none', duration: 0.12 }, 0);
 
-  /* `y`, not `translate` — the desktop rule centres this box with the CSS
-     `translate` property precisely so the two do not collide.
-     Opacity is deliberately left alone: the load sequence owns it, and a
+  /* The desktop rule centres this box with auto margins, so `y` has the
+     transform to itself. Opacity is deliberately left alone: the load sequence owns it, and a
      scrubbed `to()` here would capture whatever value the intro happened to
      be at when the timeline first rendered. */
   if (copy) tl.to(copy, { y: -34, ease: 'none', duration: 0.45 }, 0.55);
@@ -163,13 +162,15 @@ function chapters(reduced) {
   const frame = q('.frame');
 
   qa('.chap', sec).forEach((chap, i) => {
+    if (reduced) return;
+
     // ghost numeral drifts slower than the page
     gsap.to(qa('.ghost-num', chap), {
       yPercent: -18, ease: 'none',
       scrollTrigger: { trigger: chap, scrub: true, start: 'top bottom', end: 'bottom top', invalidateOnRefresh: true },
     });
 
-    if (reduced || !shots.length) return;
+    if (!shots.length) return;
 
     ScrollTrigger.create({
       trigger: chap,
@@ -307,6 +308,8 @@ function stats(reduced, getVelocity) {
     });
   });
 
+  if (reduced) return;
+
   const quotes = qa('.quote', sec);
   gsap.fromTo(quotes,
     { y: 46, opacity: 0, rotate: (i) => (i % 2 ? 1.5 : -1.5) },
@@ -322,8 +325,6 @@ function stats(reduced, getVelocity) {
       gsap.to(qq, { rotate: i % 2 ? 1.5 : -1.5, y: 0, duration: 0.55, ease: 'power3.out' });
     });
   });
-
-  if (reduced) return;
 
   const rows = qa('.mq-row', sec).map(row => {
     const dir = Number(row.dataset.dir || 1);
@@ -350,7 +351,7 @@ function mission(reduced) {
   const sec  = q('.mission');
   const card = q('.mission-card');
   const dark = q('#darken');
-  if (!sec || !card) return;
+  if (!sec || !card || reduced) return;
 
   const btn = q('.btn-magnet', card);
   if (btn) {
@@ -363,8 +364,6 @@ function mission(reduced) {
     });
     btn.addEventListener('pointerleave', () => { xTo(0); yTo(0); });
   }
-
-  if (reduced) return;
 
   const tl = gsap.timeline({
     scrollTrigger: {
@@ -420,12 +419,15 @@ export function initScroll({ reduced, getVelocity }) {
   splitText();
   chrome();
   textChoreography(reduced);
-  hero(reduced);
+
+  const mm = gsap.matchMedia();
+
+  // Same height as the short-screen rule in styles.css: nothing is pinned there to scrub.
+  mm.add('(min-height: 621px)', () => hero(reduced));
+
   showcase(reduced);
   stats(reduced, getVelocity);
   mission(reduced);
-
-  const mm = gsap.matchMedia();
 
   // full choreography on real desktop widths
   mm.add('(min-width: 1024px)', () => {
