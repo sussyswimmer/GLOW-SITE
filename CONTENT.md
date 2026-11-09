@@ -42,7 +42,7 @@ Derived, with the reason each one exists:
 | Token | Hex | Why |
 |---|---|---|
 | `--deep-d` / `--deep-x` | `#013B36` / `#00241F` | the hero field; white on them is 12.5:1 / 16.5:1 |
-| `--moss` | `#0F6B4A` | `#1B8F45` is 4.15:1 on white and kickers are small caps; this is 6.5:1 |
+| `--moss` | `#0F6B4A` | `#1B8F45` is 4.15:1 on white and kickers are 14px text; this is 6.5:1 |
 | `--spring-t` | `#085838` | the accent as text — passes 4.5:1 even mid-fade at 80% opacity |
 | `--spring-x` | `#0FA265` | the focus ring — 3.3:1 on white, 3.8:1 on the deep field |
 | `--ink` / `--muted` / `--faint` | `#1B2A26` / `#3F5A54` / `#587068` | 14.9:1 / 7.5:1 / 5.3:1 |

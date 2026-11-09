@@ -309,7 +309,8 @@
     </div>
 
     <article class="chap" data-chap="0">
-      <span class="ghost-num" aria-hidden="true">01</span>
+      <!-- Ghost numerals: decorative, duplicated by each kicker; the detector's low-contrast check is waived on them (data-impeccable-ignore). -->
+      <span class="ghost-num" aria-hidden="true" data-impeccable-ignore="low-contrast">01</span>
       <div class="chap-body">
         <p class="kick"><i class="kick-rule"></i><span data-i18n data-vi="{{pillars.0.kick.vi}}" data-en="{{pillars.0.kick.en}}">{{pillars.0.kick.vi}}</span></p>
         <h2 data-i18n data-vi="{{pillars.0.heading.vi}}" data-en="{{pillars.0.heading.en}}">{{pillars.0.heading.vi}}</h2>
@@ -326,7 +327,7 @@
     </article>
 
     <article class="chap" data-chap="1">
-      <span class="ghost-num" aria-hidden="true">02</span>
+      <span class="ghost-num" aria-hidden="true" data-impeccable-ignore="low-contrast">02</span>
       <div class="chap-body">
         <p class="kick"><i class="kick-rule"></i><span data-i18n data-vi="{{pillars.1.kick.vi}}" data-en="{{pillars.1.kick.en}}">{{pillars.1.kick.vi}}</span></p>
         <h2 data-i18n data-vi="{{pillars.1.heading.vi}}" data-en="{{pillars.1.heading.en}}">{{pillars.1.heading.vi}}</h2>
@@ -343,7 +344,7 @@
     </article>
 
     <article class="chap" data-chap="2">
-      <span class="ghost-num" aria-hidden="true">03</span>
+      <span class="ghost-num" aria-hidden="true" data-impeccable-ignore="low-contrast">03</span>
       <div class="chap-body">
         <p class="kick"><i class="kick-rule"></i><span data-i18n data-vi="{{pillars.2.kick.vi}}" data-en="{{pillars.2.kick.en}}">{{pillars.2.kick.vi}}</span></p>
         <h2 data-i18n data-vi="{{pillars.2.heading.vi}}" data-en="{{pillars.2.heading.en}}">{{pillars.2.heading.vi}}</h2>
@@ -408,8 +409,12 @@
 
          The second span in each row is the seam copy that makes the loop
          infinite; the wrapper is aria-hidden and each duplicate says so on
-         its own account too, so nothing here can start being read twice. -->
-    <div class="marquee" aria-hidden="true">
+         its own account too, so nothing here can start being read twice.
+         The detector's low-contrast check is waived on this wrapper
+         (data-impeccable-ignore): it is texture, every term in it is readable
+         in pillar 01's list and the footer, and tools/contrast.mjs already
+         exempts aria-hidden decoration. -->
+    <div class="marquee" aria-hidden="true" data-impeccable-ignore="low-contrast">
       <div class="mq-row" data-dir="-1"><span data-i18n data-vi="{{stats.marqueeTop.vi}}" data-en="{{stats.marqueeTop.en}}">{{stats.marqueeTop.vi}}</span><span aria-hidden="true" data-i18n data-vi="{{stats.marqueeTop.vi}}" data-en="{{stats.marqueeTop.en}}">{{stats.marqueeTop.vi}}</span></div>
       <div class="mq-row" data-dir="1"><span data-i18n data-vi="{{stats.marqueeBottom.vi}}" data-en="{{stats.marqueeBottom.en}}">{{stats.marqueeBottom.vi}}</span><span aria-hidden="true" data-i18n data-vi="{{stats.marqueeBottom.vi}}" data-en="{{stats.marqueeBottom.en}}">{{stats.marqueeBottom.vi}}</span></div>
     </div>
