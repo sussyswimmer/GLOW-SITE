@@ -28,7 +28,7 @@
 <!-- ══════ BRAND BAR ══════ -->
 <header class="appbar">
   <div class="appbar-in">
-    <a class="logo" href="./index.html"><img src="./assets/img/glow-logo.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="550" height="90"></a>
+    <a class="logo" href="./index.html"><img src="./assets/img/glow-wordmark.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="459" height="90"></a>
     <p class="partner" data-i18n data-vi="Hợp tác cùng Pacific Links Foundation & Matera" data-en="In partnership with Pacific Links Foundation & Matera">Hợp tác cùng Pacific Links Foundation & Matera</p>
     <span class="appbar-spacer"></span>
     <div class="navsearch-wrap">
@@ -66,9 +66,9 @@
 </header>
 
 <!-- ══════ NAV ══════
-     Home · Dashboard · Courses ▼ · Tuition. Dashboard is in the public menu
-     on purpose (the brief keeps it there): signed out, it sends you to sign
-     in. Tuition is not in the brief's menu; it stays because it was asked
+     Home · Dashboard · Courses ▼ · Tuition. Dashboard is data-member: the
+     team's COMMENT tab (2026-11-09) says it appears only after sign-in, so
+     src/nav.js reveals it once there is a session. Tuition is not in the brief's menu; it stays because it was asked
      for in every menu. English self-learning, Resources and Stories are no
      longer here: they live under Courses and in the footer.
      The Training entry is data-staff: hidden until src/nav.js sees a staff
@@ -79,7 +79,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
       <span data-i18n data-vi="Trang chủ" data-en="Home">Trang chủ</span>
     </a>
-    <a href="./dashboard.html" data-page="dashboard.html" data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
+    <a href="./dashboard.html" data-page="dashboard.html" data-member hidden data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
     <div class="navdd">
       <button class="navdd-btn" type="button" aria-expanded="false" aria-controls="coursesMenu">
         <span data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -127,8 +127,12 @@
 <footer class="foot">
   <div class="foot-in">
     <div class="foot-brand">
-      <a class="logo" href="./index.html"><img src="./assets/img/glow-logo.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="550" height="90"></a>
+      <a class="logo" href="./index.html"><img src="./assets/img/glow-wordmark.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="459" height="90"></a>
       <p data-i18n data-vi="Nền tảng tự học của Pacific Links Foundation, hợp tác cùng Matera." data-en="The self-learning platform from Pacific Links Foundation, in partnership with Matera.">Nền tảng tự học của Pacific Links Foundation, hợp tác cùng Matera.</p>
+      <div class="foot-partners">
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer"><img src="./assets/img/partners/pacific-links-foundation.png" alt="Pacific Links Foundation" width="157" height="160"></a>
+        <img src="./assets/img/partners/matera-alliance.png" alt="Matera Alliance Inc" width="129" height="160">
+      </div>
     </div>
     <div class="foot-cols">
       <div>

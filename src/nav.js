@@ -4,7 +4,8 @@
 
    initNav()    wires the Courses dropdown, the search toggle and Sign out.
    applyAuth()  turns the header over once the session is known, and
-                reveals everything marked [data-staff] for a staff account.
+                reveals everything marked [data-staff] for a staff account,
+                [data-member] for any signed-in account, and hides [data-guest].
 
    The markup is signed out, with the dropdown closed and the search form
    tucked away, so a crawler and a visitor with no JavaScript see a header
@@ -96,6 +97,7 @@ export function applyAuth(learner) {
 
   document.querySelectorAll('[data-staff]').forEach(n => { n.hidden = !staff; });
   document.querySelectorAll('[data-guest]').forEach(n => { n.hidden = !!learner; });
+  document.querySelectorAll('[data-member]').forEach(n => { n.hidden = !learner; });
 
   if (!learner) {
     if (name) clear(name);

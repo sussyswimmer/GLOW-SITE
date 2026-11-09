@@ -38,3 +38,9 @@ The site was rebuilt from the GLOW website content brief (Google Sheet, FINAL co
 23. **Pillar link wording.** The brief has no text for the links under each pillar. The site says "Explore English Learning" / "Khám phá Học tiếng Anh" and so on.
 24. **Phone header.** On phones the "In partnership with…" line is hidden in the shell header (no room beside the logo); it is shown on desktop, and in the footer tagline everywhere. On the landing page it is also hidden below 1500px while signed in.
 25. **Pillar pictures.** The pictures beside the three pillars on the home page are unchanged. Pillar 02 is now "Skills & Network Building" but still shows the old "Professional Development" slide (`slide4.png`). New pictures are needed for pillars 02 and 03.
+
+## Brief update, 2026-11-09 evening
+
+26. **Training in the menu.** The team changed the menu's Training row from ADD to REMOVE. Read as: Training is not in the public Courses menu, which is how it already works. A signed-in **staff** account still sees it, because the signed-in menu row still lists Training. If REMOVE means "not even for staff", say so and it comes out completely.
+27. **Logos.** The Pacific Links mark is gone from the header, which now shows the GLOW wordmark only (`glow-wordmark.png`). The Pacific Links Foundation and Matera Alliance logos (colour versions from the shared Drive folder) now sit in the footer on every page. Pacific Links links to pacificlinks.org. Matera's logo is not a link until someone confirms its website. Moodle and the CMS still use the old `glow-logo.png` (with the Pacific Links mark). Should Moodle's logo change too?
+28. **Dashboard in the menu.** Following the COMMENT tab ("The dashboard will be appeared after sign in"), Dashboard is hidden from the menu until a learner or staff member signs in. Before this it was in the public menu and sent signed-out visitors to the sign-in page.

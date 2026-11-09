@@ -115,17 +115,17 @@
 
 <header id="hdr">
   <nav class="nav" aria-label="Main">
-    <a class="logo" href="#top"><img src="./assets/img/glow-logo.png" width="550" height="90" alt="GLOW — Growing Learning Opportunities Worldwide, by Pacific Links Foundation"></a>
+    <a class="logo" href="#top"><img src="./assets/img/glow-wordmark.png" width="459" height="90" alt="GLOW — Growing Learning Opportunities Worldwide, by Pacific Links Foundation"></a>
     <p class="partner" data-i18n data-vi="{{nav.partnership.vi}}" data-en="{{nav.partnership.en}}">{{nav.partnership.vi}}</p>
     <!-- The same items as the menu on every other page (tools/build-pages.mjs
-         writes that one). Dashboard is in the public menu on purpose: signed
-         out, it sends you to sign in. Tuition is kept although the brief's
+         writes that one). Dashboard is data-member: shown only after sign-in
+         (the team's COMMENT tab, 2026-11-09). Tuition is kept although the brief's
          menu leaves it out. English self-learning, Resources and Stories are
          gone from here; Stories is in the footer. Training is data-staff,
          shown by src/nav.js only for a staff session. -->
     <div class="nav-links">
       <a href="./index.html" data-i18n data-vi="{{nav.home.vi}}" data-en="{{nav.home.en}}">{{nav.home.vi}}</a>
-      <a href="./dashboard.html" data-i18n data-vi="{{nav.dashboard.vi}}" data-en="{{nav.dashboard.en}}">{{nav.dashboard.vi}}</a>
+      <a href="./dashboard.html" data-member hidden data-i18n data-vi="{{nav.dashboard.vi}}" data-en="{{nav.dashboard.en}}">{{nav.dashboard.vi}}</a>
       <div class="navdd">
         <button class="navdd-btn" type="button" aria-expanded="false" aria-controls="coursesMenu">
           <span data-i18n data-vi="{{nav.courses.vi}}" data-en="{{nav.courses.en}}">{{nav.courses.vi}}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
@@ -466,8 +466,13 @@
 <footer class="foot">
   <div class="foot-in">
     <div class="foot-brand">
-      <span class="logo"><img src="./assets/img/glow-logo.png" width="550" height="90" alt="GLOW — Growing Learning Opportunities Worldwide"></span>
+      <span class="logo"><img src="./assets/img/glow-wordmark.png" width="459" height="90" alt="GLOW — Growing Learning Opportunities Worldwide"></span>
       <p data-i18n data-vi="{{footer.tagline.vi}}" data-en="{{footer.tagline.en}}">{{footer.tagline.vi}}</p>
+      <!-- Brief, 2026-11-09: the partner logos live here, not in the header. Matera has no confirmed site, so its logo is not a link. -->
+      <div class="foot-partners">
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer"><img src="./assets/img/partners/pacific-links-foundation.png" alt="Pacific Links Foundation" width="157" height="160"></a>
+        <img src="./assets/img/partners/matera-alliance.png" alt="Matera Alliance Inc" width="129" height="160">
+      </div>
     </div>
     <!-- The same columns as every other page's footer (tools/build-pages.mjs).
          Every link goes to the thing it names, into the anchors the catalogue

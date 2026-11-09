@@ -181,7 +181,9 @@
 .foot-cols{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
 .foot-cols a{padding:9px 0;min-height:44px;display:flex;align-items:center}
 .foot-cols a:hover{text-decoration:underline}
-.foot-partner{margin-top:12px;font-size:.8rem;color:var(--muted)}
+.foot-partners{display:flex;align-items:center;gap:28px;margin-top:24px}
+.foot-partners img{display:block;height:64px;width:auto}
+.foot-partners a{display:block;border-radius:6px}
 /* The shell pages share the footer but not the landing page's scroll
    sequence, so the full-height breathing room is cut back. */
 body.app .foot{padding-top:56px}
