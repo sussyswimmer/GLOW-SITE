@@ -84,10 +84,28 @@
 # Everything under /assets carries a content hash in its name and can be
 # cached forever. The HTML shells are the only files that do not, so a stale
 # one would pin a learner to a deleted JS bundle.
+#
+# Access-Control-Allow-Origin on both blocks below is for the Moodle front
+# page, which loads this page's CSS and JS from here (see tools/build.mjs).
+# A stylesheet or script crosses origins without it; a FONT does not —
+# browsers refuse a cross-origin @font-face without CORS, so without this the
+# hero's outlined wordmark line falls back to a plain face on Moodle. These
+# are public static files with no cookies involved, so `*` exposes nothing.
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+# The stable-named copies Moodle points at. Never immutable: the name stays
+# the same across deploys, so the browser has to revalidate every load (a 304
+# when nothing changed) or it would keep last month's build.
+[[headers]]
+  for = "/embed/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Access-Control-Allow-Origin = "*"
+    X-Content-Type-Options = "nosniff"
 
 [[headers]]
   for = "/*.html"
