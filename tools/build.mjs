@@ -116,7 +116,7 @@ const EMBED_LINKS = [
   [/(href)="\.\/login\.html"/g,                  '$1="%%MOODLE%%/login/index.php"'],
   [/(href)="\.\/dashboard\.html"/g,              '$1="%%MOODLE%%/my/"'],
   [/(href)="\.\/course\.html\?id=(\d+)"/g,       '$1="%%MOODLE%%/course/view.php?id=$2"'],
-  [/(href)="\.\/((?:english|resources|stories)\.html(?:#[\w-]*)?)"/g, '$1="%%GLOW%%/$2"'],
+  [/(href)="\.\/((?:english|resources|stories|payment)\.html(?:#[\w-]*)?)"/g, '$1="%%GLOW%%/$2"'],
   [/(src|href)="\.\/(assets\/[^"]+)"/g,          '$1="%%GLOW%%/$2"'],
 ];
 const bodyHtml = indexHtml.slice(indexHtml.indexOf('<body>') + 6, indexHtml.lastIndexOf('</body>'))
