@@ -19,7 +19,7 @@ export default defineConfig({
     port: 5173,
     open: false,
     proxy: {
-      '/api': { target: 'http://localhost:8080', changeOrigin: false },
+      '/api': { target: `http://localhost:${process.env.API_PORT || 8080}`, changeOrigin: false },
     },
   },
 });

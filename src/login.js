@@ -10,11 +10,11 @@
 
 import { initI18n } from './i18n.js';
 import { api, ApiError } from './api.js';
-import { el, t } from './ui.js';
+import { el, t, currentLang } from './ui.js';
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-initI18n({ reduced });
+initI18n({ reduced, onSwapped: () => labelReveal() });
 
 const form = document.getElementById('loginForm');
 const userField = document.getElementById('username');
@@ -30,6 +30,7 @@ const params = new URLSearchParams(location.search);
    of this app is accepted; anything else silently becomes the dashboard. */
 const ALLOWED_NEXT = new Set([
   'dashboard.html', 'courses.html', 'course.html', 'payment.html', 'english.html', 'resources.html',
+  'lesson-studio.html', 'training.html',
 ]);
 
 function destination() {
@@ -149,15 +150,23 @@ for (const field of [userField, passField]) {
    Worth having on a site used on shared phones with unfamiliar keyboard
    layouts and diacritics, where a typo is otherwise invisible. */
 const reveal = document.getElementById('revealPass');
+/* Label follows both the toggled state and the language (re-run on swap). */
+function labelReveal() {
+  if (!reveal) return;
+  const shown = passField.type === 'text';
+  const label = currentLang() === 'en'
+    ? (shown ? 'Hide password' : 'Show password')
+    : (shown ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+  reveal.setAttribute('aria-label', label);
+  reveal.title = label;
+}
 reveal?.addEventListener('click', () => {
   const shown = passField.type === 'text';
   passField.type = shown ? 'password' : 'text';
   reveal.setAttribute('aria-pressed', String(!shown));
-  reveal.setAttribute('aria-label',
-    document.documentElement.lang === 'en'
-      ? (shown ? 'Show password' : 'Hide password')
-      : (shown ? 'Hiện mật khẩu' : 'Ẩn mật khẩu'));
+  labelReveal();
 });
+labelReveal();
 
 /* ── demo-mode credentials ───────────────────────────────
    Only ever printed when the server says it is serving sample data. The
@@ -170,11 +179,12 @@ fetch('/api/health', { credentials: 'same-origin' })
     const hint = document.getElementById('demoHint');
     if (!hint) return;
     hint.hidden = false;
+    /* The three learner accounts only; the staff login is in docs/DEPLOY.md. */
     hint.append(
       el('strong', {}, t('Bản trình diễn', 'Demo build')),
       el('span', {}, t(
-        ' — đăng nhập bằng demo / glow-demo-2026. Dữ liệu chỉ là ví dụ.',
-        ' — sign in with demo / glow-demo-2026. The data is illustrative only.',
+        ' — đăng nhập bằng demo, demo-gems hoặc demo-seeds, mật khẩu glow-demo-2026. Dữ liệu chỉ là ví dụ.',
+        ' — sign in with demo, demo-gems or demo-seeds, password glow-demo-2026. The data is illustrative only.',
       )),
     );
   })

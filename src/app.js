@@ -11,9 +11,12 @@ import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { initI18n, setDocTitle } from './i18n.js';
 import { initInteractions } from './interact.js';
-import { api, signOut, toLogin, ApiError } from './api.js';
-import { el, clear, region, demoBanner, currentLang } from './ui.js';
-import { renderDashboard, renderCourses, renderCourse, renderCatalog, renderPayment } from './views.js';
+import { api, toLogin, ApiError } from './api.js';
+import { initNav, applyAuth, loadAuth } from './nav.js';
+import { region, demoBanner, currentLang } from './ui.js';
+import { renderCourse, renderCatalog, renderPayment } from './views.js';
+import { renderCourses, renderCategoryPage, renderCatalogueCourse, loadCourse } from './views/catalogue.js';
+import { renderDashboard } from './views/dashboard.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -146,45 +149,7 @@ function markNav() {
    them out. A placeholder that has to be explained is not a placeholder;
    there are two states here and both are now rendered honestly. */
 function setAuthState(learner) {
-  const who = document.querySelector('.who');
-  const out = document.getElementById('signOut');
-  const inn = document.getElementById('signIn');
-  const name = document.querySelector('.who-name');
-  const avatar = document.querySelector('.appbar .avatar');
-
-  if (!learner) {
-    if (name) clear(name);
-    if (avatar) avatar.textContent = '';
-    who?.setAttribute('hidden', '');
-    out?.setAttribute('hidden', '');
-    inn?.removeAttribute('hidden');
-    return;
-  }
-
-  if (name) {
-    clear(name);
-    name.append(document.createTextNode(learner.fullname));
-    if (learner.username) name.append(el('span', { class: 'who-id', text: learner.username }));
-  }
-  if (avatar) avatar.textContent = learner.initials || '?';
-
-  if (who) {
-    who.setAttribute('href', './dashboard.html');
-    who.setAttribute('aria-label',
-      document.documentElement.lang === 'en' ? `Signed in as ${learner.fullname}` : `Đang đăng nhập: ${learner.fullname}`);
-    who.removeAttribute('hidden');
-  }
-
-  inn?.setAttribute('hidden', '');
-  if (out) {
-    out.removeAttribute('hidden');
-    out.addEventListener('click', e => { e.preventDefault(); signOut(); });
-  }
-
-  /* The two nav items that only exist for a signed-in learner. They ship
-     hidden on the public catalogue pages so a crawler is not offered a
-     dashboard it can never reach. */
-  document.querySelectorAll('.appnav a[data-private]').forEach(a => a.removeAttribute('hidden'));
+  applyAuth(learner);   // src/nav.js: the chip, Sign in / Sign out, and [data-staff]
 }
 
 /* ── routes ──────────────────────────────────────────────── */
@@ -195,12 +160,14 @@ const ROUTES = {
     render: renderDashboard,
     skeleton: 'tiles',
   },
-  'courses.html': {
-    host: '#view',
-    load: () => api.courses(),
-    render: renderCourses,
-    skeleton: 'tiles',
-  },
+  /* PUBLIC. tools/build-pages.mjs writes the public catalogue into the markup;
+     enhance() swaps in the API's version, which knows the viewer's role and
+     progress, and leaves the markup alone if the API cannot be reached. */
+  'courses.html': { host: '#view', public: true, enhance: renderCourses },
+  'english.html': { host: '#view', public: true, enhance: renderCategoryPage('english') },
+  'skills.html': { host: '#view', public: true, enhance: renderCategoryPage('skills') },
+  /* The static page is the "staff only" panel; only a staff session replaces it. */
+  'training.html': { host: '#view', public: true, enhance: renderCategoryPage('training') },
   /* PUBLIC, unlike the other signed-in pages: someone deciding whether to
      join needs to see what GLOW costs before they have an account. Signed in,
      the same page adds their own status and history. */
@@ -214,32 +181,18 @@ const ROUTES = {
   },
   'course.html': {
     host: '#view',
-    load: () => {
-      const id = new URLSearchParams(location.search).get('id');
-      if (!id) {
-        /* Arriving with no course chosen is a navigation mistake, not an
-           error — send them to the list rather than showing a failure. */
-        location.replace('./courses.html');
-        return new Promise(() => {});   // never resolves; the page is leaving
-      }
-      return api.course(id);
-    },
-    render: renderCourse,
+    /* ?code= is the public course page; ?id= is a Moodle id and still needs
+       a session, as it always did. */
+    public: () => { const q = new URLSearchParams(location.search); return !!q.get('code') || !q.get('id'); },
+    load: loadCoursePage,
+    publicLoad: loadCoursePage,
+    render: (d, host) => (new URLSearchParams(location.search).get('code')
+      ? renderCatalogueCourse(d, host) : renderCourse(d, host)),
     skeleton: 'rows',
     onError: courseHeading,
   },
-  /* PUBLIC. The catalogue is already in the markup — tools/build-pages.mjs
-     writes it there from the same data the API serves — so these two do not
-     gate on a session and do not blank the page to fetch what they already
-     have. A signed-in learner still gets a refresh, because on a live Moodle
-     the API knows about enrolments and the build-time snapshot does not. */
-  'english.html': {
-    host: '#view',
-    load: () => api.catalog('english'),
-    render: renderCatalog,
-    skeleton: 'rows',
-    public: true,
-  },
+  /* PUBLIC, and still the old chip catalogue: it is not part of the new
+     course catalogue (see tools/build-pages.mjs). */
   'resources.html': {
     host: '#view',
     load: () => api.catalog('resources'),
@@ -248,6 +201,33 @@ const ROUTES = {
     public: true,
   },
 };
+
+function loadCoursePage() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('code')) return loadCourse(q.get('code'));
+  const id = q.get('id');
+  if (!id) {
+    /* Arriving with no course chosen is a navigation mistake, not an
+       error — send them to the list rather than showing a failure. */
+    location.replace('./courses.html');
+    return new Promise(() => {});   // never resolves; the page is leaving
+  }
+  return api.course(id);
+}
+
+/* A catalogue page whose markup was built with the public courses in it.
+   The new content is rendered off to the side and swapped in only if there
+   is any, so a failed fetch — or a page with nothing for this viewer — keeps
+   what the build wrote rather than blanking it. */
+async function enhance(route, host) {
+  let data;
+  try { data = await api.catalogue(); } catch { i18n?.refresh(); return; }
+  if (data.demo) demoBanner();
+  const next = document.createElement('div');
+  route.enhance(data, next);
+  if (next.childNodes.length) host.replaceChildren(...next.childNodes);
+  afterRender(host);
+}
 
 /* ── the course page's heading, when the course never arrives ───
    The shell opens on "Đang tải…" with "Khoá học" as the last breadcrumb,
@@ -280,12 +260,14 @@ function courseHeading(err) {
 
 async function boot() {
   markNav();
+  initNav();
   initInteractions({ reduced });
   i18n = initI18n({ reduced });
 
   const page = pageName();
   const route = ROUTES[page];
-  if (!route) return;                   // a static page, nothing to load
+  if (!route) { loadAuth(); return; }   // a static page: header chip only, nothing else to load
+  const isPublic = typeof route.public === 'function' ? route.public() : route.public;
 
   /* One session check before any data call, so an expired session sends
      the learner to sign in instead of painting four broken panels. */
@@ -303,7 +285,7 @@ async function boot() {
     if (err instanceof ApiError && err.kind === 'auth') {
       /* On a public page there is nothing to redirect to: not being signed in
          is a normal way to read it, not a failure. */
-      if (!route.public) return toLogin('required');
+      if (!isPublic) return toLogin('required');
     } else {
       /* The server is unreachable rather than the session being bad. Let the
          region below render that honestly — do not bounce them to a login
@@ -318,11 +300,13 @@ async function boot() {
   const host = document.querySelector(route.host);
   if (!host) return;
 
+  if (route.enhance) return enhance(route, host);
+
   /* A public page read signed out keeps the markup it was built with. There
      is nothing to fetch that it does not already have, and blanking real,
      indexed content to show a skeleton — then an error panel, because the
      API needs a session — would be strictly worse than doing nothing. */
-  if (route.public && !me && !route.publicLoad) {
+  if (isPublic && !me && !route.publicLoad) {
     i18n?.refresh();
     ScrollTrigger.refresh();
     return;
@@ -346,7 +330,7 @@ async function boot() {
       /* On a public page, losing the session means the header goes back to
          signed out — not that the reader is thrown off the page they are
          reading. Only the gated pages have somewhere to send them. */
-      if (route.public) { setAuthState(null); return; }
+      if (isPublic) { setAuthState(null); return; }
       toLogin('expired');
     }
   });

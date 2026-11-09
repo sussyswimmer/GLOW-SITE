@@ -17,6 +17,15 @@
         ],
         "createdAt": "2026-08-22T02:41:02.732Z",
         "reason": "body::after is a paper-grain field, not a grid overlay: a 1px RADIAL gradient dot at 4% alpha on a 4px cell, no linear-gradient hairlines and no grid lines. Intent documented at styles.css:129 ('a whisper of tooth so the flats never read as plastic') and in main.js ('Grain is the CSS dot field drawn by body::after'). Pre-existing and deliberate."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/app.css"
+        ],
+        "createdAt": "2026-11-09T00:54:46.190Z",
+        "reason": "Claude (Opus) triage 2026-11-09: the only hit is .story-body blockquote's 3px left rule, committed before this session — a conventional quotation rule, not a side-tab card"
       }
     ]
   }

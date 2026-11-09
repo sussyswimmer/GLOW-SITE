@@ -15,10 +15,13 @@
 
 import { initI18n, setDocTitle } from './i18n.js';
 import { initInteractions } from './interact.js';
+import { initNav, loadAuth } from './nav.js';
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 initInteractions({ reduced });
 const i18n = initI18n({ reduced });
+initNav();
+loadAuth();   // header chip + staff-only links; a failure just leaves it signed out
 
 const esc = s => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')

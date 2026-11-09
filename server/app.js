@@ -31,6 +31,8 @@ import { isDemo } from './data/index.js';
 import { billingFor } from './data/billing.js';
 import authRoutes from './routes/auth.js';
 import apiRoutes from './routes/api.js';
+import catalogueRoutes from './routes/catalogue.js';
+import aiRoutes from './routes/ai.js';
 
 export async function buildApp({ serveStatic = true, logger } = {}) {
   const app = Fastify({
@@ -143,7 +145,9 @@ export async function buildApp({ serveStatic = true, logger } = {}) {
 
   /* ── routes ──────────────────────────────────────────────── */
   await app.register(authRoutes, { prefix: '/api/auth' });
+  await app.register(catalogueRoutes, { prefix: '/api/catalogue' });
   await app.register(apiRoutes, { prefix: '/api' });
+  await app.register(aiRoutes, { prefix: '/api' });
 
   app.get('/api/health', async () => ({
     ok: true,

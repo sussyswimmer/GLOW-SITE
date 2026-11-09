@@ -68,6 +68,40 @@ collections:
       - { label: "Content (English)", name: body_en, widget: markdown, required: false,
           hint: "If left empty, readers on English see the Vietnamese text." }
 
+  # ── Lessons: English through the news ──────────────────
+  - name: lessons
+    label: "Tiếng Anh qua tin tức / Lessons"
+    label_singular: "bài học / lesson"
+    folder: "content/lessons"
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    slug: "{{fields.date}}-{{slug}}"
+    summary: "{{title}} — {{fields.level}}"
+    sortable_fields: [date, title, level]
+    editor:
+      preview: false
+    fields:
+      - { label: "Title (English)", name: title, widget: string }
+      - { label: "Tiêu đề (Tiếng Việt)", name: titleVi, widget: string }
+      - { label: "Ngày / Date", name: date, widget: datetime,
+          format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
+      - { label: "Cấp độ / Level", name: level, widget: select, default: beginner,
+          options: [ { label: "Cơ bản / Beginner", value: beginner },
+                     { label: "Trung cấp / Intermediate", value: intermediate },
+                     { label: "Nâng cao / Advanced", value: advanced } ] }
+      - { label: "Summary (English)", name: summary, widget: text }
+      - { label: "Tóm tắt (Tiếng Việt)", name: summaryVi, widget: text }
+      - { label: "Bài đọc / Story (English)", name: body, widget: markdown,
+          hint: "Original English text, paragraphs separated by a blank line. / Bài đọc tiếng Anh gốc." }
+      - { label: "Từ khoá / Keywords", name: keywords, widget: text,
+          hint: "One per line: word | tiếng Việt | English meaning. The word must appear in the story exactly as written. / Mỗi dòng một từ." }
+      - { label: "Âm thanh / Audio", name: audio, widget: file, required: false,
+          hint: "Optional MP3. If empty, the page reads the story aloud with the browser voice. / Không bắt buộc." }
+      - { label: "Bài mẫu / Sample lesson", name: sample, widget: boolean, default: false,
+          hint: "Shows a 'Sample lesson' tag. Leave off for real lessons. / Chỉ bật cho bài mẫu." }
+
   # ── The landing page ───────────────────────────────────
   - name: pages
     label: "Trang chủ / Landing page"
@@ -95,22 +129,31 @@ collections:
             widget: object
             collapsed: true
             fields:
-              - { label: "English self-learning", name: english, widget: object, fields: [
+              - { label: "Dòng giới thiệu hợp tác / Partnership line", name: partnership, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Home", name: home, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Dashboard", name: dashboard, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
               - { label: "Courses", name: courses, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Resources", name: resources, widget: object, fields: [
+              - { label: "Courses ▸ All courses", name: coursesAll, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Stories", name: stories, widget: object, fields: [
+              - { label: "Courses ▸ English Learning", name: english, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Courses ▸ Skills & Network Building", name: skills, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Courses ▸ Training (staff only)", name: training, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
               - { label: "Tuition", name: tuition, widget: object, fields: [
-                  { label: "Tiếng Việt", name: vi, widget: string },
-                  { label: "English", name: en, widget: string } ] }
-              - { label: "About GLOW", name: about, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
               - { label: "Sign in", name: signin, widget: object, fields: [
@@ -192,6 +235,9 @@ collections:
                   allow_add: false, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết cuối cột / Link under the list", name: link, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
 
           - label: "Khoá học — phần đầu / Courses section heading"
             name: coursesSection
@@ -202,6 +248,10 @@ collections:
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
               - { label: "Tiêu đề / Heading", name: heading, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+
+              - { label: "Liên kết Xem tất cả / See-all link", name: all, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
 
@@ -263,6 +313,15 @@ collections:
               - { label: "Đoạn văn / Body", name: body, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: text },
                   { label: "English", name: en, widget: text } ] }
+              - { label: "Tiêu đề phần tác động / Impact title", name: impactTitle, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Ba con số tác động / The three impact figures", name: impact, widget: list,
+                  allow_add: false, fields: [
+                  { label: "Con số / Figure", name: value, widget: string },
+                  { label: "Nhãn / Label", name: label, widget: object, fields: [
+                    { label: "Tiếng Việt", name: vi, widget: string },
+                    { label: "English", name: en, widget: string } ] } ] }
               - { label: "Nút / Button", name: cta, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
@@ -281,37 +340,67 @@ collections:
               - { label: "Cột 2 — tiêu đề / Column 2 heading", name: colSkills, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Cột 3 — tiêu đề / Column 3 heading", name: colResources, widget: object, fields: [
+              - { label: "Cột 3 (nhân viên) — tiêu đề / Column 3 heading (staff)", name: colTraining, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Phát âm / Pronunciation", name: linkPronunciation, widget: object, fields: [
+              - { label: "Cột 4 — tiêu đề / Column 4 heading", name: colOther, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Kiểm tra / Testing", name: linkTesting, widget: object, fields: [
+              - { label: "Liên kết / Link: EnglishTesting", name: linkEnglishTesting, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Giao tiếp / Communication", name: linkCommunication, widget: object, fields: [
+              - { label: "Liên kết / Link: EnglishSelf", name: linkEnglishSelf, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Lãnh đạo / Leadership", name: linkLeadership, widget: object, fields: [
+              - { label: "Liên kết / Link: Etop", name: linkEtop, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Tài chính / Finance", name: linkFinance, widget: object, fields: [
+              - { label: "Liên kết / Link: EnglishResources", name: linkEnglishResources, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Chatbot AI / AI Chatbots", name: linkChatbots, widget: object, fields: [
+              - { label: "Liên kết / Link: Coffeetime", name: linkCoffeetime, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Mẹo tự học / Self-learning tips", name: linkTips, widget: object, fields: [
+              - { label: "Liên kết / Link: Mentoring", name: linkMentoring, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Tin tức / Stories", name: linkStories, widget: object, fields: [
+              - { label: "Liên kết / Link: Career", name: linkCareer, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Học phí / Tuition", name: linkTuition, widget: object, fields: [
+              - { label: "Liên kết / Link: Youth", name: linkYouth, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
-              - { label: "Liên kết: Đăng nhập / Sign in", name: linkSignin, widget: object, fields: [
+              - { label: "Liên kết / Link: StaffEnglish", name: linkStaffEnglish, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: StaffMigration", name: linkStaffMigration, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: StaffOrg", name: linkStaffOrg, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: StaffTech", name: linkStaffTech, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: Stories", name: linkStories, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: About", name: linkAbout, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: Signin", name: linkSignin, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: Volunteer", name: linkVolunteer, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: Donate", name: linkDonate, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: Partner", name: linkPartner, widget: object, fields: [
+                  { label: "Tiếng Việt", name: vi, widget: string },
+                  { label: "English", name: en, widget: string } ] }
+              - { label: "Liên kết / Link: Paxu", name: linkPaxu, widget: object, fields: [
                   { label: "Tiếng Việt", name: vi, widget: string },
                   { label: "English", name: en, widget: string } ] }
               - { label: "Dòng bản quyền / Copyright line", name: copyright, widget: string }

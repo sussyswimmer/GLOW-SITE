@@ -24,23 +24,6 @@ export default async function apiRoutes(app) {
     return { ...d, demo: isDemo };
   });
 
-  /* ── GET /api/courses ───────────────────────────────────── */
-  app.get('/courses', async (req) => {
-    const d = await data.getDashboard(req.session);
-    /* Grouped the way the page renders them, so the client is not
-       re-deriving a taxonomy it would then have to keep in step. */
-    const groups = new Map();
-    for (const c of d.courses) {
-      const key = c.category || 'Courses';
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(c);
-    }
-    return {
-      demo: isDemo,
-      groups: [...groups].map(([title, courses]) => ({ title, courses })),
-    };
-  });
-
   /* ── GET /api/courses/:id ───────────────────────────────── */
   app.get('/courses/:id', {
     schema: { params: { type: 'object', properties: { id: { type: 'integer', minimum: 1 } }, required: ['id'] } },

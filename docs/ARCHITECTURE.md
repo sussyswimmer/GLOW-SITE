@@ -114,6 +114,28 @@ independently.
 `tools/smoke.mjs` asserts the tested rows above against a running server. It
 is not a formality — run it after any change to `server/`.
 
+## Roles and the catalogue
+
+Every signed-in learner has a `role`: `learner`, `gems`, `seeds` or `staff`. It
+comes from the adapter at sign-in, is sealed into the session cookie, and is
+returned by `/api/auth/me`. The browser never supplies it. The mock adapter has
+one demo account per role; the Moodle adapter returns `learner` for everyone
+until the team says how staff, GEMS and SEEDS are marked in Moodle (a
+`shortcut:` comment in `moodle.js` says so).
+
+`server/data/catalogue.js` is the hand-maintained list of categories,
+sub-categories, groups and courses, from the client's content brief. Each
+course has an `access`: empty (everyone), `gems`, `seeds` or `staff`, and
+`canSee(course, role)` applies it (staff see everything; `null` is signed out).
+A course the viewer may not see **does not exist for them**: it is left out of
+lists and its page is a 404, not a 403, so a signed-out visitor is never told
+that Training exists.
+
+`/api/catalogue` and `/api/catalogue/courses/:code` are public and read the
+session only to decide what to show and to attach progress. The catalogue is
+server-only: the page builder writes public courses into the static HTML, and
+the browser gets the rest through the API.
+
 ## The file map
 
 ```
@@ -123,10 +145,12 @@ server/
   config.js           env parsing; refuses to boot if misconfigured
   session.js          the sealed-cookie session. Read this one first.
   routes/auth.js      sign in / out / me   ← the security-critical file
-  routes/api.js       dashboard, courses, catalog, SSO bridge, media proxy
+  routes/api.js       dashboard, course by id, catalog, SSO bridge, media proxy
+  routes/catalogue.js the public catalogue and course-by-code
   data/contract.js    THE data contract + runtime validation
+  data/catalogue.js   the course catalogue and who may see what (server-only)
   data/moodle.js      live adapter; absorbs Moodle's quirks
-  data/mock.js        the catalogue, in memory, self-flagging as demo
+  data/mock.js        four demo accounts and their dashboards, in memory, self-flagging as demo
 src/
   api.js              the single fetch wrapper; 401 → sign in, offline, timeout
   ui.js               DOM helpers + the loading/empty/error states

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi"
+      data-title-vi="Kỹ năng &amp; Kết nối | GLOW" data-title-en="Skills &amp; Network Building | GLOW"
+      data-desc-vi="CoffeeTime, cố vấn, lộ trình nghề nghiệp, chuỗi khoá học Trao quyền cho Thanh niên và di cư an toàn trên GLOW." data-desc-en="CoffeeTime talks, mentoring, career tracks, the Youth Empowerment Series and safe migration on GLOW.">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F9F9F9">
+<!-- Vietnamese is the authored language and the one the UI renders first, so
+     it is the one in the markup. src/i18n.js rewrites this title, the
+     description and <html lang> together from the data-* attributes above
+     when the learner switches to English — the page used to render a
+     Vietnamese interface under an English title in both languages. -->
+<title>Kỹ năng &amp; Kết nối | GLOW</title>
+<meta name="description" content="CoffeeTime, cố vấn, lộ trình nghề nghiệp, chuỗi khoá học Trao quyền cho Thanh niên và di cư an toàn trên GLOW.">
+<link rel="canonical" href="https://glow-pacific-links.netlify.app/skills.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wght@600;700;800&family=Roboto:wght@300;400;500;700&display=swap">
+<link rel="stylesheet" href="./src/styles.css">
+<link rel="stylesheet" href="./src/app.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23014E45'/%3E%3Ccircle cx='16' cy='16' r='11' fill='%23B7EAE7'/%3E%3Ccircle cx='16' cy='16' r='7.4' fill='%2340D3BA'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%2314BA76'/%3E%3C/svg%3E">
+</head>
+<body class="app">
+
+<a class="skip-link" href="#view" data-i18n data-vi="Tới nội dung chính" data-en="Skip to main content">Tới nội dung chính</a>
+
+<!-- ══════ BRAND BAR ══════ -->
+<header class="appbar">
+  <div class="appbar-in">
+    <a class="logo" href="./index.html"><img src="./assets/img/glow-logo.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="550" height="90"></a>
+    <p class="partner" data-i18n data-vi="Hợp tác cùng Pacific Links Foundation & Matera" data-en="In partnership with Pacific Links Foundation & Matera">Hợp tác cùng Pacific Links Foundation & Matera</p>
+    <span class="appbar-spacer"></span>
+    <div class="navsearch-wrap">
+      <a class="navsearch-btn" href="./courses.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg><span class="sr-only" data-i18n data-vi="Tìm khoá học" data-en="Search courses">Tìm khoá học</span></a>
+      <form class="navsearch" id="navSearch" role="search" action="./courses.html" method="get" hidden>
+        <label for="navQ" data-i18n data-vi="Tìm khoá học (tên tiếng Anh hoặc tiếng Việt)" data-en="Search courses (English or Vietnamese names)">Tìm khoá học (tên tiếng Anh hoặc tiếng Việt)</label>
+        <div class="navsearch-row">
+          <input id="navQ" name="q" type="search" autocomplete="off">
+          <button type="submit" data-i18n data-vi="Tìm" data-en="Search">Tìm</button>
+        </div>
+      </form>
+    </div>
+    <button id="langBtn" class="lang" type="button" aria-pressed="false" aria-label="Language / Ngôn ngữ">
+      <span class="lang-vi">VI</span><span class="lang-sep"> · </span><span class="lang-en">EN</span>
+    </button>
+
+    <!-- SIGNED OUT is the state in the markup, because it is the state a
+         crawler, a link preview and a first-time visitor are all actually in.
+         src/nav.js (applyAuth) turns these over once, and only once, it has
+         a session in hand: the chip reads "<learner code> <full name>", or
+         "Staff" for an account with no code. -->
+    <a class="who" href="./dashboard.html" hidden>
+      <span class="who-name"></span>
+      <span class="avatar" aria-hidden="true"></span>
+    </a>
+    <button id="signOut" class="signout" type="button" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+      <span data-i18n data-vi="Đăng xuất" data-en="Sign out">Đăng xuất</span>
+    </button>
+    <a id="signIn" class="signout" href="./login.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg>
+      <span data-i18n data-vi="Đăng nhập" data-en="Sign in">Đăng nhập</span>
+    </a>
+  </div>
+</header>
+
+<!-- ══════ NAV ══════
+     Home · Dashboard · Courses ▼ · Tuition. Dashboard is in the public menu
+     on purpose (the brief keeps it there): signed out, it sends you to sign
+     in. Tuition is not in the brief's menu; it stays because it was asked
+     for in every menu. English self-learning, Resources and Stories are no
+     longer here: they live under Courses and in the footer.
+     The Training entry is data-staff: hidden until src/nav.js sees a staff
+     session. -->
+<nav class="appnav" aria-label="Main">
+  <div class="appnav-in">
+    <a href="./index.html" data-page="index.html">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+      <span data-i18n data-vi="Trang chủ" data-en="Home">Trang chủ</span>
+    </a>
+    <a href="./dashboard.html" data-page="dashboard.html" data-i18n data-vi="Bảng điều khiển" data-en="Dashboard">Bảng điều khiển</a>
+    <div class="navdd">
+      <button class="navdd-btn" type="button" aria-expanded="false" aria-controls="coursesMenu">
+        <span data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="navdd-menu" id="coursesMenu" hidden>
+        <a href="./courses.html" data-i18n data-vi="Tất cả khoá học" data-en="All courses">Tất cả khoá học</a>
+        <a href="./english.html" data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</a>
+        <a href="./skills.html" data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</a>
+        <a href="./training.html" data-staff hidden data-i18n data-vi="Đào tạo nội bộ" data-en="Training">Đào tạo nội bộ</a>
+      </div>
+    </div>
+    <a href="./payment.html" data-page="payment.html" data-i18n data-vi="Học phí" data-en="Tuition">Học phí</a>
+  </div>
+</nav>
+
+<!-- ══════ PAGE HEAD ══════ -->
+<div class="pagehead">
+  <div class="pagehead-in">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="./index.html" data-i18n data-vi="Trang chủ" data-en="Home">Trang chủ</a><span aria-hidden="true">/</span><a href="./courses.html" data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</a><span aria-hidden="true">/</span><span data-i18n data-vi="Kỹ năng & Kết nối" data-en="Skills & Network Building">Kỹ năng & Kết nối</span></nav>
+    <h1 data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</h1>
+    <p data-i18n data-vi="Các buổi trò chuyện, cố vấn, lộ trình nghề nghiệp và khoá học tự học giúp bạn phát triển kỹ năng và mở rộng mạng lưới." data-en="Talks, mentoring, career tracks and self-paced courses to build skills and grow your network.">Các buổi trò chuyện, cố vấn, lộ trình nghề nghiệp và khoá học tự học giúp bạn phát triển kỹ năng và mở rộng mạng lưới.</p>
+  </div>
+</div>
+
+<main class="shell" id="view" tabindex="-1">
+      <section class="catsec" id="coffeetime">
+        <div class="catsec-head"><h2>CoffeeTime</h2><span class="count">9</span></div>
+        <p class="catsec-desc"><span data-i18n data-vi="Các buổi trò chuyện trực tuyến với chuyên gia, chia sẻ hiểu biết và hướng dẫn thực tế về sự sẵn sàng đi làm, kỹ năng sống và phát triển bản thân." data-en="Virtual discussions with professionals offering insights and practical guidance on work readiness, life skills and personal development.">Các buổi trò chuyện trực tuyến với chuyên gia, chia sẻ hiểu biết và hướng dẫn thực tế về sự sẵn sàng đi làm, kỹ năng sống và phát triển bản thân.</span></p>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="S1 - Kỹ năng sống" data-en="S1 - Life Skills">S1 - Kỹ năng sống</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EM1001"><span class="ccard-name"><span data-i18n data-vi="Cùng đọc Đắc Nhân tâm" data-en="Book Club: How to Win Friends and Influence People">Cùng đọc Đắc Nhân tâm</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM1001</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM1012"><span class="ccard-name"><span data-i18n data-vi="Tự học hiệu quả" data-en="Effective Self-learning">Tự học hiệu quả</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM1012</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM1017"><span class="ccard-name"><span data-i18n data-vi="Nhận diện và phòng tránh lừa đảo" data-en="Recognising and Avoiding Scams">Nhận diện và phòng tránh lừa đảo</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM1017</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="S2 - Hiểu bản thân" data-en="S2 - Self-Awareness">S2 - Hiểu bản thân</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EM2001"><span class="ccard-name"><span data-i18n data-vi="Xây dựng thương hiệu cá nhân" data-en="Self-branding">Xây dựng thương hiệu cá nhân</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM2001</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM2610"><span class="ccard-name"><span data-i18n data-vi="Thực hành Chánh niệm" data-en="Practising Mindfulness">Thực hành Chánh niệm</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM2610</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="S3 - Kiến thức mới &amp; Khám phá nghề nghiệp" data-en="S3 - New Knowledge &amp; Career Exploration">S3 - Kiến thức mới &amp; Khám phá nghề nghiệp</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EM2608"><span class="ccard-name"><span data-i18n data-vi="Hành trình trở thành một kỹ sư" data-en="The Journey to Becoming an Engineer">Hành trình trở thành một kỹ sư</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM2608</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM2611"><span class="ccard-name"><span data-i18n data-vi="Định hướng ngành An ninh mạng" data-en="Cybersecurity Career Orientation">Định hướng ngành An ninh mạng</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM2611</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="S4 - Kết nối &amp; Cơ hội" data-en="S4 - Networking &amp; Opportunities">S4 - Kết nối &amp; Cơ hội</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EM4202"><span class="ccard-name"><span data-i18n data-vi="Xây dựng resume hiệu quả" data-en="Building an effective resume">Xây dựng resume hiệu quả</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM4202</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM2606"><span class="ccard-name"><span data-i18n data-vi="Chuẩn bị cho phỏng vấn xin việc" data-en="Preparing for Job Interviews">Chuẩn bị cho phỏng vấn xin việc</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM2606</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div></div>
+      </section>
+      <section class="catsec" id="mentoring">
+        <div class="catsec-head"><h2><span data-i18n data-vi="Cố vấn" data-en="Mentoring">Cố vấn</span></h2><span class="count">3</span></div>
+        <div class="cgrid"><a class="ccard" href="./course.html?code=EM5001"><span class="ccard-name"><span data-i18n data-vi="Chương Trình Cố Vấn SuccessPath 2023" data-en="SuccessPath Mentoring 2023">Chương Trình Cố Vấn SuccessPath 2023</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM5001</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM5002"><span class="ccard-name"><span data-i18n data-vi="Chương Trình Cố Vấn SuccessPath 2024" data-en="SuccessPath Mentoring 2024">Chương Trình Cố Vấn SuccessPath 2024</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM5002</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM9001"><span class="ccard-name"><span data-i18n data-vi="Hướng dẫn dành cho mentor" data-en="SuccessPath Mentor Orientation">Hướng dẫn dành cho mentor</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM9001</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div>
+      </section>
+      <section class="catsec" id="career-track">
+        <div class="catsec-head"><h2><span data-i18n data-vi="Lộ trình phát triển nghề nghiệp chuyên sâu" data-en="In-depth Career Development Track">Lộ trình phát triển nghề nghiệp chuyên sâu</span></h2><span class="count">3</span></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="Thành công với Khởi nghiệp (SET)" data-en="Success with Entrepreneurship (SET)">Thành công với Khởi nghiệp (SET)</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EM6001"><span class="ccard-name"><span data-i18n data-vi="SET 2023: Thành Công Với Khởi Nghiệp" data-en="Success with Entrepreneurship (SET) 2023">SET 2023: Thành Công Với Khởi Nghiệp</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM6001</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM6002"><span class="ccard-name"><span data-i18n data-vi="SET 2024: Thành Công Với Khởi Nghiệp" data-en="Success with Entrepreneurship (SET) 2024">SET 2024: Thành Công Với Khởi Nghiệp</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM6002</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div></div>
+        <div class="cgroup"><h3 class="cgroup-title"><span data-i18n data-vi="Chương trình tự học IT cùng nhau (GRIT)" data-en="Growing with Information Technology (GRIT)">Chương trình tự học IT cùng nhau (GRIT)</span></h3><div class="cgrid"><a class="ccard" href="./course.html?code=EM6101"><span class="ccard-name"><span data-i18n data-vi="Chương trình tự học IT cùng nhau" data-en="Growing with Information Technology (GRIT)">Chương trình tự học IT cùng nhau</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM6101</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div></div>
+      </section>
+      <section class="catsec" id="youth-empowerment">
+        <div class="catsec-head"><h2><span data-i18n data-vi="Chuỗi khoá học Trao quyền cho Thanh niên" data-en="Youth Empowerment Series">Chuỗi khoá học Trao quyền cho Thanh niên</span></h2><span class="count">6</span></div>
+        <p class="catsec-desc"><span data-i18n data-vi="Các khoá học tự học cho cuộc sống và công việc." data-en="Self-paced courses for life and work.">Các khoá học tự học cho cuộc sống và công việc.</span></p>
+        <div class="cgrid"><a class="ccard" href="./course.html?code=EM7101"><span class="ccard-name"><span data-i18n data-vi="Kỹ năng giao tiếp" data-en="Communication Skills">Kỹ năng giao tiếp</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM7101</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM7103"><span class="ccard-name"><span data-i18n data-vi="Quản lý tài chính cá nhân" data-en="Personal Financial Management">Quản lý tài chính cá nhân</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM7103</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM7106"><span class="ccard-name"><span data-i18n data-vi="Phòng, chống mua bán người" data-en="Anti-Human Trafficking">Phòng, chống mua bán người</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM7106</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM7110"><span class="ccard-name"><span data-i18n data-vi="Kỹ năng làm việc nhóm" data-en="Teamwork Skills">Kỹ năng làm việc nhóm</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM7110</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM7108"><span class="ccard-name"><span data-i18n data-vi="Kỹ năng lãnh đạo" data-en="Leadership Skills">Kỹ năng lãnh đạo</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM7108</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=EM7112"><span class="ccard-name"><span data-i18n data-vi="AI từ cơ bản đến ứng dụng" data-en="AI: Basics to Application">AI từ cơ bản đến ứng dụng</span></span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>EM7112</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div>
+      </section>
+      <section class="catsec" id="safe-migration">
+        <div class="catsec-head"><h2><span data-i18n data-vi="Di cư an toàn &amp; Phòng chống mua bán người" data-en="Safe Migration &amp; Anti-Trafficking">Di cư an toàn &amp; Phòng chống mua bán người</span></h2><span class="count">3</span></div>
+        <p class="catsec-desc"><span data-i18n data-vi="Đưa ra lựa chọn sáng suốt về việc làm và di cư — khoá học tương tác về rủi ro lao động và dấu hiệu bóc lột, hỗ trợ người ứng phó và nạn nhân, cùng công cụ số để so sánh việc làm, chi phí sinh hoạt và lộ trình di cư an toàn." data-en="Make informed choices about work and migration — interactive training on labor risks and exploitation red flags, support for responders and survivors, and digital tools to compare jobs, living costs and safe pathways.">Đưa ra lựa chọn sáng suốt về việc làm và di cư — khoá học tương tác về rủi ro lao động và dấu hiệu bóc lột, hỗ trợ người ứng phó và nạn nhân, cùng công cụ số để so sánh việc làm, chi phí sinh hoạt và lộ trình di cư an toàn.</span></p>
+        <div class="cgrid"><a class="ccard" href="./course.html?code=FACT"><span class="ccard-name">FACT — Factory Awareness to Counter Trafficking</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>FACT</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=CARES"><span class="ccard-name">CARES — for frontline responders</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>CARES</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a><a class="ccard" href="./course.html?code=RISE"><span class="ccard-name">RISE — for trafficking survivors</span><span class="ccard-top"><span class="ccode"><span class="sr-only" data-i18n data-vi="Mã khoá học: " data-en="Course code: ">Mã khoá học: </span>RISE</span></span><span class="ccard-cat"><span data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</span></span></a></div>
+      </section>
+</main>
+
+<!-- Written in both languages, always — the VI/EN toggle is itself a script,
+     so a reader without JavaScript is stuck in whichever language the markup
+     shipped in, and telling them so in only that language is no help at all.
+
+     Two versions, because the two kinds of page fail differently. A private
+     shell without JavaScript is an empty #view under a heading, and needs to
+     say why. A public catalogue page is completely readable without it and
+     loses only the toggle, so claiming it is broken would be a lie. -->
+<noscript>
+  <div class="noscript-note" role="note">
+    <p><strong>JavaScript đang tắt.</strong> Bạn vẫn đọc được toàn bộ trang này, nhưng nút chuyển VI · EN sẽ không hoạt động. Bật JavaScript để đổi ngôn ngữ.</p>
+    <p lang="en"><strong>JavaScript is off.</strong> You can still read this whole page, but the VI · EN switch will not work. Turn JavaScript on to change language.</p>
+  </div>
+</noscript>
+
+<footer class="foot">
+  <div class="foot-in">
+    <div class="foot-brand">
+      <a class="logo" href="./index.html"><img src="./assets/img/glow-logo.png" alt="GLOW — Growing Learning Opportunities Worldwide" width="550" height="90"></a>
+      <p data-i18n data-vi="Nền tảng tự học của Pacific Links Foundation, hợp tác cùng Matera." data-en="The self-learning platform from Pacific Links Foundation, in partnership with Matera.">Nền tảng tự học của Pacific Links Foundation, hợp tác cùng Matera.</p>
+    </div>
+    <div class="foot-cols">
+      <div>
+        <h3 data-i18n data-vi="Học tiếng Anh" data-en="English Learning">Học tiếng Anh</h3>
+        <a href="./english.html#english-testing" data-i18n data-vi="Kiểm tra tiếng Anh" data-en="English Testing">Kiểm tra tiếng Anh</a>
+        <a href="./english.html#english-self-learning" data-i18n data-vi="Tự học tiếng Anh" data-en="English Self-Learning">Tự học tiếng Anh</a>
+        <a href="./english.html#etop" data-i18n data-vi="ETOP" data-en="ETOP">ETOP</a>
+        <a href="./english.html#english-resources" data-i18n data-vi="Tài nguyên tiếng Anh" data-en="English Resources">Tài nguyên tiếng Anh</a>
+      </div>
+      <div>
+        <h3 data-i18n data-vi="Kỹ năng &amp; Kết nối" data-en="Skills &amp; Network Building">Kỹ năng &amp; Kết nối</h3>
+        <a href="./skills.html#coffeetime" data-i18n data-vi="CoffeeTime" data-en="CoffeeTime">CoffeeTime</a>
+        <a href="./skills.html#mentoring" data-i18n data-vi="Cố vấn" data-en="Mentoring">Cố vấn</a>
+        <a href="./skills.html#career-track" data-i18n data-vi="Lộ trình phát triển nghề nghiệp" data-en="Career Development Track">Lộ trình phát triển nghề nghiệp</a>
+        <a href="./skills.html#youth-empowerment" data-i18n data-vi="Chuỗi khoá học Trao quyền cho Thanh niên" data-en="Youth Empowerment Series">Chuỗi khoá học Trao quyền cho Thanh niên</a>
+      </div>
+      <div data-staff hidden>
+        <h3 data-i18n data-vi="Đào tạo nội bộ" data-en="Training">Đào tạo nội bộ</h3>
+        <a href="./training.html#staff-english" data-i18n data-vi="Tiếng Anh cho nhân viên" data-en="English for staff">Tiếng Anh cho nhân viên</a>
+        <a href="./training.html#migration-trafficking" data-i18n data-vi="Phòng ngừa rủi ro di cư &amp; mua bán người" data-en="Migration &amp; trafficking prevention">Phòng ngừa rủi ro di cư &amp; mua bán người</a>
+        <a href="./training.html#organization-skills" data-i18n data-vi="Kỹ năng tổ chức" data-en="Organisation skills">Kỹ năng tổ chức</a>
+        <a href="./training.html#technical-skills" data-i18n data-vi="Kỹ năng công nghệ" data-en="Technical skills">Kỹ năng công nghệ</a>
+      </div>
+      <div>
+        <h3 data-i18n data-vi="Khác" data-en="Other">Khác</h3>
+        <a href="./stories.html" data-i18n data-vi="Tin tức" data-en="Stories">Tin tức</a>
+        <a href="./index.html#about" data-i18n data-vi="Về GLOW" data-en="About GLOW">Về GLOW</a>
+        <a href="./login.html" data-guest data-i18n data-vi="Đăng nhập" data-en="Sign in">Đăng nhập</a>
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer" data-i18n data-vi="Trở thành tình nguyện viên" data-en="Become a Volunteer">Trở thành tình nguyện viên</a>
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer" data-i18n data-vi="Quyên góp" data-en="Donate">Quyên góp</a>
+        <a href="https://pacificlinks.org" target="_blank" rel="noopener noreferrer" data-i18n data-vi="Hợp tác cùng chúng tôi" data-en="Partner With Us">Hợp tác cùng chúng tôi</a>
+        <a href="https://mypalo.vn" target="_blank" rel="noopener noreferrer" data-i18n data-vi="Ứng dụng PAXU" data-en="PAXU app">Ứng dụng PAXU</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-rule">
+    <span>© 2026 Pacific Links Foundation</span>
+    <span>GLOW — Growing Learning Opportunities Worldwide</span>
+  </div>
+  <div class="bands foot-bands" aria-hidden="true"></div>
+</footer>
+
+<script type="module" src="./src/app.js"></script>
+</body>
+</html>

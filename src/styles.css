@@ -623,7 +623,9 @@ h3{font-size:1.15rem;font-weight:700;letter-spacing:-.02em}
   position:relative;width:100%;aspect-ratio:16/10;border-radius:var(--r-lg);overflow:hidden;
   box-shadow:var(--sh-md);background:var(--matte);border:1px solid var(--mint);will-change:transform;
 }
-.shot{position:absolute;inset:0;clip-path:inset(100% 0 0 0);will-change:clip-path}
+/* opaque: the 4:3 course cover is letterboxed in this 16:10 frame, and without a
+   background the shot beneath it shows through the bars */
+.shot{position:absolute;inset:0;background:var(--matte);clip-path:inset(100% 0 0 0);will-change:clip-path}
 .shot:first-child{clip-path:inset(0 0 0 0)}
 /* GLOW's own slides are wide banners — contain, never cover, or the
    headline gets cropped off both ends */

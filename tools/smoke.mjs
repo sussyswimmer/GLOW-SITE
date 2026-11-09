@@ -5,7 +5,12 @@
    from a learner, so they run against the real process rather than mocks:
    auth is enforced, a bad password is refused, the session cookie is
    HttpOnly, a cross-origin POST is rejected, and the SSO bridge cannot be
-   pointed off-site. */
+   pointed off-site.
+
+   It signs in four times (one per demo role) plus three refused attempts,
+   and the login limiter allows ten per fifteen minutes per IP. Run it once
+   per window against a fresh server, or start the server with
+   LOGIN_MAX_ATTEMPTS=100 when iterating. */
 
 const BASE = process.argv[2] || 'http://localhost:8080';
 
@@ -49,10 +54,12 @@ async function req(path, opts = {}) {
 }
 
 /* ── 1. the API is closed by default ───────────────────── */
-for (const path of ['/api/dashboard', '/api/courses', '/api/catalog/english', '/api/courses/101', '/api/billing']) {
+for (const path of ['/api/dashboard', '/api/catalog/english', '/api/courses/101', '/api/billing']) {
   const r = await req(path);
   check(`${path} requires a session`, r.status === 401, `got ${r.status}`);
 }
+/* The old "My courses" list is gone: the dashboard and /api/catalogue replace it. */
+check('/api/courses (the old list) no longer exists', (await req('/api/courses')).status === 404);
 
 /* ── 2. health is open, and honest about demo mode ─────── */
 const health = await (await req('/api/health')).json();
@@ -162,6 +169,120 @@ for (const key of ['english', 'resources']) {
   check(`every /${key} chip opens a course`, ids.length > 0 && dead.length === 0,
     dead.length ? `dead: ${dead.map(([id, s]) => `${id}→${s}`).join(', ')}` : `${ids.length} chips`);
 }
+
+/* ── 6c. roles, and the catalogue they see ─────────────────
+   The role comes from the server and decides which courses exist for a
+   viewer. A course the viewer may not see is a 404, never a 403. */
+const codesOf = body => new Set((body.courses || []).map(c => c.code));
+const hasAny = (set, codes) => codes.filter(c => set.has(c));
+const GATED = ['EL5004', 'EL5005', 'EL5006'];
+
+async function loginAs(username, password) {
+  jar = '';
+  const r = await req('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+  remember(r);
+  return { status: r.status, body: await r.json() };
+}
+
+/* The dashboard v2 contract, for any role. */
+function checkDashboard(who, d, { pinned, staff }) {
+  check(`${who}: dashboard has recommended (≤3), pinned, emmai`,
+    Array.isArray(d.recommended) && d.recommended.length > 0 && d.recommended.length <= 3 &&
+    'pinned' in d && typeof d.emmai?.vi === 'string' && typeof d.emmai?.en === 'string');
+  check(`${who}: pinned is ${pinned ? 'a titled block' : 'null'}`,
+    pinned ? Boolean(d.pinned?.titleVi && d.pinned?.titleEn && d.pinned.courses.length) : d.pinned === null);
+  const all = [...d.courses, ...d.recent, ...d.recommended, ...(d.pinned?.courses || [])];
+  check(`${who}: every course has a code and a catalogue href`,
+    all.every(c => c.code && /^\.\/course\.html\?code=[A-Za-z0-9]+$/.test(c.href)), all.find(c => !c.href)?.code);
+  check(`${who}: recent has hours and lessons`,
+    d.recent.length === 3 && d.recent.every(c => c.hours > 0 && c.lessonsTotal >= c.lessonsDone && c.lessonsDone >= 0));
+  check(`${who}: events are upcoming and bilingual`,
+    d.events.length > 0 && d.events.every(e => e.titleVi && Date.parse(e.when) > Date.now()));
+  check(`${who}: courses are ${staff ? 'all staff training' : 'free of staff training'}`,
+    d.courses.every(c => c.code.startsWith('PT') === staff));
+}
+
+const learnerJar = jar;
+
+/* signed out */
+jar = '';
+const outCat = await (await req('/api/catalogue')).json();
+const outCodes = codesOf(outCat);
+check('catalogue (signed out): role is null, no gated or PT courses',
+  outCat.role === null && hasAny(outCodes, GATED).length === 0 && ![...outCodes].some(c => c.startsWith('PT')),
+  `${outCodes.size} courses`);
+check('catalogue (signed out): no Training category and no progress',
+  !outCat.categories.some(c => c.key === 'training') && outCat.courses.every(c => c.progress === null));
+check('catalogue (signed out): carries the whole public catalogue',
+  outCat.courses.length >= 45 && outCat.groups.length > 0 && outCat.subcategories.length > 0 && outCat.demo === true,
+  `${outCat.courses.length} courses`);
+check('catalogue course (signed out): a public one is 200', (await req('/api/catalogue/courses/EL1001')).status === 200);
+check('catalogue course: lookup is case-insensitive', (await req('/api/catalogue/courses/el1001')).status === 200);
+check('catalogue course (signed out): PT0001 is 404', (await req('/api/catalogue/courses/PT0001')).status === 404);
+check('catalogue course (signed out): EL5004 is 404', (await req('/api/catalogue/courses/EL5004')).status === 404);
+check('catalogue course: an unknown code is 404', (await req('/api/catalogue/courses/ZZ9999')).status === 404);
+const ct = await (await req('/api/catalogue/courses/EM1001')).json();
+check('catalogue course: names, presenter and no sections signed out',
+  ct.course.vi === 'Cùng đọc Đắc Nhân tâm' && ct.course.presenter === 'Eric & Gil' && ct.sections.length === 0 && ct.role === null);
+const moodleCourse = await (await req('/api/catalogue/courses/EL3001')).json();
+check('catalogue course: a Moodle course exposes moodlePath', moodleCourse.course.moodlePath === '/course/view.php?id=241');
+
+/* learner (the session from section 4) */
+jar = learnerJar;
+const me = await (await req('/api/auth/me')).json();
+check('/api/auth/me (learner): role, idnumber and initials',
+  me.learner.role === 'learner' && me.learner.idnumber === 'QT20P0007' && me.learner.initials === 'LA' && me.learner.fullname === 'Lê Thị A',
+  JSON.stringify(me.learner));
+checkDashboard('learner', dashBody, { pinned: false, staff: false });
+const lCat = await (await req('/api/catalogue')).json();
+check('catalogue (learner): no gated or PT courses, progress attached',
+  lCat.role === 'learner' && hasAny(codesOf(lCat), GATED).length === 0 && ![...codesOf(lCat)].some(c => c.startsWith('PT')) &&
+  lCat.courses.find(c => c.code === 'EL3001')?.progress === 60 && lCat.courses.find(c => c.code === 'EL1002')?.progress === null);
+check('catalogue course (learner): PT0001 is 404', (await req('/api/catalogue/courses/PT0001')).status === 404);
+const lEtop = await (await req('/api/catalogue/courses/EL3001')).json();
+check('catalogue course (learner): an enrolled Moodle course carries sections and progress',
+  lEtop.sections.length > 0 && lEtop.course.progress === 60 && lEtop.course.enrolled === true);
+
+/* gems */
+const gems = await loginAs('demo-gems', 'glow-demo-2026');
+check('gems signs in', gems.status === 200, `got ${gems.status}`);
+const gMe = await (await req('/api/auth/me')).json();
+check('/api/auth/me (gems): role, idnumber and initials',
+  gMe.learner.role === 'gems' && gMe.learner.idnumber === 'HU21G0012' && gMe.learner.initials === 'NB', JSON.stringify(gMe.learner));
+const gCodes = codesOf(await (await req('/api/catalogue')).json());
+check('catalogue (gems): sees EL5004 and EL5005, not EL5006, not PT',
+  gCodes.has('EL5004') && gCodes.has('EL5005') && !gCodes.has('EL5006') && ![...gCodes].some(c => c.startsWith('PT')));
+check('catalogue course (gems): EL5004 is 200, PT0001 is 404',
+  (await req('/api/catalogue/courses/EL5004')).status === 200 && (await req('/api/catalogue/courses/PT0001')).status === 404);
+checkDashboard('gems', await (await req('/api/dashboard')).json(), { pinned: true, staff: false });
+
+/* seeds */
+const seeds = await loginAs('demo-seeds', 'glow-demo-2026');
+check('seeds signs in', seeds.status === 200, `got ${seeds.status}`);
+const sMe = await (await req('/api/auth/me')).json();
+check('/api/auth/me (seeds): role, idnumber and initials',
+  sMe.learner.role === 'seeds' && sMe.learner.idnumber === 'QT24S0031' && sMe.learner.initials === 'TC', JSON.stringify(sMe.learner));
+const sCodes = codesOf(await (await req('/api/catalogue')).json());
+check('catalogue (seeds): sees EL5006, not EL5004 or EL5005, not PT',
+  sCodes.has('EL5006') && !sCodes.has('EL5004') && !sCodes.has('EL5005') && ![...sCodes].some(c => c.startsWith('PT')));
+checkDashboard('seeds', await (await req('/api/dashboard')).json(), { pinned: true, staff: false });
+
+/* staff */
+const staff = await loginAs('demo-staff', 'glow-staff-2026');
+check('staff signs in', staff.status === 200, `got ${staff.status}`);
+const stMe = await (await req('/api/auth/me')).json();
+check('/api/auth/me (staff): role, no idnumber, initials',
+  stMe.learner.role === 'staff' && !stMe.learner.idnumber && stMe.learner.initials === 'PD', JSON.stringify(stMe.learner));
+const stCat = await (await req('/api/catalogue')).json();
+const stCodes = codesOf(stCat);
+check('catalogue (staff): sees PT, the gems and seeds courses, and Training',
+  stCodes.has('PT0001') && stCodes.has('PT4004') && GATED.every(c => stCodes.has(c)) && stCat.categories.some(c => c.key === 'training'));
+check('catalogue course (staff): PT0001 is 200', (await req('/api/catalogue/courses/PT0001')).status === 200);
+checkDashboard('staff', await (await req('/api/dashboard')).json(), { pinned: true, staff: true });
+check('the staff demo password does not sign in the learner account',
+  (await loginAs('demo', 'glow-staff-2026')).status === 401);
+
+jar = learnerJar;
 
 /* ── 7. a course you are not in is refused ─────────────── */
 const missing = await req('/api/courses/999999');

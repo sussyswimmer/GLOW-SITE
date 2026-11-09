@@ -96,9 +96,11 @@ export function unseal(raw) {
  * Build the session payload for a freshly authenticated learner.
  * Only what a request genuinely needs is kept — the token to call Moodle
  * with, and enough identity to render the header without a round trip.
- * Notably absent: email, ID number, anything about their courses.
+ * The role and institutional ID number are kept so the header and the
+ * catalogue gate need no round trip. Notably absent: email, anything
+ * about their courses.
  */
-export function makeSession({ token, userId, username, fullname }) {
+export function makeSession({ token, userId, username, fullname, idnumber, role }) {
   const now = Date.now();
   return {
     v: VERSION,
@@ -106,6 +108,8 @@ export function makeSession({ token, userId, username, fullname }) {
     userId,
     username,
     fullname,
+    idnumber,
+    role,
     iat: now,
     exp: now + config.SESSION_TTL_MS,
   };
