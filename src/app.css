@@ -82,6 +82,11 @@
 }
 .panel + .panel{margin-top:24px}
 
+/* Course summary: bullets sit inside the text column, not the panel edge. */
+.course-summary > p{font-weight:700;margin-bottom:.5rem}
+.course-summary ul{padding-left:1.25em;margin:0 0 1.5rem}
+.course-summary li + li{margin-top:.35rem}
+
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:20px}
 
 .tile{

@@ -7,6 +7,7 @@
 
 import { isDemo, data } from '../data/index.js';
 import { catalogueFor, courseByCode, canSee } from '../data/catalogue.js';
+import { SUMMARIES } from '../data/course-summaries.js';
 import { readSession } from './auth.js';
 
 const moodlePathOf = c => (c.moodleId ? `/course/view.php?id=${c.moodleId}` : undefined);
@@ -50,7 +51,7 @@ export default async function catalogueRoutes(app) {
     const c = courseByCode(req.params.code);
     if (!c || !canSee(c, role)) return reply.code(404).send({ error: 'not_found' });
 
-    const course = { ...c, moodlePath: moodlePathOf(c), progress: null, enrolled: false };
+    const course = { ...c, moodlePath: moodlePathOf(c), progress: null, enrolled: false, summary: SUMMARIES[c.code] || null };
     let sections = [];
     if (session && c.moodleId) {
       try {

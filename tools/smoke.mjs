@@ -220,6 +220,9 @@ check('catalogue course (signed out): a public one is 200', (await req('/api/cat
 check('catalogue course: lookup is case-insensitive', (await req('/api/catalogue/courses/el1001')).status === 200);
 check('catalogue course (signed out): PT0001 is 404', (await req('/api/catalogue/courses/PT0001')).status === 404);
 check('catalogue course (signed out): EL5004 is 404', (await req('/api/catalogue/courses/EL5004')).status === 404);
+const sm = await (await req('/api/catalogue/courses/EM7110')).json();
+check('catalogue course (signed out): EM7110 carries a bilingual summary; unknown EM7999 is 404',
+  sm.course.summary?.en.bullets.length === 3 && sm.course.summary.vi.lead.length > 0 && (await req('/api/catalogue/courses/EM7999')).status === 404);
 check('catalogue course: an unknown code is 404', (await req('/api/catalogue/courses/ZZ9999')).status === 404);
 const ct = await (await req('/api/catalogue/courses/EM1001')).json();
 check('catalogue course: names, presenter and no sections signed out',
