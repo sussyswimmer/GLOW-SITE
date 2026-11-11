@@ -5,10 +5,10 @@ date: 2026-08-24
 cover: ""
 excerpt: >-
   Đây là bài viết mẫu. Đội ngũ GLOW có thể đăng thông báo, câu chuyện học viên
-  và tin tức tại đây — không cần lập trình viên.
+  và tin tức tại đây — không cần biết lập trình.
 excerpt_en: >-
   This is a sample story. The GLOW team can publish announcements, learner
-  stories and news here — no developer needed.
+  stories and news here — no coding needed.
 body_en: |-
   **This is a sample story** — delete it once your first real story is published.
 

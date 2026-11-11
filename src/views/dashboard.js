@@ -250,7 +250,10 @@ function calendarAndUpcoming(d) {
       : days === 1 ? { vi: 'Ngày mai', en: 'Tomorrow' }
       : null;
     const title = e.titleVi ? t(e.titleVi, e.title) : el('span', { text: e.title });
-    const meta = el('span', { class: 'event-meta' }, [e.courseTitle, clock(e.when)].filter(Boolean).join(' · '));
+    /* Skip the course name when either title already carries it (Moodle events too). */
+    const course = (e.courseTitle || '').toLowerCase();
+    const repeated = !!course && [e.title, e.titleVi].some(s => (s || '').toLowerCase().includes(course));
+    const meta = el('span', { class: 'event-meta' }, [repeated ? null : e.courseTitle, clock(e.when)].filter(Boolean).join(' · '));
     if (e.local) meta.append(' · ', t('chỉ trên thiết bị này', 'only on this device'));
 
     const li = el('li', { class: `event${tag ? ' is-soon' : ''}` });

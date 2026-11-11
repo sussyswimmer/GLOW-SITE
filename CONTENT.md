@@ -94,7 +94,7 @@ From their navigation, verbatim:
 - **Testing** — TOEIC, IELTS, IELTS Speaking, IELTS Writing, Placement Assessment
 - **Other** — Quizlet, Movies, Idioms/collocation, Sentence Diagramming, Grammar, Songs, Books, English for beginners
 
-## Educational Resources
+## Resources
 
 - Chatbots AI
 - Tips for GLOW self learning

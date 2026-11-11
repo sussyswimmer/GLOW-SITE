@@ -96,6 +96,7 @@ export function applyAuth(learner) {
   const staff = learner?.role === 'staff';
 
   document.querySelectorAll('[data-staff]').forEach(n => { n.hidden = !staff; });
+  document.querySelectorAll('[data-not-staff]').forEach(n => { n.hidden = staff; });
   document.querySelectorAll('[data-guest]').forEach(n => { n.hidden = !!learner; });
   document.querySelectorAll('[data-member]').forEach(n => { n.hidden = !learner; });
 
@@ -135,5 +136,12 @@ export async function loadAuth() {
   let me = null;
   try { me = await api.me(); } catch { /* signed out, or no API on this host */ }
   applyAuth(me?.learner || null);
+  /* Moodle's front page (src/moodle-embed.js) flags a Moodle session; the role is
+     unknown there, so only members' links show and [data-staff] stays hidden. */
+  if (!me && document.documentElement.dataset.glowMoodleIn) {
+    document.querySelectorAll('[data-member]:not([data-staff])').forEach(n => { n.hidden = false; });
+    document.querySelectorAll('[data-guest]').forEach(n => { n.hidden = true; });
+    document.getElementById('signIn')?.setAttribute('hidden', '');
+  }
   return me;
 }

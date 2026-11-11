@@ -163,7 +163,7 @@ check('progress is a real 0–100 number', progress);
    catalogue, not a sample. */
 for (const key of ['english', 'resources']) {
   const cat = await (await req(`/api/catalog/${key}`)).json();
-  const ids = (cat.groups || []).flatMap(g => g.items).map(i => i.courseId).filter(Boolean);
+  const ids = (cat.groups || []).flatMap(g => g.items).filter(i => !i.href && !i.emmai).map(i => i.courseId).filter(Boolean); // external and EMMAI items do not open a course here
   const statuses = await Promise.all(ids.map(async id => [id, (await req(`/api/courses/${id}`)).status]));
   const dead = statuses.filter(([, s]) => s !== 200);
   check(`every /${key} chip opens a course`, ids.length > 0 && dead.length === 0,

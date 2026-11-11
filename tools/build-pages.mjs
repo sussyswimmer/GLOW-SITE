@@ -20,6 +20,7 @@
 
 import { writeFileSync } from 'node:fs';
 import { GROUPS, TRACKS } from '../server/data/glow-catalogue.js';
+import { resourceItems } from '../server/data/resource-items.js';
 import { CATEGORIES, GROUPS as CAT_GROUPS, catalogueFor } from '../server/data/catalogue.js';
 
 /* The course catalogue, signed out: role null is public courses only, so
@@ -45,10 +46,13 @@ const bi = (tag, vi, en) =>
    that only describes the thing. */
 function catalogMarkup(key) {
   return GROUPS.filter(g => g.catalog === key).map(g => {
-    const items = TRACKS.filter(t => t.group === g.key);
-    const chips = items
-      .map(t => `<a class="chip" href="./course.html?id=${t.id}">${esc(t.nav)}</a>`)
-      .join('');
+    const items = resourceItems(TRACKS.filter(t => t.group === g.key).map(t => ({ courseId: t.id, title: t.nav })));
+    const chips = items.map(i => {
+      const name = i.titleVi ? `<span data-i18n data-vi="${esc(i.titleVi)}" data-en="${esc(i.title)}">${esc(i.titleVi)}</span>` : esc(i.title);
+      if (i.emmai) return `<button class="chip" type="button" data-emmai-open>${name}</button>`;
+      if (i.href) return `<a class="chip" href="${esc(i.href)}"${EXT}>${name}<span class="sr-only" data-i18n data-vi=" (mở tab mới)" data-en=" (opens in a new tab)"> (mở tab mới)</span></a>`;
+      return `<a class="chip" href="./course.html?${i.code ? 'code=' + encodeURIComponent(i.code) : 'id=' + i.courseId}">${name}</a>`;
+    }).join('');
     return [
       `      <section class="track" id="${esc(g.key)}" data-rise>`,
       '        <div class="track-head">',
@@ -211,7 +215,7 @@ ${c.links.map(([h, vi, en, x = '']) => '        ' + link(h, vi, en, x)).join('\n
 
 const shell = ({
   file, titleVi, titleEn, descVi, descEn,
-  h1, h1en, sub, suben, crumbs, main,
+  h1, h1en, sub, suben, subStaffVi, subStaffEn, crumbs, main,
   noindex = true, isPublic = false,
   /* Which script boots the page. Everything used to be src/app.js; the
      story reader has its own, smaller entry. */
@@ -311,8 +315,9 @@ ${COURSES_MENU}
 <div class="pagehead">
   <div class="pagehead-in">
     ${crumbs ? `<nav class="crumbs" aria-label="Breadcrumb">${crumbs}</nav>` : ''}
-    <h1 data-i18n data-vi="${esc(h1)}" data-en="${esc(h1en)}">${esc(h1)}</h1>
-    ${sub ? `<p data-i18n data-vi="${esc(sub)}" data-en="${esc(suben)}">${esc(sub)}</p>` : ''}
+    <h1 data-i18n data-vi="${esc(h1)}" data-en="${esc(h1en)}">${esc(h1)}</h1>${sub ? `
+    <p${subStaffVi ? ' data-not-staff' : ''} data-i18n data-vi="${esc(sub)}" data-en="${esc(suben)}">${esc(sub)}</p>` : ''}${subStaffVi ? `
+    <p data-staff hidden data-i18n data-vi="${esc(subStaffVi)}" data-en="${esc(subStaffEn)}">${esc(subStaffVi)}</p>` : ''}
   </div>
 </div>
 
@@ -385,8 +390,10 @@ const PAGES = [
     descVi: 'Tất cả khoá học trên GLOW: Học tiếng Anh, Kỹ năng & Kết nối.',
     descEn: 'All GLOW courses: English Learning and Skills & Network Building.',
     h1: 'Khoá học', h1en: 'Courses',
-    sub: 'Tất cả khoá học trên GLOW, chia thành ba danh mục: Học tiếng Anh, Kỹ năng & Kết nối và Đào tạo nội bộ.',
-    suben: 'All GLOW courses, in three categories: English Learning, Skills & Network Building, and Training.',
+    sub: 'Tất cả khoá học trên GLOW, chia thành hai danh mục: Học tiếng Anh và Kỹ năng & Kết nối.',
+    suben: 'All GLOW courses, in two categories: English Learning and Skills & Network Building.',
+    subStaffVi: 'Tất cả khoá học trên GLOW, chia thành ba danh mục: Học tiếng Anh, Kỹ năng & Kết nối và Đào tạo nội bộ.',
+    subStaffEn: 'All GLOW courses, in three categories: English Learning, Skills & Network Building, and Training.',
     crumbs: crumbHome + sep + '<span data-i18n data-vi="Khoá học" data-en="Courses">Khoá học</span>',
     main: coursesIndexMarkup(),
     noindex: false, isPublic: true,
@@ -455,13 +462,13 @@ const PAGES = [
   },
   {
     file: 'resources.html',
-    titleVi: 'Tài nguyên giáo dục | GLOW', titleEn: 'Educational Resources | GLOW',
-    descVi: 'Công cụ và tài liệu hỗ trợ tự học trên GLOW: chatbot AI, mẹo tự học, báo cáo thời gian học và Khan Academy.',
-    descEn: 'Tools and material that support self-study on GLOW: AI chatbots, self-learning tips, study-time reporting and Khan Academy.',
-    h1: 'Tài nguyên giáo dục', h1en: 'Educational Resources',
+    titleVi: 'Tài nguyên | GLOW', titleEn: 'Resources | GLOW',
+    descVi: 'Công cụ và tài liệu hỗ trợ tự học trên GLOW: cố vấn AI EMMAI, mẹo tự học, báo cáo thời gian học và Khan Academy.',
+    descEn: 'Tools and material that support self-study on GLOW: the EMMAI AI advisor, self-learning tips, study-time reporting and Khan Academy.',
+    h1: 'Tài nguyên', h1en: 'Resources',
     sub: 'Công cụ và tài liệu hỗ trợ việc tự học.',
     suben: 'Tools and material that support self-study.',
-    crumbs: crumbHome + sep + '<span data-i18n data-vi="Tài nguyên giáo dục" data-en="Educational Resources">Tài nguyên giáo dục</span>',
+    crumbs: crumbHome + sep + '<span data-i18n data-vi="Tài nguyên" data-en="Resources">Tài nguyên</span>',
     main: `<main class="shell" id="view" tabindex="-1">\n${catalogMarkup('resources')}\n</main>`,
     noindex: false, isPublic: true,
   },

@@ -113,6 +113,13 @@
     root.dataset.descEn = page.desc.en;
     document.title = page.title[LANG];
 
+    /* Moodle's own session, read before the class is cleared: the GLOW API is
+       not on this origin, so landing.js cannot ask it. Core puts "notloggedin"
+       on <body> for visitors; the guest account counts as logged in there, so
+       it is told apart by user id. Fails safe: no M.cfg means not signed in.
+       shortcut: guest id assumed to be 1 (Moodle's default), anonymous is 0. */
+    if (!/(^|\s)notloggedin(\s|$)/.test(body.className) && Number(window.M && window.M.cfg && window.M.cfg.userId) > 1) root.dataset.glowMoodleIn = '1';
+
     body.id = 'glow-landing-page';
     body.className = '';
     body.innerHTML = page.html.split('%%GLOW%%').join(GLOW).split('%%MOODLE%%').join(MOODLE);

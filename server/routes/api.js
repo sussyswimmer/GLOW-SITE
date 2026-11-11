@@ -8,6 +8,7 @@
 import { config } from '../config.js';
 import { data, isDemo } from '../data/index.js';
 import { readSession } from './auth.js';
+import { resourceGroups } from '../data/resource-items.js';
 
 export default async function apiRoutes(app) {
   app.addHook('preHandler', async (req, reply) => {
@@ -37,7 +38,7 @@ export default async function apiRoutes(app) {
     schema: { params: { type: 'object', properties: { key: { type: 'string', enum: ['english', 'resources'] } }, required: ['key'] } },
   }, async (req) => {
     const d = await data.getCatalog(req.session, req.params.key);
-    return { ...d, demo: isDemo };
+    return { ...d, ...(req.params.key === 'resources' && { groups: resourceGroups(d.groups) }), demo: isDemo };
   });
 
   /* ── GET /api/billing ───────────────────────────────────── */
