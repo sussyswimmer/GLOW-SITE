@@ -331,6 +331,8 @@ main{position:relative}
    simply does not appear. */
 .kick-rule{display:block;width:26px;height:2px;background:var(--spring-d);transform-origin:0 50%}
 .kick.light{color:rgba(255,255,255,.78)}
+.kick a{color:inherit;text-decoration:none}
+.kick a:hover,.kick a:focus-visible{text-decoration:underline}
 
 .display{font-size:clamp(2.1rem,4.8vw,3.9rem);line-height:1.1;letter-spacing:-.025em;color:var(--deep)}
 .display .ln{display:block;overflow:hidden;padding-bottom:.08em}

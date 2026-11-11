@@ -1,4 +1,4 @@
-/* Checks the fourteen things that were wrong, against a running server.
+/* Checks the fourteen things that were wrong, plus the brief's Resources links, against a running server.
 
      npm start           (in one terminal)
      node tools/verify-fixes.mjs [baseUrl]
@@ -528,6 +528,70 @@ await guarded(13, 'signed-in cards', async () => {
   check(13, 'courses (signed in): cards lead with the name, not the code',
     order.length > 0 && order.every(o => o[0] === 'ccard-name' && o.indexOf('ccard-top') > 0),
     order[0]?.join('>') ?? 'no cards');
+  await p.close();
+});
+
+/* 14 · the Moodle front-page embed reads Moodle's own session. It counts as signed
+       in only when body lacks "notloggedin" AND window.M.cfg.userId > 1 (0 is
+       anonymous, 1 is Moodle's guest). No M at all fails safe: not signed in. */
+const MOODLE_CASES = [
+  { name: 'loggedin, userId 5',     cls: 'loggedin',    M: '{ cfg: { userId: 5 } }', inn: true },
+  { name: 'loggedin, userId 1 (guest)', cls: 'loggedin', M: '{ cfg: { userId: 1 } }', inn: false },
+  { name: 'loggedin, no M',         cls: 'loggedin',    M: null,                     inn: false },
+  { name: 'notloggedin, userId 0',  cls: 'notloggedin', M: '{ cfg: { userId: 0 } }', inn: false },
+];
+for (const c of MOODLE_CASES) {
+  await guarded(14, `moodle embed (${c.name})`, async () => {
+    const ctx = await browser.newContext();
+    const p = await ctx.newPage();
+    await p.route(`${BASE}/__moodle.html`, r => r.fulfill({ contentType: 'text/html',
+      body: `<!doctype html><html lang="en"><head></head><body id="page-site-index" class="${c.cls}">` +
+            (c.M ? `<script>window.M = ${c.M};</script>` : '') +
+            `<script src="${BASE}/embed/moodle.js"></script></body></html>` }));
+    /* loadAuth ends with the /api/auth/me answer (401 here, as on Moodle), so
+       wait for that, then one task so its continuation has run. */
+    const me = p.waitForResponse(r => r.url().endsWith('/api/auth/me'));
+    me.catch(() => {});   // a broken embed must fail this check, not crash the run
+    await p.goto(`${BASE}/__moodle.html`);
+    await p.waitForSelector('#glow-landing-page #signIn', { state: 'attached' });
+    await me;
+    await p.evaluate(() => new Promise(r => setTimeout(r, 0)));
+    const seen = await p.evaluate(() => {
+      const shown = sel => [...document.querySelectorAll(sel)].some(n => n.offsetParent !== null);
+      return { dash: shown('[data-member]'), signIn: shown('#signIn'),
+               staff: [...document.querySelectorAll('[data-staff]')].filter(n => !n.hidden).length };
+    });
+    check(14, `moodle embed, ${c.name}: Dashboard ${c.inn ? 'visible' : 'hidden'}, Sign in ${c.inn ? 'hidden' : 'visible'}, no staff links`,
+      seen.dash === c.inn && seen.signIn === !c.inn && seen.staff === 0, JSON.stringify(seen));
+    await ctx.close();
+  });
+}
+
+/* 15 · Resources: EMMAI opens the advisor, three courses open their GLOW pages,
+       English Library opens the platform course in a new tab. Static and runtime. */
+const RES_CODES = ['EL5002', 'EL5007', 'EL5008'];
+const RES_LIB = 'https://glow.mata9.com/course/view.php?id=4';
+{
+  const html = raw['resources.html'];
+  const hasEmmai = /<button[^>]*class="chip"[^>]*data-emmai-open[^>]*>[\s\S]*?data-en="[^"]*EMMAI/.test(html);
+  const codes = RES_CODES.map(c => html.includes(`href="./course.html?code=${c}"`));
+  const lib = html.split('<a ').some(a => a.includes(`href="${RES_LIB}"`) && /target="_blank"/.test(a.split('>')[0]));
+  check(15, 'resources.html (static): EMMAI chip, EL5002/EL5007/EL5008, English Library', hasEmmai && codes.every(Boolean) && lib,
+    JSON.stringify({ hasEmmai, codes, lib }));
+}
+await guarded(15, 'resources (signed in)', async () => {
+  const p = await page(inn, 'resources.html');
+  await p.waitForSelector('.track .chip');
+  const seen = await p.evaluate(({ codes, lib }) => {
+    const emmai = [...document.querySelectorAll('button.chip[data-emmai-open]')]
+      .some(b => [b, ...b.querySelectorAll('[data-en]')].some(n => /EMMAI/.test(n.dataset.en || n.textContent)));
+    const a = [...document.querySelectorAll('a.chip')];
+    return { emmai,
+      codes: codes.map(c => a.some(x => x.getAttribute('href') === `./course.html?code=${c}`)),
+      lib: a.some(x => x.getAttribute('href') === lib && x.target === '_blank') };
+  }, { codes: RES_CODES, lib: RES_LIB });
+  check(15, 'resources (signed in, runtime): EMMAI chip, EL5002/EL5007/EL5008, English Library',
+    seen.emmai && seen.codes.every(Boolean) && seen.lib, JSON.stringify(seen));
   await p.close();
 });
 

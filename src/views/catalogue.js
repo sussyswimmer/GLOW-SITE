@@ -247,5 +247,15 @@ export function renderCatalogueCourse(d, host) {
     target: '_blank', rel: 'noopener noreferrer',
   }, t('Mở trên nền tảng GLOW', 'Open on the GLOW platform'),
   el('span', { class: 'sr-only' }, t(' (mở tab mới)', ' (opens in a new tab)')));
-  host.append(emptyState('Nội dung khoá học này sẽ được cập nhật sau.', 'This content will be filled later.', open || undefined));
+  /* Either language may be missing while a translation is pending: show the other. */
+  const side = s => ({ lead: s?.lead || '', bullets: s?.bullets || [] });
+  const vi = side(c.summary?.vi || c.summary?.en), en = side(c.summary?.en || c.summary?.vi);
+  const n = Math.max(vi.bullets.length, en.bullets.length);
+  if (vi.lead || en.lead || n) {
+    host.append(el('section', { class: 'panel course-summary' },
+      vi.lead || en.lead ? bilingual(el('p'), vi.lead || en.lead, en.lead || vi.lead) : null,
+      n ? el('ul', {}, Array.from({ length: n }, (_, i) =>
+        bilingual(el('li'), vi.bullets[i] ?? en.bullets[i], en.bullets[i] ?? vi.bullets[i]))) : null,
+      open || null));
+  } else host.append(emptyState('Nội dung khoá học này sẽ được cập nhật sau.', 'This content will be filled later.', open || undefined));
 }

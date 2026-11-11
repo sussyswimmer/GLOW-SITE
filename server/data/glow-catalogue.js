@@ -49,8 +49,8 @@ export const GROUPS = [
   },
   {
     "key": "resources",
-    "title": "Educational Resources",
-    "titleVi": "Tài nguyên giáo dục",
+    "title": "Resources",
+    "titleVi": "Tài nguyên",
     "catalog": "resources"
   }
 ];

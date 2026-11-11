@@ -24,7 +24,7 @@ const GROUPS = [
   { key: 'etop',          title: 'ETOP',           titleVi: 'ETOP',       catalog: 'english',   ids: [241, 287, 246, 106] },
   { key: 'testing',       title: 'Testing',        titleVi: 'Kiểm tra',   catalog: 'english',   ids: [62, 61, 1734, 2245, 245] },
   { key: 'other',         title: 'Other',          titleVi: 'Khác',       catalog: 'english',   ids: [1753, 1750, 1135, 1128, 60, 1999, 1983, 2005] },
-  { key: 'resources',     title: 'Educational Resources', titleVi: 'Tài nguyên giáo dục', catalog: 'resources', ids: [1986, 1987, 579, 2213] },
+  { key: 'resources',     title: 'Resources', titleVi: 'Tài nguyên', catalog: 'resources', ids: [1986, 1987, 579, 2213] },
 ];
 
 const byId = new Map(crawl.courses.map(c => [c.id, c]));

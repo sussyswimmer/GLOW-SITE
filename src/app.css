@@ -82,6 +82,11 @@
 }
 .panel + .panel{margin-top:24px}
 
+/* Course summary: bullets sit inside the text column, not the panel edge. */
+.course-summary > p{font-weight:700;margin-bottom:.5rem}
+.course-summary ul{padding-left:1.25em;margin:0 0 1.5rem}
+.course-summary li + li{margin-top:.35rem}
+
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:20px}
 
 .tile{
@@ -184,6 +189,7 @@
   font-size:.85rem;color:var(--ink);transition:border-color .2s,background .2s,color .2s;
 }
 .chip:hover{border-color:var(--spring-d);background:#E8F8F1;color:var(--deep)}
+button.chip{font-family:inherit;cursor:pointer}
 
 /* ═══════════════════════════════════════════════════════════
    Everything below is the working site: the states a real page has
@@ -461,11 +467,17 @@ a:focus-visible,button:focus-visible,input:focus-visible,
    it was. */
 .signin-foot a{color:var(--spring);text-decoration:none;display:inline-block;padding:12px 8px;margin:-12px -8px}
 .signin-foot a:hover{text-decoration:underline}
+/* Partner logos inside the white card, below a hairline: the Matera mark is dark and vanishes on the green page; nav.css (the footer rules) is not loaded on this page. */
+.signin-partners{display:flex;align-items:center;justify-content:center;gap:28px;margin:24px 0 0;padding-top:22px;border-top:1px solid var(--line)}
+.signin-partners a{display:block;border-radius:6px}
+.signin-partners img{display:block;height:56px;width:auto}
 
 @media(max-width:479px){
   .signin-card{padding:32px 22px 26px}
   .signin-card h1{font-size:1.45rem}
   .signin-lang{top:14px;right:14px}
+  .signin-partners{gap:20px}
+  .signin-partners img{height:44px}
 }
 
 /* ── sign in / sign out, in the brand bar ──────────────── */

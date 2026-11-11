@@ -5,25 +5,28 @@ The site was rebuilt from the GLOW website content brief (Google Sheet, FINAL co
 ## Names and titles (brief CONFIRM rows)
 
 1. **Vietnamese copy.** Every new Vietnamese string was written by the developers and needs a native-speaker review: menus, headings, buttons, Vietnamese course-category names and EMMAI messages.
-2. **"Growing" or "Global"** Learning Opportunities Worldwide? The site uses "Growing" (rows 4, 18).
-3. **SET or PSET**: Success with Entrepreneurship, or Passport to Success through Entrepreneurship? The site uses SET (rows 35, 169–171).
-4. **GRIT**: Growing with *Information* Technology or *Innovative* Technology? The site uses Information (rows 172–173).
-5. **EM7113 or EM7103** for Financial Management. The home carousel shows "Financial Management (EM7113)" per the brief, but the card opens EM7103 "Personal Financial Management", the course on the Skills page (rows 55, 176).
-6. **EM2610**: Practising Mindfulness, or Self-Reliant and Independent mindset? (row 157)
-7. **EM2608**: "The Journey to Becoming an Engineer". Is the Vietnamese title "Hành trình trở thành một kỹ sư" or "Định hướng nghề nghiệp"? (row 159)
-8. **EM2611**: Cybersecurity Career Orientation, or the AI title? (row 160)
-9. **EM2606**: Preparing for Job Interviews, or "Let's Talk About AI!"? (row 163)
+2. **"Growing" or "Global"** Learning Opportunities Worldwide? The site uses "Growing" (rows 5, 19). In Vietnamese the name is translated in the hero and page title ("Mở rộng cơ hội học tập trên toàn thế giới") but left in English in the About heading and footer. Which should it be everywhere?
+3. **SET or PSET**: Success with Entrepreneurship, or Passport to Success through Entrepreneurship? The site uses SET (rows 36, 170–172).
+4. **GRIT**: Growing with *Information* Technology or *Innovative* Technology? The site uses Information (rows 173–174).
+5. **EM7113 or EM7103** for Financial Management. The home carousel shows "Financial Management (EM7113)" per the brief, but the card opens EM7103 "Personal Financial Management", the course on the Skills page (rows 56, 177).
+6. **EM2610**: Practising Mindfulness, or Self-Reliant and Independent mindset? (row 158)
+7. **EM2608**: "The Journey to Becoming an Engineer". Is the Vietnamese title "Hành trình trở thành một kỹ sư" or "Định hướng nghề nghiệp"? (row 160)
+8. **EM2611**: Cybersecurity Career Orientation, or the AI title? (row 161)
+9. **EM2606**: Preparing for Job Interviews, or "Let's Talk About AI!"? (row 164)
 10. **FACT, CARES, RISE.** What are their official full titles and course codes? The site shows "FACT — Factory Awareness to Counter Trafficking", "CARES — for frontline responders" and "RISE — for trafficking survivors".
 11. **Vietnamese names for English-learning (EL) and staff training (PT) courses.** The brief only gives Vietnamese names for EM courses, so EL and PT courses show their English name in both languages.
 
 ## Structure and access
 
-12. **Resources page.** Keep it or remove it? It is no longer in the menu, and its content is now under Courses › English Learning › English Resources. The page still exists at /resources.html (row 203).
-13. **GEMS and SEEDS courses** (EL5004, EL5005, EL5006). The site shows them only to signed-in GEMS or SEEDS scholars, and to staff. Should any of them be public? (rows 143–145)
+12. **Resources page.** Keep it or remove it? It is no longer in the menu, and its content is now under Courses › English Learning › English Resources. The page still exists at /resources.html and is now called "Resources" (row 204). Its items now go to:
+   - the catalogue courses: their GLOW course pages;
+   - EMMAI: the AI advisor (row 205);
+   - English Library: its course on the GLOW platform (row 209). "PALS English Self-Learning" (row 210) is NOT built, because there is no matching course on the old platform; the team needs to send its link.
+13. **GEMS and SEEDS courses** (EL5004, EL5005, EL5006). The site shows them only to signed-in GEMS or SEEDS scholars, and to staff. Should any of them be public? (rows 144–146)
 14. **How Moodle marks staff, GEMS and SEEDS.** In demo mode the roles come from the demo accounts. On the live Moodle connection everyone is treated as a learner until we know whether staff and scholars are marked by a cohort, an ID-number pattern or a profile field. Until then the Training category and scholar-only courses stay hidden on live.
-15. **Included / Paid access badge** on course cards. Not built yet, waiting for pricing (row 101).
+15. **Included / Paid access badge** on course cards. Not built yet, waiting for pricing (row 102).
 16. **Tuition link in the menu.** The brief's menu has no Tuition link. It was kept because Max asked for it in every menu on 2026-11-08. Keep it?
-17. **Carousel images.** The brief says the carousel images need updating (row 44). The current images are unchanged.
+17. **Carousel images.** The brief says the carousel images need updating (row 45). The current images are unchanged.
 18. **Footer links**: Become a Volunteer, Donate, Partner With Us. Which Pacific Links pages should they open?
 
 ## Features
@@ -41,6 +44,11 @@ The site was rebuilt from the GLOW website content brief (Google Sheet, FINAL co
 
 ## Brief update, 2026-11-09 evening
 
-26. **Training in the menu.** The team changed the menu's Training row from ADD to REMOVE. Read as: Training is not in the public Courses menu, which is how it already works. A signed-in **staff** account still sees it, because the signed-in menu row still lists Training. If REMOVE means "not even for staff", say so and it comes out completely.
+26. **Training in the menu.** The team changed the menu's Training row from ADD to REMOVE. Read as: Training is not in the public Courses menu, which is how it already works. A signed-in **staff** account still sees it, because the signed-in menu row still lists Training. If REMOVE means "not even for staff", say so and it comes out completely. The footer's Training column follows the same rule: staff only (row 73).
 27. **Logos.** The Pacific Links mark is gone from the header, which now shows the GLOW wordmark only (`glow-wordmark.png`). The Pacific Links Foundation and Matera Alliance logos (colour versions from the shared Drive folder) now sit in the footer on every page. Pacific Links links to pacificlinks.org. Matera's logo is not a link until someone confirms its website. Moodle and the CMS still use the old `glow-logo.png` (with the Pacific Links mark). Should Moodle's logo change too?
 28. **Dashboard in the menu.** Following the COMMENT tab ("The dashboard will be appeared after sign in"), Dashboard is hidden from the menu until a learner or staff member signs in. Before this it was in the public menu and sent signed-out visitors to the sign-in page.
+
+## COMMENT tab, 2026-11-10
+
+29. **Course content from the old GLOW site.** Each course page now shows that course's description and outline from the old GLOW Moodle when the visitor isn't enrolled, in place of "This content will be filled later." Only 5 courses publish one to visitors who aren't signed in: EL2401, EM7101, EM7106, EM7108 and EM7110. For the other 25 courses with a Moodle id, the old site returns "not found" or an empty description unless you are signed in. FACT, CARES, RISE and the others without a Moodle id have nothing to pull. To fill the rest, either a team member sends the descriptions, or we pull them from a signed-in session. The English (or, for EL2401, Vietnamese) versions are developer translations and need the same native-speaker review as item 1. EM7106's "MỤC TIÊU" is shown as "Goals".
+30. **Page naming.** The COMMENT tab's "standardise page names" is done: every page has the same menu with the same names, signed in or out. The sign-in page now also shows the partner logos at the bottom.

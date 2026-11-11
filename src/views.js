@@ -184,8 +184,14 @@ export function renderCatalog(d, host) {
 
     const chips = el('div', { class: 'chips' });
     for (const item of items) {
-      chips.append(item.courseId
-        ? el('a', { class: 'chip', href: `./course.html?id=${encodeURIComponent(item.courseId)}`, text: item.title })
+      const name = item.titleVi ? t(item.titleVi, item.title) : item.title;
+      chips.append(item.emmai
+        ? el('button', { class: 'chip', type: 'button', 'data-emmai-open': '' }, name)
+        : item.href
+        ? el('a', { class: 'chip', href: item.href, target: '_blank', rel: 'noopener noreferrer' }, name,
+            el('span', { class: 'sr-only' }, t(' (mở tab mới)', ' (opens in a new tab)')))
+        : item.courseId
+        ? el('a', { class: 'chip', href: item.code ? `./course.html?code=${encodeURIComponent(item.code)}` : `./course.html?id=${encodeURIComponent(item.courseId)}` }, name)
         /* No course behind it yet — same honesty rule as the activity rows. */
         : el('span', { class: 'chip is-unavailable', text: item.title, title: currentLang() === 'en' ? 'Not available yet' : 'Chưa có' }));
     }
