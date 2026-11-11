@@ -116,14 +116,18 @@ const EMBED_LINKS = [
   [/(href)="\.\/login\.html"/g,                  '$1="%%MOODLE%%/login/index.php"'],
   [/(href)="\.\/dashboard\.html"/g,              '$1="%%MOODLE%%/my/"'],
   [/(href)="\.\/course\.html\?id=(\d+)"/g,       '$1="%%MOODLE%%/course/view.php?id=$2"'],
-  [/(href)="\.\/((?:english|resources|stories|payment)\.html(?:#[\w-]*)?)"/g, '$1="%%GLOW%%/$2"'],
+  /* Home is the page this markup is showing on. */
+  [/(href)="\.\/index\.html"/g,                  '$1="%%MOODLE%%/"'],
+  [/(href)="\.\/index\.html(#[\w-]+)"/g,         '$1="$2"'],
+  [/(href|action)="\.\/((?:english|resources|stories|payment|courses|skills|training)\.html(?:#[\w-]*)?)"/g, '$1="%%GLOW%%/$2"'],
+  [/(href)="\.\/(course\.html\?code=\w+)"/g,     '$1="%%GLOW%%/$2"'],
   [/(src|href)="\.\/(assets\/[^"]+)"/g,          '$1="%%GLOW%%/$2"'],
 ];
 const bodyHtml = indexHtml.slice(indexHtml.indexOf('<body>') + 6, indexHtml.lastIndexOf('</body>'))
   .replace(/<script\b[\s\S]*?<\/script>\s*/g, '');
 let embedHtml = bodyHtml;
 for (const [from, to] of EMBED_LINKS) embedHtml = embedHtml.replace(from, to);
-const unhandled = [...embedHtml.matchAll(/(?:href|src|srcset)="(\.{1,2}\/[^"]*)"/g)].map(m => m[1]);
+const unhandled = [...embedHtml.matchAll(/(?:href|src|srcset|action)="(\.{1,2}\/[^"]*)"/g)].map(m => m[1]);
 if (unhandled.length) {
   throw new Error(`embed: no Moodle rewrite for ${[...new Set(unhandled)].join(', ')} — add one to EMBED_LINKS`);
 }
